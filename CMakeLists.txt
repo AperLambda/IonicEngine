@@ -19,12 +19,12 @@ elseif (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 endif ()
 
+find_package(GLFW REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_subdirectory(dependencies/lambdacommon)
-add_subdirectory(dependencies/glfw)
 add_subdirectory(dependencies/soil)
-include_directories(dependencies/lambdacommon/include dependencies/glfw/include dependencies/soil/inc)
+include_directories(dependencies/lambdacommon/include ${GLFW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} dependencies/soil/inc)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -47,7 +47,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine lambdacommon glfw soil ${GLEW_LIBRARIES})
+target_link_libraries(ionicengine lambdacommon ${GLFW_LIBRARIES} soil ${GLEW_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine

@@ -35,7 +35,7 @@ namespace ionicengine
 			vector<Monitor> monitors{static_cast<size_t>(length)};
 			for (size_t i = 0; i < length; i++)
 			{
-
+				monitors.emplace_back({glfw_monitors[i]});
 			}
 			return monitors;
 		}

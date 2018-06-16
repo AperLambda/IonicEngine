@@ -18,6 +18,8 @@ namespace ionicengine
 	{
 	public:
 		virtual void draw(Graphics *graphics) = 0;
+
+		virtual void update() = 0;
 	};
 }
 

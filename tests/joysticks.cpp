@@ -7,9 +7,11 @@
  * see the LICENSE file.
  */
 
+#include <lambdacommon/system/filesystem/filesystem.h>
 #include <lambdacommon/system/system.h>
 #include <ionicengine/input/inputmanager.h>
-#include <ionicengine/graphics/graphics.h>
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 using namespace lambdacommon;
@@ -37,17 +39,15 @@ public:
 	}
 };
 
-void invokeControllerBaseEvent(int joy, int event)
+void update()
 {
-	InputManager &controllers = InputManager::INPUT_MANAGER;
-	Controller controller = controllers.getController(static_cast<uint8_t>(joy));
-	for (ControllerBaseListener *listener : controllers.getControllerBaseListeners())
+	GLFWgamepadstate state;
+	if (glfwGetGamepadState(0, &state))
 	{
-		if (event == GLFW_CONNECTED)
-			listener->connect(controller);
-		else if (event == GLFW_DISCONNECTED)
-			listener->disconnect(controller);
+		if (state.buttons[GLFW_GAMEPAD_BUTTON_A])
+			cout << "button a pressed!" << endl;
 	}
+	else cout << "Not a gamepad!" << endl;
 }
 
 int main()
@@ -56,8 +56,29 @@ int main()
 	terminal::setup();
 	glfwSetErrorCallback(error_callback);
 
+	auto gamecontrollerdb = fs::getCurrentWorkingDirectory() / "gamecontrollerdb.txt";
+	if (!gamecontrollerdb.exists())
+	{
+		cerr << "gamecontrollerdb.txt not found." << endl;
+		return EXIT_FAILURE;
+	}
+	ifstream read{};
+	ostringstream mappings{};
+	read.open(gamecontrollerdb.toAbsolute().toString());
+
+	if (read.is_open())
+	{
+		for (string line; getline(read, line);)
+		{
+			mappings << line << endl;
+		}
+		read.close();
+	}
+
 	if (!glfwInit())
 		return EXIT_FAILURE;
+
+	glfwUpdateGamepadMappings(mappings.str().c_str());
 
 	InputManager::INPUT_MANAGER.init();
 
@@ -69,22 +90,51 @@ int main()
 		     << terminal::YELLOW << "\"guid\'" << terminal::RESET << ':' << terminal::CYAN << '"'
 		     << controller.getGUID() << '"' << terminal::RESET << ','
 		     << terminal::YELLOW << "\"isConnected\"" << terminal::RESET << ':' << terminal::CYAN
-		     << lambdastring::to_string(controller.isConnected()) << terminal::RESET << '}' << endl;
+		     << lambdastring::to_string(controller.isConnected()) << terminal::RESET << ','
+		     << terminal::YELLOW << "\"isGamepad\"" << terminal::RESET << ':' << terminal::CYAN
+		     << lambdastring::to_string(controller.isGamepad()) << terminal::RESET << '}' << endl;
 	}
 
 	ControllerBaseListenerImpl listener;
 
 	InputManager::INPUT_MANAGER.addControllerBaseListener(&listener);
 
-	bool running = true;
+	auto window = glfwCreateWindow(512, 512, "IonicEngine - Game Controllers", nullptr, nullptr);
 
-	GraphicsManager gm{};
-	gm.registerGraphics({"domain:uwu"}, []() { return new Graphics(); });
+	static double limitFPS = 1.0 / 60.0;
 
-	while (running)
+	double lastTime = glfwGetTime(), timer = lastTime;
+	double deltaTime = 0, nowTime = 0;
+	int frames = 0 , updates = 0;
+
+	while (!glfwWindowShouldClose(window))
 	{
+		glfwSwapBuffers(window);
 		glfwPollEvents();
+		// - Measure time
+		nowTime = glfwGetTime();
+		deltaTime += (nowTime - lastTime) / limitFPS;
+		lastTime = nowTime;
+
+		// - Only update at 60 frames / s
+		while (deltaTime >= 1.0){
+			update();   // - Update function
+			updates++;
+			deltaTime--;
+		}
+		// - Render at maximum possible frames
+		//render(); // - Render function
+		frames++;
+
+		// - Reset after one second
+		if (glfwGetTime() - timer > 1.0) {
+			timer ++;
+			updates = 0, frames = 0;
+		}
 	}
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
 
 	return EXIT_SUCCESS;
 }

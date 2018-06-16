@@ -15,7 +15,7 @@
 
 namespace ionicengine
 {
-	class Monitor
+	class IONICENGINE_API Monitor
 	{
 	private:
 		GLFWmonitor *_monitor;
@@ -23,6 +23,10 @@ namespace ionicengine
 	public:
 		Monitor(GLFWmonitor *monitor = glfwGetPrimaryMonitor());
 
+		/*!
+		 * Gets the name of the monitor.
+		 * @return The name of the monitor.
+		 */
 		std::string getName();
 	};
 

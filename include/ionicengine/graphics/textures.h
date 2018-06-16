@@ -35,10 +35,17 @@ namespace ionicengine
 		uint32_t channels;
 	};
 
-	extern Texture IONICENGINE_API createTexture(unsigned char image[], uint32_t width, uint32_t height, uint32_t channels);
+	extern Texture IONICENGINE_API loadTexture(std::string path);
 
-	extern Texture IONICENGINE_API createTexture(unsigned char image[], uint32_t width, uint32_t height, uint32_t channels,
-	                                             TextureWrapMode wrapMode, TextureFilterMode filterMode);
+	extern Texture IONICENGINE_API
+	loadTexture(std::string path, TextureWrapMode wrapMode, TextureFilterMode filterMode);
+
+	extern Texture IONICENGINE_API
+	createTexture(unsigned char image[], uint32_t width, uint32_t height, uint32_t channels);
+
+	extern Texture IONICENGINE_API
+	createTexture(unsigned char image[], uint32_t width, uint32_t height, uint32_t channels,
+	              TextureWrapMode wrapMode, TextureFilterMode filterMode);
 }
 
 #endif //IONICENGINE_TEXTURES_H

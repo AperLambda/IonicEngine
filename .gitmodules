@@ -1,9 +1,9 @@
 [submodule "dependencies/lambdacommon"]
 	path = dependencies/lambdacommon
 	url = https://github.com/AperLambda/lambdacommon.git
-[submodule "dependencies/glfw"]
-	path = dependencies/glfw
-	url = https://github.com/glfw/glfw.git
 [submodule "dependencies/soil"]
 	path = dependencies/soil
 	url = https://github.com/paralin/soil.git
+[submodule "cmake"]
+	path = cmake
+	url = https://github.com/AperLambda/LambdaCMakeModules.git

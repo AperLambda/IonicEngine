@@ -14,7 +14,7 @@
 
 namespace ionicengine
 {
-	class Controller
+	class IONICENGINE_API Controller
 	{
 	private:
 		const uint8_t joystick;

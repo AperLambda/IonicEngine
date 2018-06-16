@@ -10,12 +10,16 @@
 #ifndef IONICENGINE_GRAPHICS_H
 #define IONICENGINE_GRAPHICS_H
 
-#include <lambdacommon/resources.h>
 #include "textures.h"
+#include <lambdacommon/resources.h>
+#include <map>
 
 namespace ionicengine
 {
-	class Graphics
+	const lambdacommon::ResourceName GRAPHICS_GL1{"ionicengine", "graphics/gl1"};
+	const lambdacommon::ResourceName GRAPHICS_GL4{"ionicengine", "graphics/gl4"};
+
+	class IONICENGINE_API Graphics
 	{
 	public:
 		virtual void drawLine2D(float x, float y, float x2, float y2) = 0;
@@ -25,10 +29,22 @@ namespace ionicengine
 		virtual void drawImage(Texture *texture, float x, float y, float width, float height) = 0;
 	};
 
-	class GraphicsManager
+	typedef Graphics* (*newGraphicsFunction)();
+
+	class IONICENGINE_API GraphicsManager
 	{
+	private:
+		std::map<lambdacommon::ResourceName, newGraphicsFunction> _graphics;
+		lambdacommon::ResourceName _graphicsUsed;
+
 	public:
-		void registerGraphics(lambdacommon::ResourceName name, Graphics* (*newGraphics)());
+		void init();
+
+		void registerGraphics(lambdacommon::ResourceName name, newGraphicsFunction newGraphics);
+
+		void useGraphics(lambdacommon::ResourceName name);
+
+		Graphics *newGraphics();
 	};
 }
 
