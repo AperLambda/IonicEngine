@@ -21,13 +21,17 @@ namespace ionicengine
 		GLFWmonitor *_monitor;
 
 	public:
-		Monitor(GLFWmonitor *monitor = glfwGetPrimaryMonitor());
+		explicit Monitor(GLFWmonitor *monitor = glfwGetPrimaryMonitor());
 
 		/*!
 		 * Gets the name of the monitor.
 		 * @return The name of the monitor.
 		 */
-		std::string getName();
+		std::string getName() const;
+
+		bool isEmpty() const;
+
+		bool operator==(const Monitor &other) const;
 	};
 
 	namespace monitor

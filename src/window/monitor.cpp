@@ -16,17 +16,26 @@ namespace ionicengine
 	Monitor::Monitor(GLFWmonitor *monitor) : _monitor(monitor)
 	{}
 
-	string Monitor::getName()
+	string Monitor::getName() const
 	{
-		const char *name = glfwGetMonitorName(_monitor);
-		if (name == nullptr)
-			return "NULL";
-		return string(name);
+		if (_monitor == nullptr)
+			return to_string((long) _monitor);
+		return string(glfwGetMonitorName(_monitor));
+	}
+
+	bool Monitor::isEmpty() const
+	{
+		return _monitor == nullptr;
+	}
+
+	bool Monitor::operator==(const Monitor &other) const
+	{
+		return _monitor == other._monitor;
 	}
 
 	namespace monitor
 	{
-		Monitor primaryMonitor{};
+		Monitor primaryMonitor{glfwGetPrimaryMonitor()};
 
 		vector<Monitor> getMonitors()
 		{
@@ -35,13 +44,15 @@ namespace ionicengine
 			vector<Monitor> monitors{static_cast<size_t>(length)};
 			for (size_t i = 0; i < length; i++)
 			{
-				monitors.emplace_back({glfw_monitors[i]});
+				monitors.emplace_back(Monitor{glfw_monitors[i]});
 			}
 			return monitors;
 		}
 
 		Monitor getPrimaryMonitor()
 		{
+			if (primaryMonitor.isEmpty())
+				primaryMonitor = Monitor{};
 			return primaryMonitor;
 		}
 	}

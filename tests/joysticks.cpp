@@ -12,6 +12,7 @@
 #include <ionicengine/input/inputmanager.h>
 #include <fstream>
 #include <sstream>
+#include <GL/glew.h>
 
 using namespace std;
 using namespace lambdacommon;
@@ -46,8 +47,7 @@ void update()
 	{
 		if (state.buttons[GLFW_GAMEPAD_BUTTON_A])
 			cout << "button a pressed!" << endl;
-	}
-	else cout << "Not a gamepad!" << endl;
+	} else cout << "Not a gamepad!" << endl;
 }
 
 int main()
@@ -99,36 +99,44 @@ int main()
 
 	InputManager::INPUT_MANAGER.addControllerBaseListener(&listener);
 
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 	auto window = glfwCreateWindow(512, 512, "IonicEngine - Game Controllers", nullptr, nullptr);
+	glfwMakeContextCurrent(window);
 
-	static double limitFPS = 1.0 / 60.0;
+	static double limitFPS = 1.0 / 144.0;
 
 	double lastTime = glfwGetTime(), timer = lastTime;
 	double deltaTime = 0, nowTime = 0;
-	int frames = 0 , updates = 0;
+	int frames = 0, updates = 0;
 
 	while (!glfwWindowShouldClose(window))
 	{
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glClearColor(0, 0, 0, 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// - Measure time
 		nowTime = glfwGetTime();
 		deltaTime += (nowTime - lastTime) / limitFPS;
 		lastTime = nowTime;
 
 		// - Only update at 60 frames / s
-		while (deltaTime >= 1.0){
+		while (deltaTime >= 1.0)
+		{
 			update();   // - Update function
 			updates++;
 			deltaTime--;
 		}
 		// - Render at maximum possible frames
-		//render(); // - Render function
 		frames++;
 
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+
 		// - Reset after one second
-		if (glfwGetTime() - timer > 1.0) {
-			timer ++;
+		if (glfwGetTime() - timer > 1.0)
+		{
+			timer++;
+			glfwSetWindowTitle(window,
+			                   (string("IonicEngine - Game Controllers - ") + to_string(frames) + "FPS").c_str());
 			updates = 0, frames = 0;
 		}
 	}

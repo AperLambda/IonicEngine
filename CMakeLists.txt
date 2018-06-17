@@ -20,6 +20,7 @@ elseif (MSVC)
 endif ()
 
 find_package(GLFW REQUIRED)
+find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_subdirectory(dependencies/lambdacommon)
@@ -47,7 +48,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine lambdacommon ${GLFW_LIBRARIES} soil ${GLEW_LIBRARIES})
+target_link_libraries(ionicengine lambdacommon ${GLFW_LIBRARIES} soil ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine
