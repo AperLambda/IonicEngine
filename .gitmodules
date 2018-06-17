@@ -1,6 +1,3 @@
-[submodule "dependencies/lambdacommon"]
-	path = dependencies/lambdacommon
-	url = https://github.com/AperLambda/lambdacommon.git
 [submodule "dependencies/soil"]
 	path = dependencies/soil
 	url = https://github.com/paralin/soil.git
