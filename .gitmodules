@@ -1,6 +1,3 @@
-[submodule "dependencies/soil"]
-	path = dependencies/soil
-	url = https://github.com/paralin/soil.git
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/AperLambda/LambdaCMakeModules.git
