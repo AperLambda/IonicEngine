@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 AperLambda <aper.entertainment@gmail.com>
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
  * This file is part of IonicEngine.
  *
@@ -12,32 +12,57 @@
 
 #include "controller.h"
 #include <vector>
+#include <thread>
 
 namespace ionicengine
 {
 	class IONICENGINE_API ControllerBaseListener
 	{
 	public:
-		virtual void connect(Controller &controller) = 0;
+		virtual void connect(Controller *controller) = 0;
 
-		virtual void disconnect(Controller &controller) = 0;
+		virtual void disconnect(Controller *controller) = 0;
+	};
+
+	class IONICENGINE_API ControllerInputListener
+	{
+	public:
+		virtual void onButtonPress(const Controller &controller, uint8_t button) = 0;
+
+		virtual void onButtonRepeat(const Controller &controller, uint8_t button) = 0;
+
+		virtual void onButtonRelease(const Controller &controller, uint8_t button) = 0;
+
+		virtual void onAxisMove(const Controller &controller, uint8_t axis, float value) = 0;
+
+		virtual void onAxisRelease(const Controller &controller, uint8_t axis) = 0;
 	};
 
 	class IONICENGINE_API InputManager
 	{
 	private:
-		std::vector<Controller> controllers;
+		std::vector<Controller *> controllers;
 
 		std::vector<ControllerBaseListener *> controllerBaseListeners;
+		std::vector<ControllerInputListener *> controllerInputListeners;
+
+		std::thread *inputThread = nullptr;
 
 		InputManager();
 
 	public:
+		~InputManager();
+
 		/*! @brief Initializes the input manager.
 		 *
 		 * This function inits the input manager.
 		 */
 		void init();
+
+		/*! @biref Shutdown the input manager.
+		 * DO NOT CALL THIS ON YOURSELF!
+		 */
+		void shutdown();
 
 		/*! @brief Gets an controller by his defined ID.
 		 *
@@ -48,7 +73,7 @@ namespace ionicengine
 		 *
 		 * @return The instance of the controller.
 		 */
-		Controller getController(uint8_t id);
+		Controller *getController(uint8_t id);
 
 		/*! @brief Gets all controllers.
 		 *
@@ -56,7 +81,7 @@ namespace ionicengine
 		 *
 		 * @return All controllers.
 		 */
-		std::vector<Controller> getControllers() const;
+		std::vector<Controller *> getControllers() const;
 
 		/*! @brief Adds an basic listener.
 		 *
@@ -78,7 +103,7 @@ namespace ionicengine
 
 		/*! @brief Checks whether an basic listener is registered.
 		 *
-		 * This function checks wether an basic listener is registered.
+		 * This function checks whether a basic listener is registered.
 		 *
 		 * @param listener The pointer of the listener to check.
 		 *
@@ -87,6 +112,34 @@ namespace ionicengine
 		bool hasControllerBaseListener(ControllerBaseListener *listener);
 
 		std::vector<ControllerBaseListener *> getControllerBaseListeners() const;
+
+		/*! @brief Adds an input listener.
+		 *
+		 * This function adds a new listener.
+		 *
+		 * @param listener The pointer of the listener to add.
+		 */
+		void addControllerInputListener(ControllerInputListener *listener);
+
+		/*! @brief Removes an input listener.
+		 *
+		 * @param listener The pointer of the listener to remove.
+		 *
+		 * @return True whether the listener was removed else false.
+		 */
+		bool removeControllerInputListener(ControllerInputListener *listener);
+
+		/*! @brief Checks whether an input listener is registered.
+		 *
+		 * This function checks whether an input listener is registered.
+		 *
+		 * @param listener The pointer of the listener to check.
+		 *
+		 * @return True whether the listener was found else false.
+		 */
+		bool hasControllerInputListener(ControllerInputListener *listener);
+
+		std::vector<ControllerInputListener *> getControllerInputListeners() const;
 
 		// For singleton.
 		InputManager(InputManager const &) = delete;

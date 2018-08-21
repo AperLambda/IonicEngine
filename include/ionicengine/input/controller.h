@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 AperLambda <aper.entertainment@gmail.com>
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
  * This file is part of IonicEngine.
  *
@@ -18,6 +18,7 @@ namespace ionicengine
 	{
 	private:
 		const uint8_t joystick;
+		bool axisInverted[6] = {false, false, false, false, false, false};
 
 	public:
 		explicit Controller(uint8_t id);
@@ -36,7 +37,7 @@ namespace ionicengine
 		 *
 		 * @return Controller's name.
 		 */
-		std::string getName();
+		std::string getName() const;
 
 		/*! @brief Gets the GUID of the controller.
 		 *
@@ -46,7 +47,7 @@ namespace ionicengine
 		 *
 		 * @return Controller's GUID.
 		 */
-		std::string getGUID();
+		std::string getGUID() const;
 
 		/*! @brief Checks whether the controller is connected or not.
 		 *
@@ -54,13 +55,27 @@ namespace ionicengine
 		 *
 		 * @return True if the controller is connected else false.
 		 */
-		bool isConnected();
+		bool isConnected() const;
 
 		/*! @brief Returns whether the controller has a gamepad mapping.
 		 *
 		 * @return True if the controller has a gamepad mapping else false.
 		 */
-		bool isGamepad();
+		bool isGamepad() const;
+
+		/*! @brief Sets whether the axis of the controller is inverted or not.
+		 *
+		 * @param axis The axis ID, between 0 and 5.
+		 * @param inverted True if the axis is inverted else false.
+		 */
+		void setAxisInverted(uint8_t axis, bool inverted);
+
+		/*! @brief Returns whether the axis of the controller is inverted or not.
+		 *
+		 * @param axis The axis ID, between 0 and 5.
+		 * @return True if the axis is inverted else false.
+		 */
+		bool isAxisInverted(uint8_t axis) const;
 	};
 }
 

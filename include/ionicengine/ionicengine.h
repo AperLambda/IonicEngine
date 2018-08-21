@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 AperLambda <aper.entertainment@gmail.com>
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
  * This file is part of IonicEngine.
  *
@@ -11,7 +11,7 @@
 #define IONICENGINE_LIBRARY_H
 
 #include "ionicengine_exports.h"
-#include <string>
+#include <lambdacommon/resources.h>
 
 #define GLFW_INCLUDE_NONE
 
@@ -24,6 +24,19 @@
 
 namespace ionicengine
 {
+	extern bool IONICENGINE_API init(lambdacommon::fs::FilePath path = lambdacommon::fs::getCurrentWorkingDirectory());
+
+	/*!
+	 * Shutdowns the library.
+	 */
+	extern void IONICENGINE_API shutdown();
+
+	extern bool IONICENGINE_API isRunning();
+
+	extern void IONICENGINE_API printError(const std::string &message);
+
+	extern lambdacommon::ResourcesManager &IONICENGINE_API getResourcesManager();
+
 	extern std::string IONICENGINE_API getVersion();
 }
 

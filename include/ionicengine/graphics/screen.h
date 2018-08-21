@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 AperLambda <aper.entertainment@gmail.com>
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
  * This file is part of IonicEngine.
  *
@@ -20,6 +20,36 @@ namespace ionicengine
 		virtual void draw(Graphics *graphics) = 0;
 
 		virtual void update() = 0;
+	};
+
+	class Overlay : public Screen
+	{
+	public:
+		void draw(Graphics *graphics) override = 0;
+
+		void update() override = 0;
+	};
+
+	class ScreenManager
+	{
+	private:
+		std::map<lambdacommon::ResourceName, Screen *> _screens;
+		std::map<lambdacommon::ResourceName, Overlay *> _overlays;
+		lambdacommon::ResourceName _activeScreen{"ionicengine", "null"};
+		std::vector<lambdacommon::ResourceName> _activeOverlays;
+
+	public:
+		ScreenManager();
+
+		void registerScreen(lambdacommon::ResourceName resourceName, Screen *screen);
+
+		void registerOverlay(lambdacommon::ResourceName resourceName, Overlay *overlay);
+
+		Screen *getActiveScreen() const;
+
+		void render();
+
+		void update();
 	};
 }
 

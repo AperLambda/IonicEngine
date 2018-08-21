@@ -1,5 +1,5 @@
 /*
- * Copyright © 2018 AperLambda <aper.entertainment@gmail.com>
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
  * This file is part of IonicEngine.
  *
@@ -9,18 +9,21 @@
 
 #include "../../include/ionicengine/window/monitor.h"
 
-using namespace std;
-
 namespace ionicengine
 {
 	Monitor::Monitor(GLFWmonitor *monitor) : _monitor(monitor)
 	{}
 
-	string Monitor::getName() const
+	Monitor::Monitor(const Monitor &monitor) = default;
+
+	Monitor::Monitor(Monitor &&monitor) noexcept : _monitor(monitor._monitor)
+	{}
+
+	std::string Monitor::getName() const
 	{
 		if (_monitor == nullptr)
-			return to_string((long) _monitor);
-		return string(glfwGetMonitorName(_monitor));
+			return "nullptr";
+		return std::string(glfwGetMonitorName(_monitor));
 	}
 
 	bool Monitor::isEmpty() const
@@ -33,15 +36,22 @@ namespace ionicengine
 		return _monitor == other._monitor;
 	}
 
+	Monitor &Monitor::operator=(const Monitor &other) = default;
+
+	Monitor &Monitor::operator=(Monitor &&other) noexcept
+	{
+		if (this != &other)
+			_monitor = other._monitor;
+		return *this;
+	}
+
 	namespace monitor
 	{
-		Monitor primaryMonitor{glfwGetPrimaryMonitor()};
-
-		vector<Monitor> getMonitors()
+		std::vector<Monitor> getMonitors()
 		{
 			int length;
 			GLFWmonitor **glfw_monitors = glfwGetMonitors(&length);
-			vector<Monitor> monitors{static_cast<size_t>(length)};
+			std::vector<Monitor> monitors{static_cast<size_t>(length)};
 			for (size_t i = 0; i < length; i++)
 			{
 				monitors.emplace_back(Monitor{glfw_monitors[i]});
@@ -49,11 +59,9 @@ namespace ionicengine
 			return monitors;
 		}
 
-		Monitor getPrimaryMonitor()
+		const Monitor getPrimaryMonitor()
 		{
-			if (primaryMonitor.isEmpty())
-				primaryMonitor = Monitor{};
-			return primaryMonitor;
+			return Monitor{glfwGetPrimaryMonitor()};
 		}
 	}
 }
