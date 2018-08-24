@@ -125,7 +125,7 @@ namespace ionicengine
 				else if (*c == '\n')
 				{
 					x = originalX;
-					y += font.getHeight();
+					y += font.getHeight() * scale;
 					continue;
 				}
 
