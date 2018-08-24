@@ -10,7 +10,8 @@
 #ifndef IONICENGINE_TEXTURES_H
 #define IONICENGINE_TEXTURES_H
 
-#include "../ionicengine.h"
+#include "ionicengine_exports.h"
+#include <string>
 
 namespace ionicengine
 {
@@ -46,6 +47,11 @@ namespace ionicengine
 	extern Texture IONICENGINE_API
 	createTexture(unsigned char image[], uint32_t width, uint32_t height, uint32_t channels,
 	              TextureWrapMode wrapMode, TextureFilterMode filterMode);
+
+	namespace texture
+	{
+		void unbind();
+	}
 }
 
 #endif //IONICENGINE_TEXTURES_H

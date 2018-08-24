@@ -1,0 +1,112 @@
+/*
+ * Copyright © 2018 AperLambda <aperlambda@gmail.com>
+ *
+ * This file is part of IonicEngine.
+ *
+ * Licensed under the MIT license. For more information,
+ * see the LICENSE file.
+ */
+
+#include "../../include/ionicengine/graphics/font.h"
+#include "../../include/ionicengine/ionicengine.h"
+#include "../../include/ionicengine/graphics/textures.h"
+
+namespace ionicengine
+{
+	Font::Font(const std::map<char, Character> &charactersMap, uint32_t size) : _chars(charactersMap), _size(size)
+	{}
+
+	Font::Font(const Font &font) = default;
+
+	Font::Font(Font &&font) noexcept : _chars(std::move(font._chars)), _size(font._size)
+	{}
+
+	Character Font::getCharacter(char c) const
+	{
+		if (!_chars.count(c))
+			return Character{};
+		return _chars.at(c);
+	}
+
+	FontManager::FontManager()
+	{
+		if (FT_Init_FreeType(&ft))
+			throw std::runtime_error("Cannot initialize FreeType library!");
+	}
+
+	FontManager::~FontManager()
+	{
+		FT_Done_FreeType(ft);
+	}
+
+	std::optional<Font> FontManager::loadFont(const lambdacommon::ResourceName &fontName, uint32_t size) const
+	{
+		if (!getResourcesManager().doesResourceExist(fontName, "ttf"))
+			return std::nullopt;
+		return loadFont(getResourcesManager().getResourcePath(fontName, "ttf"), size);
+	}
+
+	std::optional<Font> FontManager::loadFont(const lambdacommon::fs::FilePath &path, uint32_t size) const
+	{
+		return loadFont(path.toString(), size);
+	}
+
+	std::optional<Font> FontManager::loadFont(const std::string &path, uint32_t size) const
+	{
+		FT_Face face;
+		if (FT_New_Face(ft, path.c_str(), 0, &face))
+			return std::nullopt;
+		// Sets the size of the font to extract.
+		// Width is dynamically calculated based on the given height.
+		FT_Set_Pixel_Sizes(face, 0, size);
+
+		std::map<char, Character> charactersMap;
+
+		// Disable byte-alignment restriction
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		// Load the first 128 ASCII characters. @TODO Add more characters.
+		for (u_char c = 0; c < 128; c++)
+		{
+			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+			{
+				printError("Failed to load Glyph '" + std::to_string(c) + "'.");
+				continue;
+			}
+
+			// Generate texture.
+			uint32_t texture;
+			glGenTextures(1, &texture);
+			glBindTexture(GL_TEXTURE_2D, texture);
+			glTexImage2D(
+					GL_TEXTURE_2D,
+					0,
+					GL_RED,
+					face->glyph->bitmap.width,
+					face->glyph->bitmap.rows,
+					0,
+					GL_RED,
+					GL_UNSIGNED_BYTE,
+					face->glyph->bitmap.buffer
+			);
+			// Set texture options.
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// Now store character for later use.
+			Character character{
+					texture,
+					glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+					glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+					static_cast<uint32_t>(face->glyph->advance.x)
+			};
+			charactersMap.insert(std::pair<char, Character>(c, character));
+		}
+
+		texture::unbind();
+		FT_Done_Face(face);
+
+		return {Font{charactersMap, size}};
+	}
+}

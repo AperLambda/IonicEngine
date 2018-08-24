@@ -8,6 +8,7 @@
  */
 
 #include "../../include/ionicengine/graphics/textures.h"
+#include <GL/glew.h>
 #include <SOIL/SOIL.h>
 #include <stdexcept>
 
@@ -32,5 +33,13 @@ namespace ionicengine
 		//GL CALLS
 
 		return texture;
+	}
+
+	namespace texture
+	{
+		void unbind()
+		{
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 	}
 }

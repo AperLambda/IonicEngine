@@ -1,3 +1,5 @@
+#include <utility>
+
 /*
  * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
@@ -7,23 +9,19 @@
  * see the LICENSE file.
  */
 
-#include <lambdacommon/system/filesystem/filesystem.h>
 #include <lambdacommon/system/system.h>
 #include <ionicengine/input/inputmanager.h>
+#include <ionicengine/graphics/screen.h>
 #include <fstream>
 #include <sstream>
-#include <GL/glew.h>
-#include <lambdacommon/graphics/color.h>
 
 using namespace std;
 using namespace lambdacommon;
 using namespace ionicengine;
 
-lambdacommon::Color backgroundColor = Color::BLACK;
-
 static void error_callback(int error, const char *description)
 {
-	fprintf(stderr, "Error: %s\n", description);
+	fprintf(stderr, "Error (%i): %s\n", error, description);
 }
 
 class ControllerBaseListenerImpl : public ControllerBaseListener
@@ -45,29 +43,35 @@ public:
 
 class ControllerInputListenerImpl : public ControllerInputListener
 {
+private:
+	ScreenManager *screenManager;
 public:
+	explicit ControllerInputListenerImpl(ScreenManager *screenManager) : screenManager(screenManager)
+	{}
+
 	void onButtonPress(const Controller &controller, uint8_t button) override
 	{
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing A" << endl;
-			backgroundColor = Color::GREEN;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing B" << endl;
-			backgroundColor = Color::RED;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing X" << endl;
-			backgroundColor = Color::BLUE;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing Y" << endl;
-			backgroundColor = lambdacommon::getColorByIntRGBA(255, 255, 0);
+			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::getColorByIntRGBA(255, 255, 0));
 		}
+		cout << "OwO " << to_string(controller.getId()) << "|" << to_string(button) << endl;
 	}
 
 	void onButtonRepeat(const Controller &controller, uint8_t button) override
@@ -75,22 +79,22 @@ public:
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating A" << endl;
-			backgroundColor = Color::GREEN;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating B" << endl;
-			backgroundColor = Color::RED;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating X" << endl;
-			backgroundColor = Color::BLUE;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating Y" << endl;
-			backgroundColor = lambdacommon::getColorByIntRGBA(255, 255, 0);
+			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::getColorByIntRGBA(255, 255, 0));
 		}
 	}
 
@@ -99,22 +103,26 @@ public:
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing A" << endl;
-			backgroundColor = Color::BLACK;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing B" << endl;
-			backgroundColor = Color::BLACK;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing X" << endl;
-			backgroundColor = Color::BLACK;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing Y" << endl;
-			backgroundColor = Color::BLACK;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			//backgroundColor = Color::BLACK;
 		}
 	}
 
@@ -130,11 +138,33 @@ public:
 	}
 };
 
+class OverlayFPS : public Overlay
+{
+private:
+	Font font;
+public:
+	OverlayFPS(Font font) : font(std::move(font))
+	{}
+
+	int fps = 0;
+
+	void draw(Graphics *graphics) override
+	{
+		graphics->setColor(Color::WHITE);
+		graphics->drawText(font, 2, 3, "FPS: " + to_string(fps));
+	}
+
+	void update() override
+	{
+
+	}
+};
+
 int main()
 {
 	cout << "Starting joysticks.cpp with IonicEngine v" << ionicengine::getVersion() << "..." << endl;
 	terminal::setup();
-	ionicengine::init();
+	ionicengine::init(true);
 	glfwSetErrorCallback(error_callback);
 
 	auto gamecontrollerdb = fs::getCurrentWorkingDirectory() / "gamecontrollerdb.txt";
@@ -177,14 +207,46 @@ int main()
 			 << lambdastring::to_string(controller->isGamepad()) << terminal::RESET << '}' << endl;
 	}
 
+	ScreenManager screenManager{};
+
 	ControllerBaseListenerImpl listener;
 	InputManager::INPUT_MANAGER.addControllerBaseListener(&listener);
-	ControllerInputListenerImpl inputListener;
+	ControllerInputListenerImpl inputListener{&screenManager};
 	InputManager::INPUT_MANAGER.addControllerInputListener(&inputListener);
 
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-	auto window = glfwCreateWindow(512, 512, "IonicEngine - Game Controllers", nullptr, nullptr);
-	glfwMakeContextCurrent(window);
+	auto windowOptions = ionicengine::DEFAULT_WINDOW_OPTIONS;
+	windowOptions.resizable = false;
+	windowOptions.context_version_major = 3;
+	windowOptions.context_version_minor = 3;
+	windowOptions.opengl_profile = GLFW_OPENGL_CORE_PROFILE;
+	windowOptions.samples = 4;
+	auto window = window::createWindow("IonicEngine - Game Controllers", 512, 512, windowOptions);
+	window.requestContext();
+	glewExperimental = GL_TRUE;
+	GLenum  err = glewInit();
+	if (err != GLEW_OK)
+	{
+		ionicengine::shutdown();
+		glfwTerminate();
+		return err;
+	}
+
+	glEnable(GL_MULTISAMPLE);
+
+	auto font = ionicengine::getFontManager().loadFont(string{"Roboto.ttf"}, 14);
+	if (!font)
+	{
+		ionicengine::shutdown();
+		return EXIT_FAILURE;
+	}
+
+	OverlayFPS overlay{font.value()};
+	screenManager.registerOverlay(IONICENGINE_OVERLAYS_FPS, &overlay);
+	screenManager.addActiveOverlay(IONICENGINE_OVERLAYS_FPS);
+
+	getGraphicsManager()->init();
+
+	screenManager.attachWindow(window);
 
 	static double limitFPS = 1.0 / 144.0;
 
@@ -192,10 +254,11 @@ int main()
 	double deltaTime = 0, nowTime = 0;
 	int frames = 0, updates = 0;
 
-	while (!glfwWindowShouldClose(window))
+	while (!window.shouldClose())
 	{
-		glClearColor(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		screenManager.render();
+		//glClearColor(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// - Measure time
 		nowTime = glfwGetTime();
 		deltaTime += (nowTime - lastTime) / limitFPS;
@@ -211,21 +274,20 @@ int main()
 		// - Render at maximum possible frames
 		frames++;
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(window.getHandle());
 		glfwPollEvents();
 
 		// - Reset after one second
 		if (glfwGetTime() - timer > 1.0)
 		{
 			timer++;
-			glfwSetWindowTitle(window,
-							   (string("IonicEngine - Game Controllers - ") + to_string(frames) + "FPS").c_str());
+			window.setTitle("IonicEngine - Game Controllers - " + to_string(frames) + "FPS");
+			overlay.fps = frames;
 			updates = 0, frames = 0;
 		}
 	}
 
 	ionicengine::shutdown();
-	glfwDestroyWindow(window);
 	glfwTerminate();
 
 	return EXIT_SUCCESS;

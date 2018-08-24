@@ -25,20 +25,21 @@ find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(SOIL REQUIRED)
+find_package(Freetype REQUIRED)
 
-include_directories(${LAMBDACOMMON_INCLUDE_DIR} ${GLFW_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${SOIL_INCLUDE_DIR})
+include_directories(${LAMBDACOMMON_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${SOIL_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS})
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-set(HEADERS_GRAPHICS include/ionicengine/graphics/graphics.h include/ionicengine/graphics/screen.h include/ionicengine/graphics/textures.h include/ionicengine/graphics/shader.h)
+set(HEADERS_GRAPHICS include/ionicengine/graphics/graphics.h include/ionicengine/graphics/screen.h include/ionicengine/graphics/textures.h include/ionicengine/graphics/shader.h include/ionicengine/graphics/font.h)
 set(HEADERS_INPUT include/ionicengine/input/inputmanager.h include/ionicengine/input/controller.h)
-set(HEADERS_WINDOW include/ionicengine/window/monitor.h)
+set(HEADERS_WINDOW include/ionicengine/window/monitor.h include/ionicengine/window/window.h)
 set(HEADERS_FILES ${HEADERS_GRAPHICS} ${HEADERS_INPUT} ${HEADERS_WINDOW} include/ionicengine/ionicengine.h)
-set(SOURCES_GRAPHICS src/graphics/graphics.cpp src/graphics/screen.cpp src/graphics/textures.cpp src/graphics/shader.cpp)
+set(SOURCES_GRAPHICS src/graphics/graphics.cpp src/graphics/screen.cpp src/graphics/textures.cpp src/graphics/shader.cpp src/graphics/font.cpp)
 set(SOURCES_INPUT src/input/inputmanager.cpp src/input/controller.cpp)
-set(SOURCES_WINDOW src/window/monitor.cpp)
+set(SOURCES_WINDOW src/window/monitor.cpp src/window/window.cpp)
 set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ionicengine.cpp)
 
 # Now build the library
@@ -49,7 +50,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine ${LAMBDACOMMON_LIBRARIES} ${GLFW_LIBRARIES} ${SOIL_LIBRARIES} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES})
+target_link_libraries(ionicengine ${LAMBDACOMMON_LIBRARIES} ${GLFW_LIBRARIES} ${SOIL_LIBRARIES} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine

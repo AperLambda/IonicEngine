@@ -17,6 +17,34 @@ namespace ionicengine
 {
 	using namespace std::rel_ops;
 
+	struct VideoMode
+	{
+		/*!
+		 * The width, in screen coordinates, of the video mode.
+     	 */
+		int width;
+		/*!
+		 * The height, in screen coordinates, of the video mode.
+		 */
+		int height;
+		/*!
+		 * The bit depth of the red channel of the video mode.
+		 */
+		int redBits;
+		/*!
+		 * The bit depth of the green channel of the video mode.
+		 */
+		int greenBits;
+		/*!
+		 * The bit depth of the blue channel of the video mode.
+		 */
+		int blueBits;
+		/*!
+		 * The refresh rate, in Hz, of the video mode.
+		 */
+		int refreshRate;
+	};
+
 	class IONICENGINE_API Monitor
 	{
 	private:
@@ -30,18 +58,30 @@ namespace ionicengine
 		Monitor(Monitor &&monitor) noexcept;
 
 		/*!
+		 * Gets the GLFW handle of the monitor.
+		 * @return The handle of the monitor.
+		 */
+		GLFWmonitor *getHandle() const;
+
+		/*!
 		 * Gets the name of the monitor.
 		 * @return The name of the monitor.
 		 */
 		std::string getName() const;
 
+		/*!
+		 * Returns the current mode of this monitor.
+		 * @return The current mode of the monitor.
+		 */
+		VideoMode getVideoMode() const;
+
 		bool isEmpty() const;
 
 		bool operator==(const Monitor &other) const;
 
-		Monitor& operator=(const Monitor& other);
+		Monitor &operator=(const Monitor &other);
 
-		Monitor &operator=(Monitor&& other) noexcept;
+		Monitor &operator=(Monitor &&other) noexcept;
 	};
 
 	namespace monitor

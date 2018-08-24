@@ -19,11 +19,31 @@ namespace ionicengine
 	Monitor::Monitor(Monitor &&monitor) noexcept : _monitor(monitor._monitor)
 	{}
 
+	GLFWmonitor *Monitor::getHandle() const
+	{
+		return _monitor;
+	}
+
 	std::string Monitor::getName() const
 	{
 		if (_monitor == nullptr)
 			return "nullptr";
 		return std::string(glfwGetMonitorName(_monitor));
+	}
+
+	VideoMode Monitor::getVideoMode() const
+	{
+		VideoMode vidMode{};
+		if (_monitor == nullptr)
+			return vidMode;
+		auto glfwVidMode = glfwGetVideoMode(_monitor);
+		vidMode.width = glfwVidMode->width;
+		vidMode.height = glfwVidMode->height;
+		vidMode.redBits = glfwVidMode->redBits;
+		vidMode.greenBits = glfwVidMode->greenBits;
+		vidMode.blueBits = glfwVidMode->blueBits;
+		vidMode.refreshRate = glfwVidMode->refreshRate;
+		return vidMode;
 	}
 
 	bool Monitor::isEmpty() const

@@ -13,9 +13,17 @@
 
 namespace ionicengine
 {
-	std::map<lambdacommon::ResourceName, Shader> shaders;
+	std::map<std::string, Shader> shaders;
+
+	Shader::Shader() : _id(0)
+	{}
 
 	Shader::Shader(uint32_t id) : _id(id)
+	{}
+
+	Shader::Shader(const Shader &shader) = default;
+
+	Shader::Shader(Shader &&shader) noexcept : _id(shader._id)
 	{}
 
 	uint32_t Shader::getId() const
@@ -80,6 +88,11 @@ namespace ionicengine
 		this->setVector4f(name, value.x, value.y, value.z, value.w, useShader);
 	}
 
+	void Shader::setColor(const lambdacommon::Color &color, bool useShader)
+	{
+		this->setVector4f("inColor", color.red(), color.green(), color.blue(), color.alpha(), useShader);
+	}
+
 	void Shader::setMatrix4f(const std::string &name, const glm::mat4 &matrix, bool useShader)
 	{
 		if (useShader)
@@ -90,6 +103,25 @@ namespace ionicengine
 	Shader::operator bool() const
 	{
 		return _id != 0;
+	}
+
+	Shader &Shader::operator=(const Shader &other) = default;
+
+	Shader &Shader::operator=(Shader &&other) noexcept
+	{
+		if (this != &other)
+			_id = other._id;
+		return *this;
+	}
+
+	bool Shader::operator==(const Shader &shader) const
+	{
+		return _id == shader._id;
+	}
+
+	bool Shader::operator<(const Shader &shader) const
+	{
+		return _id < shader._id;
 	}
 
 	bool checkCompileErrors(const lambdacommon::ResourceName &name, uint32_t id, const std::string &type)
@@ -103,8 +135,9 @@ namespace ionicengine
 			{
 				glGetShaderInfoLog(id, 1024, nullptr, infoLog);
 				printError(
-						"[IONICENGINE] Error - Shader: Cannot compile shader of type \"" + type + "\". | Resource: " +
-						name.getDomain() + ":" + name.getName());
+						"[IONICENGINE] Error - Shader: Cannot compile shader of type '" + type + "'. | Resource: " +
+						name.toString());
+				printError(infoLog);
 				return false;
 			}
 		}
@@ -114,21 +147,21 @@ namespace ionicengine
 			if (!success)
 			{
 				glGetProgramInfoLog(id, 1024, nullptr, infoLog);
-				printError("[IONICENGINE] Error - Shader: Cannot link shader. | Resource: " + name.getDomain() + ":" +
-						   name.getName());
+				printError("[IONICENGINE] Error - Shader: Cannot link shader. | Resource: " + name.toString());
+				printError(infoLog);
 				return false;
 			}
 		}
 		return true;
 	}
 
-	std::optional<Shader> IONICENGINE_API shader::compile(const lambdacommon::ResourceName &resourceName)
+	std::optional<Shader> IONICENGINE_API shader::compile(const lambdacommon::ResourceName &shaderName)
 	{
-		if (shaders.count(resourceName))
-			return {shaders.at(resourceName)};
+		if (shaders.count(shaderName.toString()))
+			return {shaders.at(shaderName.toString())};
 
-		auto vertexSource = getResourcesManager().loadResource(resourceName, "vert");
-		auto fragmentSource = getResourcesManager().loadResource(resourceName, "frag");
+		auto vertexSource = getResourcesManager().loadResource(shaderName, "vert");
+		auto fragmentSource = getResourcesManager().loadResource(shaderName, "frag");
 
 		if (vertexSource.empty() || fragmentSource.empty())
 			return {};
@@ -139,24 +172,24 @@ namespace ionicengine
 		auto sVertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(sVertex, 1, &vertexCSource, nullptr);
 		glCompileShader(sVertex);
-		if (!checkCompileErrors(resourceName, sVertex, "vertex"))
+		if (!checkCompileErrors(shaderName, sVertex, "vertex"))
 			return {};
 		// Fragment shader
 		auto sFragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(sFragment, 1, &fragmentCSource, nullptr);
 		glCompileShader(sFragment);
-		if (!checkCompileErrors(resourceName, sFragment, "fragment"))
+		if (!checkCompileErrors(shaderName, sFragment, "fragment"))
 			return {};
 
 		bool hasGeomtryShader = false;
 		uint32_t sGeom = 0;
-		if (getResourcesManager().doesResourceExist(resourceName, "geom"))
+		if (getResourcesManager().doesResourceExist(shaderName, "geom"))
 		{
-			auto geomSource = getResourcesManager().loadResource(resourceName, "geom").c_str();
+			auto geomSource = getResourcesManager().loadResource(shaderName, "geom").c_str();
 			sGeom = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(sGeom, 1, &geomSource, nullptr);
 			glCompileShader(sGeom);
-			if (!checkCompileErrors(resourceName, sGeom, "geometry"))
+			if (!checkCompileErrors(shaderName, sGeom, "geometry"))
 				return {};
 			hasGeomtryShader = true;
 		}
@@ -167,7 +200,7 @@ namespace ionicengine
 		if (hasGeomtryShader)
 			glAttachShader(id, sGeom);
 		glLinkProgram(id);
-		if (!checkCompileErrors(resourceName, id, "program"))
+		if (!checkCompileErrors(shaderName, id, "program"))
 			return {};
 		// Delete the shaders
 		glDeleteShader(sVertex);
@@ -175,7 +208,20 @@ namespace ionicengine
 		if (hasGeomtryShader)
 			glDeleteShader(sGeom);
 		Shader shader{id};
-		shaders[resourceName] = shader;
+		printDebug("Shader '" + shaderName.toString() + "' loaded successfully with ID '" + std::to_string(id) + "'!");
+		shaders.insert(std::pair<std::string, Shader>(shaderName.toString(), shader));
 		return {shader};
+	}
+
+	bool shader::hasShader(const lambdacommon::ResourceName &shaderName)
+	{
+		return static_cast<bool>(shaders.count(shaderName.toString()));
+	}
+
+	const Shader &shader::getShader(const lambdacommon::ResourceName &shaderName)
+	{
+		if (!shaders.count(shaderName.toString()))
+			throw std::runtime_error("Cannot get the shader " + shaderName.toString());
+		return shaders[shaderName.toString()];
 	}
 }
