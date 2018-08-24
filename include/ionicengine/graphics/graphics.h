@@ -16,6 +16,7 @@
 #include <lambdacommon/graphics/color.h>
 #include <glm/glm.hpp>
 #include <map>
+#include <functional>
 
 namespace ionicengine
 {
@@ -41,13 +42,15 @@ namespace ionicengine
 		virtual void drawText(const Font &font, float x, float y, const std::string &text, float scale = 1.0) = 0;
 	};
 
-	typedef Graphics* (*newGraphicsFunction)(const glm::mat4 &projection);
+	//typedef Graphics* (*newGraphicsFunction)(const glm::mat4 &projection);
+	typedef std::function<Graphics *(const glm::mat4 &projection)> newGraphicsFunction;
 
 	class IONICENGINE_API GraphicsManager
 	{
 	private:
 		std::map<lambdacommon::ResourceName, newGraphicsFunction> _graphics;
 		lambdacommon::ResourceName _graphicsUsed;
+		uint32_t vao = 0, vbo = 0;
 
 	public:
 		GraphicsManager();

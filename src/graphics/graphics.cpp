@@ -63,18 +63,9 @@ namespace ionicengine
 	private:
 		uint32_t vao, vbo;
 	public:
-		explicit GraphicsGL3(const glm::mat4 &projection2d) : Graphics(projection2d)
+		explicit GraphicsGL3(const glm::mat4 &projection2d, uint32_t vao, uint32_t vbo) : Graphics(projection2d),
+																						  vao(vao), vbo(vbo)
 		{
-			// Configure VAO/VBO for texture quads
-			glGenVertexArrays(1, &this->vao);
-			glGenBuffers(1, &this->vbo);
-			glBindVertexArray(this->vao);
-			glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
-			glEnableVertexAttribArray(0);
-			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindVertexArray(0);
 		}
 
 		void setColor(const lambdacommon::Color &color) override
@@ -128,13 +119,13 @@ namespace ionicengine
 				GLfloat h = ch.size.y * scale;
 				// Update VBO for each character.
 				GLfloat vertices[6][4] = {
-						{ xpos,     ypos + h,   0.0, 1.0 },
-						{ xpos + w, ypos,       1.0, 0.0 },
-						{ xpos,     ypos,       0.0, 0.0 },
+						{xpos,     ypos + h, 0.0, 1.0},
+						{xpos + w, ypos,     1.0, 0.0},
+						{xpos,     ypos,     0.0, 0.0},
 
-						{ xpos,     ypos + h,   0.0, 1.0 },
-						{ xpos + w, ypos + h,   1.0, 1.0 },
-						{ xpos + w, ypos,       1.0, 0.0 }
+						{xpos,     ypos + h, 0.0, 1.0},
+						{xpos + w, ypos + h, 1.0, 1.0},
+						{xpos + w, ypos,     1.0, 0.0}
 				};
 				// Render glyph texture over quad.
 				glBindTexture(GL_TEXTURE_2D, ch.textureId);
@@ -160,8 +151,19 @@ namespace ionicengine
 	{
 		//registerGraphics(GRAPHICS_GL1, [](const glm::mat4 &projection) { return (Graphics *) new GraphicsGL1(projection); });
 		registerGraphics(GRAPHICS_GL3,
-						 [](const glm::mat4 &projection) { return (Graphics *) new GraphicsGL3(projection); });
+						 [this](const glm::mat4 &projection) { return (Graphics *) new GraphicsGL3(projection, vao, vbo); });
 		_graphicsUsed = GRAPHICS_GL3;
+
+		// Configure VAO/VBO for texture quads
+		glGenVertexArrays(1, &this->vao);
+		glGenBuffers(1, &this->vbo);
+		glBindVertexArray(this->vao);
+		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindVertexArray(0);
 
 		if (!shader::compile(IONICENGINE_SHADERS_2DBASIC))
 			throw std::runtime_error("Cannot load 2d basic shaders.");
