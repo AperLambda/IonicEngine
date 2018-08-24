@@ -106,11 +106,28 @@ namespace ionicengine
 			glActiveTexture(GL_TEXTURE0);
 			glBindVertexArray(this->vao);
 
+			float originalX = x;
+			float originalY = y;
+
 			// Iterate through all characters.
 			std::string::const_iterator c;
 			for (c = text.begin(); c != text.end(); c++)
 			{
 				Character ch = font.getCharacter(*c);
+
+				// Special characters handling.
+				if (*c == '\t')
+				{
+					for (uint32_t i = 0; i < font.getTabSize(); i++)
+						x += (ch.advance >> 6) * scale;
+					continue;
+				}
+				else if (*c == '\n')
+				{
+					x = originalX;
+					y += font.getHeight();
+					continue;
+				}
 
 				GLfloat xpos = x + ch.bearing.x * scale;
 				GLfloat ypos = y + (font.getCharacter('H').bearing.y - ch.bearing.y) * scale;

@@ -13,12 +13,14 @@
 
 namespace ionicengine
 {
-	Font::Font(const std::map<char, Character> &charactersMap, uint32_t size) : _chars(charactersMap), _size(size)
+	Font::Font(const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize) : _chars(charactersMap),
+																								  _size(size),
+																								  _tabSize(tabSize)
 	{}
 
 	Font::Font(const Font &font) = default;
 
-	Font::Font(Font &&font) noexcept : _chars(std::move(font._chars)), _size(font._size)
+	Font::Font(Font &&font) noexcept : _chars(std::move(font._chars)), _size(font._size), _tabSize(font._tabSize)
 	{}
 
 	Character Font::getCharacter(char c) const
@@ -26,6 +28,56 @@ namespace ionicengine
 		if (!_chars.count(c))
 			return Character{};
 		return _chars.at(c);
+	}
+
+	uint32_t Font::getSize() const
+	{
+		return _size;
+	}
+
+	uint32_t Font::getTabSize() const
+	{
+		return _tabSize;
+	}
+
+	void Font::setTabSize(uint32_t tabSize)
+	{
+		_tabSize = tabSize;
+	}
+
+	uint32_t Font::getTextLength(const std::string &text) const
+	{
+		uint32_t length{0};
+		std::string tab;
+		for (uint32_t i = 0; i < getTabSize(); i++)
+			tab += " ";
+		auto reformattedText = lambdacommon::lambdastring::replaceAll(text, "\t", tab);
+		for (const auto &line : lambdacommon::lambdastring::split(reformattedText, '\n'))
+		{
+			uint32_t x{0};
+			std::string::const_iterator c;
+			for (c = line.begin(); c != line.end(); c++)
+			{
+				x += (getCharacter(*c).advance >> 6);
+			}
+			if (length < x)
+				length = x;
+		}
+		return length;
+	}
+
+	uint32_t Font::getTextHeight(const std::string &text) const
+	{
+		return static_cast<uint32_t>(lambdacommon::lambdastring::split(text, '\n').size() * getHeight());
+	}
+
+	uint32_t Font::getHeight() const
+	{
+		auto hChar = getCharacter('H');
+		auto gChar = getCharacter('g');
+		auto belowOrigin = static_cast<uint32_t>(gChar.size.y - gChar.bearing.y);
+		auto maxBearingY = hChar.bearing.y;
+		return belowOrigin + maxBearingY + 4;
 	}
 
 	FontManager::FontManager()

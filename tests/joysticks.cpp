@@ -71,7 +71,6 @@ public:
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing Y" << endl;
 			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::getColorByIntRGBA(255, 255, 0));
 		}
-		cout << "OwO " << to_string(controller.getId()) << "|" << to_string(button) << endl;
 	}
 
 	void onButtonRepeat(const Controller &controller, uint8_t button) override
@@ -186,12 +185,7 @@ int main()
 		read.close();
 	}
 
-	if (!glfwInit())
-		return EXIT_FAILURE;
-
 	glfwUpdateGamepadMappings(mappings.str().c_str());
-
-	InputManager::INPUT_MANAGER.init();
 
 	for (Controller *controller : InputManager::INPUT_MANAGER.getControllers())
 	{

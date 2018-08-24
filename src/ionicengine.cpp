@@ -25,8 +25,11 @@ namespace ionicengine
 	{
 		manager = {path};
 		_debug = debug;
+		if (!glfwInit())
+			return false;
 		fontManager = new FontManager();
 		running = true;
+		InputManager::INPUT_MANAGER.init();
 		return true;
 	}
 

@@ -10,8 +10,7 @@
 #ifndef IONICENGINE_TEXTURES_H
 #define IONICENGINE_TEXTURES_H
 
-#include "ionicengine_exports.h"
-#include <string>
+#include "../includes.h"
 
 namespace ionicengine
 {
