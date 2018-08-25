@@ -25,6 +25,7 @@ namespace ionicengine
 	protected:
 		lambdacommon::Color color = lambdacommon::Color::WHITE;
 		glm::mat4 _projection2d;
+		glm::mat4 _transform{1.0f};
 
 	public:
 		Graphics(const glm::mat4 &projection2d);
@@ -32,6 +33,20 @@ namespace ionicengine
 		glm::mat4 getOrthoProjection() const;
 
 		virtual void setColor(const lambdacommon::Color &color) = 0;
+
+		void resetTransform();
+
+		void translate(float x, float y, float z = 0.0f);
+
+		void translate(const glm::vec3 &translateVector);
+
+		void rotate(float radians, float xAxis, float yAxis, float zAxis);
+
+		void rotate(float radians, const glm::vec3 &axis);
+
+		void scale(float xScale, float yScale, float zScale = 1.0f);
+
+		void scale(const glm::vec3 &scale);
 
 		virtual void drawLine2D(float x, float y, float x2, float y2) = 0;
 

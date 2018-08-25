@@ -23,40 +23,40 @@ namespace ionicengine
 		return _projection2d;
 	}
 
-	class GraphicsGL1 : public Graphics
+	void Graphics::resetTransform()
 	{
-	public:
-		explicit GraphicsGL1(const glm::mat4 &projection2d) : Graphics(projection2d)
-		{}
+		_transform = glm::mat4{1.0f};
+	}
 
-		void setColor(const lambdacommon::Color &color) override
-		{
-			this->color = color;
-			glColor4f(color.red(), color.green(), color.blue(), color.alpha());
-		}
+	void Graphics::translate(float x, float y, float z)
+	{
+		translate(glm::vec3(x, y, z));
+	}
 
-		void use2D()
-		{
-		};
+	void Graphics::translate(const glm::vec3 &translateVector)
+	{
+		_transform = glm::translate(_transform, translateVector);
+	}
 
-		void drawLine2D(float x, float y, float x2, float y2) override
-		{
-			glBegin(GL_LINE);
-			glVertex2f(x, y);
-			glVertex2f(x2, y2);
-			glEnd();
-		}
+	void Graphics::rotate(float radians, float xAxis, float yAxis, float zAxis)
+	{
+		rotate(radians, glm::vec3(xAxis, yAxis, zAxis));
+	}
 
-		void drawQuad() override
-		{
+	void Graphics::rotate(float radians, const glm::vec3 &axis)
+	{
+		_transform = glm::rotate(_transform, radians, axis);
+	}
 
-		}
+	void Graphics::scale(float xScale, float yScale, float zScale)
+	{
+		scale(glm::vec3(xScale, yScale, zScale));
+	}
 
-		void drawImage(Texture *texture, float x, float y, float width, float height) override
-		{
-
-		}
-	};
+	void Graphics::scale(const glm::vec3 &scale)
+	{
+		_transform = glm::scale(_transform, scale);
+	}
 
 	class GraphicsGL3 : public Graphics
 	{
@@ -101,6 +101,7 @@ namespace ionicengine
 			auto shader = shader::getShader(SHADER_TEXT);
 			shader.use();
 			shader.setMatrix4f("projection", _projection2d);
+			shader.setMatrix4f("transform", _transform);
 			shader.setInteger("text", 0);
 			shader.setColor(color);
 			glActiveTexture(GL_TEXTURE0);

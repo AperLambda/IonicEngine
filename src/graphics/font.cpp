@@ -10,6 +10,8 @@
 #include "../../include/ionicengine/graphics/font.h"
 #include "../../include/ionicengine/ionicengine.h"
 #include "../../include/ionicengine/graphics/textures.h"
+//#include <harfbuzz/hb.h>
+//#include <harfbuzz/hb-ft.h>
 
 namespace ionicengine
 {
@@ -108,6 +110,12 @@ namespace ionicengine
 		FT_Face face;
 		if (FT_New_Face(ft, path.c_str(), 0, &face))
 			return std::nullopt;
+
+		if (FT_Select_Charmap(face, FT_ENCODING_UNICODE))
+			return std::nullopt;
+
+		//auto hb_ft_font = hb_ft_font_create(face, nullptr);
+
 		// Sets the size of the font to extract.
 		// Width is dynamically calculated based on the given height.
 		FT_Set_Pixel_Sizes(face, 0, size);
@@ -117,8 +125,8 @@ namespace ionicengine
 		// Disable byte-alignment restriction
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-		// Load the first 128 ASCII characters. @TODO Add more characters.
-		for (u_char c = 0; c < 128; c++)
+		// Load the first 256 ASCII characters. @TODO Add more characters.
+		for (uint32_t c = 0; c < 256; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 			{
@@ -148,6 +156,7 @@ namespace ionicengine
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			// Now store character for later use.
 			Character character{
+					c,
 					texture,
 					glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
 					glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
@@ -157,6 +166,7 @@ namespace ionicengine
 		}
 
 		texture::unbind();
+		//hb_font_destroy(hb_ft_font);
 		FT_Done_Face(face);
 
 		return {Font{charactersMap, size}};

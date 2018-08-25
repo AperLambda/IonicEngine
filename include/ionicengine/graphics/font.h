@@ -20,6 +20,7 @@ namespace ionicengine
 {
 	struct Character
 	{
+		uint32_t codepoint;
 		uint32_t textureId;
 		glm::ivec2 size;
 		glm::ivec2 bearing;
