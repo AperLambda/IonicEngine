@@ -107,6 +107,8 @@ namespace ionicengine
 												   const WindowOptions &options = DEFAULT_WINDOW_OPTIONS,
 												   const std::optional<const Monitor> &monitor = std::nullopt);
 
+		extern std::optional<Window> IONICENGINE_API getByHandle(GLFWwindow *window);
+
 		extern void IONICENGINE_API destroyAll();
 	}
 }

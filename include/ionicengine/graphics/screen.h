@@ -18,19 +18,37 @@ namespace ionicengine
 	class IONICENGINE_API Screen
 	{
 	private:
-		lambdacommon::Color backgroundColor = lambdacommon::Color::BLACK;
+		lambdacommon::Color backgroundColor = lambdacommon::Color::COLOR_BLACK;
 	public:
 		virtual void draw(Graphics *graphics) = 0;
 
 		virtual void update() = 0;
 
-		lambdacommon::Color getBackgroundColor() const;
+		virtual lambdacommon::Color getBackgroundColor() const;
 
 		void setBackgroundColor(const lambdacommon::Color &color);
 	};
 
 	class IONICENGINE_API Overlay : public Screen
-	{};
+	{
+		lambdacommon::Color getBackgroundColor() const override;
+	};
+
+	class IONICENGINE_API OverlayFPS : public Overlay
+	{
+	private:
+		Font _font;
+		int _fps{0};
+
+	public:
+		explicit OverlayFPS(const Font &font);
+
+		void draw(Graphics *graphics) override;
+
+		void update() override;
+
+		void updateFPS(int fps);
+	};
 
 	class IONICENGINE_API ScreenManager
 	{
@@ -41,6 +59,8 @@ namespace ionicengine
 		std::vector<lambdacommon::ResourceName> _activeOverlays;
 
 		std::optional<Window> _window;
+
+		int fps{0}, updates{0};
 
 	public:
 		ScreenManager();
@@ -71,9 +91,15 @@ namespace ionicengine
 
 		void attachWindow(const Window &window);
 
+		int getFPS() const;
+
+		int getUpdates() const;
+
 		void render();
 
 		void update();
+
+		void startLoop();
 	};
 }
 

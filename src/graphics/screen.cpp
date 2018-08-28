@@ -12,6 +12,10 @@
 
 namespace ionicengine
 {
+	/*
+	 * SCREEN
+	 */
+
 	lambdacommon::Color Screen::getBackgroundColor() const
 	{
 		return backgroundColor;
@@ -21,6 +25,10 @@ namespace ionicengine
 	{
 		backgroundColor = color;
 	}
+
+	/*
+	 * NULLSCREEN
+	 */
 
 	class NullScreen : public Screen
 	{
@@ -33,6 +41,40 @@ namespace ionicengine
 		void update() override
 		{}
 	};
+
+	/*
+	 * OVERLAY
+	 */
+
+	lambdacommon::Color Overlay::getBackgroundColor() const
+	{
+		return lambdacommon::Color(.0f, .0f, .0f, .0f);
+	}
+
+	/*
+	 * OVERLAY FPS
+	 */
+
+	OverlayFPS::OverlayFPS(const Font &font) : Overlay(), _font(font)
+	{}
+
+	void OverlayFPS::draw(Graphics *graphics)
+	{
+		graphics->setColor(lambdacommon::Color::COLOR_WHITE);
+		graphics->drawText(_font, 2, 3, "FPS: " + std::to_string(_fps));
+	}
+
+	void OverlayFPS::update()
+	{}
+
+	void OverlayFPS::updateFPS(int fps)
+	{
+		_fps = fps;
+	}
+
+	/*
+	 * SCREENMANAGER
+	 */
 
 	ScreenManager::ScreenManager()
 	{
@@ -118,6 +160,16 @@ namespace ionicengine
 		_window = {window};
 	}
 
+	int ScreenManager::getFPS() const
+	{
+		return fps;
+	}
+
+	int ScreenManager::getUpdates() const
+	{
+		return updates;
+	}
+
 	void ScreenManager::render()
 	{
 		if (_window)
@@ -127,7 +179,7 @@ namespace ionicengine
 			glViewport(0, 0, size.first, size.second);
 			auto graphics = getGraphicsManager()->newGraphics(size);
 			auto screen = getActiveScreen();
-			auto backgroundColor = lambdacommon::Color::BLACK;
+			auto backgroundColor = lambdacommon::Color::COLOR_BLACK;
 			if (screen != nullptr)
 				backgroundColor = screen->getBackgroundColor();
 			glClearColor(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(),
@@ -160,5 +212,48 @@ namespace ionicengine
 				overlay->update();
 			}
 		}
+	}
+
+	void ScreenManager::startLoop()
+	{
+		if (!_window)
+			throw std::runtime_error("Cannot start loop without a Window");
+
+		double lastTime = glfwGetTime(), timer = lastTime;
+		double deltaTime = 0, nowTime = 0;
+		int frames = 0, updates = 0;
+
+		while (!_window->shouldClose())
+		{
+			this->render();
+
+			nowTime = glfwGetTime();
+			deltaTime += (nowTime - lastTime);
+			lastTime = nowTime;
+
+			if (deltaTime >= 0.020)
+			{
+				this->update();
+				updates++;
+				deltaTime = 0;
+			}
+			frames++;
+
+			glfwSwapBuffers(_window->getHandle());
+			glfwPollEvents();
+
+			// - Reset after one second
+			if (glfwGetTime() - timer > 1.0)
+			{
+				timer++;
+				this->fps = frames;
+				this->updates = updates;
+				if (hasOverlay(IONICENGINE_OVERLAYS_FPS))
+					((OverlayFPS*) getOverlay(IONICENGINE_OVERLAYS_FPS))->updateFPS(frames);
+				updates = 0, frames = 0;
+			}
+		}
+
+		_window->destroy();
 	}
 }

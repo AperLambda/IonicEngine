@@ -38,6 +38,7 @@ namespace ionicengine
 		running = false;
 		window::destroyAll();
 		InputManager::INPUT_MANAGER.shutdown();
+		glfwTerminate();
 	}
 
 	bool IONICENGINE_API isRunning()

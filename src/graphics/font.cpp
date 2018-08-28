@@ -169,6 +169,8 @@ namespace ionicengine
 		//hb_font_destroy(hb_ft_font);
 		FT_Done_Face(face);
 
+		printDebug("[IonicEngine] Font at '" + path + "' loaded successfully!");
+
 		return {Font{charactersMap, size}};
 	}
 }

@@ -27,6 +27,7 @@
 #define IONICENGINE_GRAPHICS_GL3 lambdacommon::ResourceName("ionicengine", "graphics/gl3")
 #define IONICENGINE_OVERLAYS_FPS lambdacommon::ResourceName("ionicengine", "overlays/fps")
 #define IONICENGINE_SHADERS_2DBASIC lambdacommon::ResourceName("ionicengine", "shaders/2dbasic")
+#define IONICENGINE_SHADERS_IMAGE lambdacommon::ResourceName("ionicengine", "shaders/image")
 #define IONICENGINE_SHADERS_TEXT lambdacommon::ResourceName("ionicengine", "shaders/text")
 
 namespace ionicengine

@@ -1,5 +1,3 @@
-#include <utility>
-
 /*
  * Copyright © 2018 AperLambda <aperlambda@gmail.com>
  *
@@ -54,17 +52,17 @@ public:
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::GREEN);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::RED);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLUE);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
@@ -78,17 +76,17 @@ public:
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::GREEN);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::RED);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLUE);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
@@ -102,25 +100,25 @@ public:
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
-			//backgroundColor = Color::BLACK;
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
+			//backgroundColor = Color::COLOR_BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Releasing Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::BLACK);
+			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 	}
@@ -137,7 +135,7 @@ public:
 	}
 };
 
-class OverlayFPS : public Overlay
+/*class OverlayFPS : public Overlay
 {
 private:
 	Font font;
@@ -149,7 +147,7 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		graphics->setColor(Color::WHITE);
+		graphics->setColor(Color::COLOR_WHITE);
 		graphics->drawText(font, 2, 3, "FPS: " + to_string(fps));
 	}
 
@@ -157,7 +155,7 @@ public:
 	{
 
 	}
-};
+};*/
 
 int main()
 {
@@ -217,11 +215,11 @@ int main()
 	auto window = window::createWindow("IonicEngine - Game Controllers", 512, 512, windowOptions);
 	window.requestContext();
 	glewExperimental = GL_TRUE;
+	glfwSwapInterval(0);
 	GLenum  err = glewInit();
 	if (err != GLEW_OK)
 	{
 		ionicengine::shutdown();
-		glfwTerminate();
 		return err;
 	}
 
@@ -242,7 +240,9 @@ int main()
 
 	screenManager.attachWindow(window);
 
-	static double limitFPS = 1.0 / 144.0;
+	screenManager.startLoop();
+
+	/*static double limitFPS = 1.0 / 144.0;
 
 	double lastTime = glfwGetTime(), timer = lastTime;
 	double deltaTime = 0, nowTime = 0;
@@ -261,7 +261,7 @@ int main()
 		// - Only update at 60 frames / s
 		while (deltaTime >= 1.0)
 		{
-			//update();   // - Update function
+			screenManager.update();   // - Update function
 			updates++;
 			deltaTime--;
 		}
@@ -276,10 +276,10 @@ int main()
 		{
 			timer++;
 			window.setTitle("IonicEngine - Game Controllers - " + to_string(frames) + "FPS");
-			overlay.fps = frames;
+			//overlay.fps = frames;
 			updates = 0, frames = 0;
 		}
-	}
+	}*/
 
 	ionicengine::shutdown();
 	glfwTerminate();

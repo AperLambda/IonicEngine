@@ -90,7 +90,13 @@ namespace ionicengine
 
 	void Shader::setColor(const lambdacommon::Color &color, bool useShader)
 	{
-		this->setVector4f("inColor", color.red(), color.green(), color.blue(), color.alpha(), useShader);
+		this->setColor("inColor", color, useShader);
+
+	}
+
+	void Shader::setColor(const std::string &name, const lambdacommon::Color &color, bool useShader)
+	{
+		this->setVector4f(name, color.red(), color.green(), color.blue(), color.alpha(), useShader);
 	}
 
 	void Shader::setMatrix4f(const std::string &name, const glm::mat4 &matrix, bool useShader)
@@ -208,7 +214,7 @@ namespace ionicengine
 		if (hasGeomtryShader)
 			glDeleteShader(sGeom);
 		Shader shader{id};
-		printDebug("Shader '" + shaderName.toString() + "' loaded successfully with ID '" + std::to_string(id) + "'!");
+		printDebug("[IonicEngine] Shader '" + shaderName.toString() + "' loaded successfully with ID '" + std::to_string(id) + "'!");
 		shaders.insert(std::pair<std::string, Shader>(shaderName.toString(), shader));
 		return {shader};
 	}

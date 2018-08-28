@@ -147,7 +147,9 @@ namespace ionicengine
 
 	void Window::destroy()
 	{
-		glfwDestroyWindow(_pointer);
+		// I don't understand this.
+		if (!*this)
+			glfwDestroyWindow(_pointer);
 		_pointer = nullptr;
 	}
 
@@ -210,6 +212,14 @@ namespace ionicengine
 				windows.push_back(ionicWindow);
 				return ionicWindow;
 			}
+		}
+
+		std::optional<Window> IONICENGINE_API getByHandle(GLFWwindow *window)
+		{
+			for (const Window &ionicWindow : windows)
+				if (ionicWindow.getHandle() == window)
+					return {ionicWindow};
+			return std::nullopt;
 		}
 
 		void IONICENGINE_API destroyAll()

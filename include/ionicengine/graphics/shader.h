@@ -55,6 +55,8 @@ namespace ionicengine
 
 		void setColor(const lambdacommon::Color &color, bool useShader = false);
 
+		void setColor(const std::string &name, const lambdacommon::Color &color, bool useShader = false);
+
 		void setMatrix4f(const std::string &name, const glm::mat4 &matrix, bool useShader = false);
 
 		explicit operator bool() const;
