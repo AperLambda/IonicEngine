@@ -111,11 +111,10 @@ namespace ionicengine
 			if (currentTime >= 50)
 			{
 				// Update
-				for (Controller *controller : InputManager::INPUT_MANAGER.getControllers())
-				{
-					if (controller->isConnected())
+				if (!InputManager::INPUT_MANAGER.getControllerInputListeners().empty())
+					for (Controller *controller : InputManager::INPUT_MANAGER.getControllers())
 					{
-						if (controller->isGamepad())
+						if (controller->isConnected() && controller->isGamepad())
 						{
 							GLFWgamepadstate state;
 
@@ -141,7 +140,6 @@ namespace ionicengine
 							}
 						}
 					}
-				}
 
 				// Reset timer.
 				startTime = (clock() / (CLOCKS_PER_SEC / 1000));
@@ -149,17 +147,80 @@ namespace ionicengine
 		}
 	}
 
-	void InputManager::init()
+	void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		for (KeyboardListener *listener : InputManager::INPUT_MANAGER.getKeyboardListeners())
+		{
+			listener->onKeyInput(ionicWindow.value(), key, scancode, static_cast<InputAction>(action), mods);
+		}
+	}
+
+	void char_callback(GLFWwindow *window, unsigned int codepoint)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		for (KeyboardListener *listener : InputManager::INPUT_MANAGER.getKeyboardListeners())
+		{
+			listener->onCharInput(ionicWindow.value(), codepoint);
+		}
+	}
+
+	void InputManager::init(bool useController)
 	{
 		glfwSetJoystickCallback(invokeControllerBaseEvent);
 
-		inputThread = new std::thread{updateControllers};
+		if (useController)
+			inputThread = new std::thread{updateControllers};
 	}
 
 	void InputManager::shutdown()
 	{
 		if (inputThread != nullptr)
 			inputThread->join();
+	}
+
+	void InputManager::attachWindow(const Window &window)
+	{
+		glfwSetKeyCallback(window.getHandle(), key_callback);
+		glfwSetCharCallback(window.getHandle(), char_callback);
+	}
+
+	std::string InputManager::getKeyName(int key, int scancode)
+	{
+		auto keyName = glfwGetKeyName(key, scancode);
+		if (keyName == nullptr)
+			return "NULL";
+		return {keyName};
+	}
+
+	void InputManager::addKeyboardListener(KeyboardListener *listener)
+	{
+		if (!hasKeyboardListener(listener))
+			keyboardListeners.push_back(listener);
+	}
+
+	bool InputManager::removeKeyboardListener(KeyboardListener *listener)
+	{
+		if (!hasKeyboardListener(listener))
+			return false;
+		keyboardListeners.erase(std::remove(keyboardListeners.begin(), keyboardListeners.end(), listener),
+								keyboardListeners.end());
+		return true;
+	}
+
+	bool InputManager::hasKeyboardListener(KeyboardListener *listener)
+	{
+		return std::find(keyboardListeners.begin(), keyboardListeners.end(), listener) !=
+			   keyboardListeners.end();
+	}
+
+	std::vector<KeyboardListener *> InputManager::getKeyboardListeners() const
+	{
+		return keyboardListeners;
 	}
 
 	Controller *InputManager::getController(uint8_t id)

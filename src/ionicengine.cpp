@@ -21,15 +21,15 @@ namespace ionicengine
 	bool running = false;
 	bool _debug = false;
 
-	bool IONICENGINE_API init(bool debug, lambdacommon::fs::FilePath path)
+	bool IONICENGINE_API init(IonicOptions options)
 	{
-		manager = {path};
-		_debug = debug;
+		manager = {options.path};
+		_debug = options.debug;
 		if (!glfwInit())
 			return false;
 		fontManager = new FontManager();
 		running = true;
-		InputManager::INPUT_MANAGER.init();
+		InputManager::INPUT_MANAGER.init(options.useControllers);
 		return true;
 	}
 

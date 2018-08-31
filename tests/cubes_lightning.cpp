@@ -92,6 +92,9 @@ public:
 		glDeleteBuffers(1, &vbo);
 	}
 
+	void init() override
+	{}
+
 	void draw(Graphics *graphics) override
 	{
 		// per-frame time logic
@@ -107,8 +110,8 @@ public:
 		lightningShader.setColor("objectColor", {1.f, .5f, .31f});
 		lightningShader.setColor("lightColor", Color::COLOR_WHITE);
 
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(graphics->getWidth()) /
-																	static_cast<float>(graphics->getHeight()),
+		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), static_cast<float>(width) /
+																	static_cast<float>(height),
 												.1f, 100.f);
 		glm::mat4 view = camera.GetViewMatrix();
 
@@ -151,6 +154,9 @@ private:
 	Font font;
 public:
 	DebugOverlay(const Font &font) : font(font)
+	{}
+
+	void init() override
 	{}
 
 	void draw(Graphics *graphics) override

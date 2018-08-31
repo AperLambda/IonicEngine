@@ -16,14 +16,25 @@ namespace ionicengine
 	 * SCREEN
 	 */
 
-	lambdacommon::Color Screen::getBackgroundColor() const
+	void Screen::draw(Graphics *graphics)
 	{
-		return backgroundColor;
+		for (GuiComponent *component : components)
+			component->draw(graphics);
 	}
 
-	void Screen::setBackgroundColor(const lambdacommon::Color &color)
+	void Screen::update()
 	{
-		backgroundColor = color;
+		for (GuiComponent *component : components)
+			component->update();
+	}
+
+	void Screen::refresh(uint32_t width, uint32_t height)
+	{
+		this->width = width;
+		this->height = height;
+		for (GuiComponent *component : components)
+			delete component;
+		components.clear();
 	}
 
 	/*
@@ -33,6 +44,9 @@ namespace ionicengine
 	class NullScreen : public Screen
 	{
 	public:
+		void init() override
+		{}
+
 		void draw(Graphics *graphics) override
 		{
 			// Draws nothing it's a null screen.
@@ -58,6 +72,9 @@ namespace ionicengine
 	OverlayFPS::OverlayFPS(const Font &font) : Overlay(), _font(font)
 	{}
 
+	void OverlayFPS::init()
+	{}
+
 	void OverlayFPS::draw(Graphics *graphics)
 	{
 		graphics->setColor(lambdacommon::Color::COLOR_WHITE);
@@ -81,6 +98,11 @@ namespace ionicengine
 		lambdacommon::ResourceName nullScreen{"ionicengine", "screens/null"};
 		registerScreen(nullScreen, new NullScreen());
 		_activeScreen = nullScreen;
+	}
+
+	ScreenManager::~ScreenManager()
+	{
+		delete graphics;
 	}
 
 	void ScreenManager::registerScreen(const lambdacommon::ResourceName &name, Screen *screen)
@@ -131,6 +153,12 @@ namespace ionicengine
 	void ScreenManager::setActiveScreen(const lambdacommon::ResourceName &name)
 	{
 		_activeScreen = name;
+		auto screen = getActiveScreen();
+		if (screen != nullptr)
+		{
+			screen->refresh(oldFramebufferSize.first, oldFramebufferSize.second);
+			screen->init();
+		}
 	}
 
 	std::vector<lambdacommon::ResourceName> ScreenManager::getActiveOverlays() const
@@ -141,7 +169,15 @@ namespace ionicengine
 	void ScreenManager::addActiveOverlay(const lambdacommon::ResourceName &name)
 	{
 		if (!isOverlayActive(name))
+		{
 			_activeOverlays.emplace_back(name);
+			auto overlay = _overlays.at(name);
+			if (overlay != nullptr)
+			{
+				overlay->refresh(oldFramebufferSize.first, oldFramebufferSize.second);
+				overlay->init();
+			}
+		}
 	}
 
 	bool ScreenManager::isOverlayActive(const lambdacommon::ResourceName &name)
@@ -160,6 +196,11 @@ namespace ionicengine
 		_window = {window};
 	}
 
+	std::optional<Window> ScreenManager::getAttachedWindow() const
+	{
+		return _window;
+	}
+
 	int ScreenManager::getFPS() const
 	{
 		return fps;
@@ -170,14 +211,21 @@ namespace ionicengine
 		return updates;
 	}
 
+	float ScreenManager::getDeltaTime() const
+	{
+		return deltaTime;
+	}
+
+	void ScreenManager::setDeltaTime(float deltaTime)
+	{
+		ScreenManager::deltaTime = deltaTime;
+	}
+
 	void ScreenManager::render()
 	{
 		if (_window)
 		{
 			_window->requestContext();
-			auto size = _window->getFramebufferSize();
-			glViewport(0, 0, size.first, size.second);
-			auto graphics = getGraphicsManager()->newGraphics(size);
 			auto screen = getActiveScreen();
 			auto backgroundColor = lambdacommon::Color::COLOR_BLACK;
 			if (screen != nullptr)
@@ -186,16 +234,19 @@ namespace ionicengine
 						 backgroundColor.alpha());
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			if (screen != nullptr)
-				screen->draw(graphics); // Temporary
+			{
+				screen->draw(graphics);
+				graphics->resetTransform();
+			}
 			for (const auto &activeOverlay : _activeOverlays)
 			{
 				if (hasOverlay(activeOverlay))
 				{
 					Overlay *overlay = getOverlay(activeOverlay);
 					overlay->draw(graphics);
+					graphics->resetTransform();
 				}
 			}
-			delete graphics;
 		}
 	}
 
@@ -219,17 +270,50 @@ namespace ionicengine
 		if (!_window)
 			throw std::runtime_error("Cannot start loop without a Window");
 
+		auto size = _window->getFramebufferSize();
+		graphics = getGraphicsManager()->newGraphics(size);
+		oldFramebufferSize = {0, 0};
+
 		double lastTime = glfwGetTime(), timer = lastTime;
 		double deltaTime = 0, nowTime = 0;
 		int frames = 0, updates = 0;
 
+		glfwSetFramebufferSizeCallback(_window->getHandle(), [](GLFWwindow *window, int width, int height)
+		{
+			glViewport(0, 0, width, height);
+		});
+
 		while (!_window->shouldClose())
 		{
+			auto currentSize = _window->getSize();
+			if (oldFramebufferSize != currentSize)
+			{
+				graphics->updateFramebufferSize(currentSize.first, currentSize.second);
+				oldFramebufferSize = currentSize;
+				auto screen = getActiveScreen();
+				if (screen != nullptr)
+				{
+					screen->refresh(currentSize.first, currentSize.second);
+					screen->init();
+				}
+				for (const auto &activeOverlay : _activeOverlays)
+				{
+					if (hasOverlay(activeOverlay))
+					{
+						Overlay *overlay = getOverlay(activeOverlay);
+						overlay->refresh(currentSize.first, currentSize.second);
+						overlay->init();
+					}
+				}
+			}
+
 			this->render();
 
 			nowTime = glfwGetTime();
 			deltaTime += (nowTime - lastTime);
 			lastTime = nowTime;
+
+			this->deltaTime = static_cast<float>(deltaTime);
 
 			if (deltaTime >= 0.020)
 			{
@@ -249,10 +333,12 @@ namespace ionicengine
 				this->fps = frames;
 				this->updates = updates;
 				if (hasOverlay(IONICENGINE_OVERLAYS_FPS))
-					((OverlayFPS*) getOverlay(IONICENGINE_OVERLAYS_FPS))->updateFPS(frames);
+					((OverlayFPS *) getOverlay(IONICENGINE_OVERLAYS_FPS))->updateFPS(frames);
 				updates = 0, frames = 0;
 			}
 		}
+
+		delete graphics;
 
 		_window->destroy();
 	}

@@ -66,6 +66,8 @@ namespace ionicengine
 
 		bool shouldClose() const;
 
+		void setShouldClose(bool shouldClose);
+
 		void show() const;
 
 		void hide() const;

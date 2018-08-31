@@ -10,23 +10,23 @@
 #ifndef IONICENGINE_SCREEN_H
 #define IONICENGINE_SCREEN_H
 
-#include "graphics.h"
+#include "gui.h"
 #include "../window/window.h"
+#include <thread>
 
 namespace ionicengine
 {
-	class IONICENGINE_API Screen
+	class IONICENGINE_API Screen : public Gui
 	{
-	private:
-		lambdacommon::Color backgroundColor = lambdacommon::Color::COLOR_BLACK;
+	protected:
+		std::vector<GuiComponent *> components;
+
 	public:
-		virtual void draw(Graphics *graphics) = 0;
+		void draw(Graphics *graphics) override;
 
-		virtual void update() = 0;
+		void update() override;
 
-		virtual lambdacommon::Color getBackgroundColor() const;
-
-		void setBackgroundColor(const lambdacommon::Color &color);
+		void refresh(uint32_t width, uint32_t height);
 	};
 
 	class IONICENGINE_API Overlay : public Screen
@@ -42,6 +42,8 @@ namespace ionicengine
 
 	public:
 		explicit OverlayFPS(const Font &font);
+
+		void init() override;
 
 		void draw(Graphics *graphics) override;
 
@@ -59,11 +61,16 @@ namespace ionicengine
 		std::vector<lambdacommon::ResourceName> _activeOverlays;
 
 		std::optional<Window> _window;
+		std::pair<uint32_t, uint32_t> oldFramebufferSize;
+		Graphics *graphics;
 
 		int fps{0}, updates{0};
+		float deltaTime{0.f};
 
 	public:
 		ScreenManager();
+
+		~ScreenManager();
 
 		void registerScreen(const lambdacommon::ResourceName &name, Screen *screen);
 
@@ -91,9 +98,15 @@ namespace ionicengine
 
 		void attachWindow(const Window &window);
 
+		std::optional<Window> getAttachedWindow() const;
+
 		int getFPS() const;
 
 		int getUpdates() const;
+
+		void setDeltaTime(float deltaTime);
+
+		float getDeltaTime() const;
 
 		void render();
 

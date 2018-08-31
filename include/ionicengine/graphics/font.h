@@ -75,6 +75,23 @@ namespace ionicengine
 		uint32_t getTextLength(const std::string &text) const;
 
 		/*!
+		 * Trims the given text to a given length.
+		 * @param input The given text to trim.
+		 * @param length The length to trim.
+		 * @param reverse Is reversed?
+		 * @return The trimmed string.
+		 */
+		std::string trimTextToLength(const std::string &input, uint32_t length, bool reverse = false) const;
+
+		/*!
+		 * Trims the given text to a given length and adds three dots at the end if it was trimmed.
+		 * @param input The given text to trim.
+		 * @param length The length to trim.
+		 * @return The trimmed string.
+		 */
+		std::string trimTextToLengthDotted(const std::string &input, uint32_t length) const;
+
+		/*!
 		 * Gets the height a=of a string in pixels.
 		 * @param text Text to measure.
 		 * @return The height of the specified string.

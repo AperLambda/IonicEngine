@@ -34,11 +34,11 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-set(HEADERS_GRAPHICS include/ionicengine/graphics/graphics.h include/ionicengine/graphics/screen.h include/ionicengine/graphics/textures.h include/ionicengine/graphics/shader.h include/ionicengine/graphics/font.h)
+set(HEADERS_GRAPHICS include/ionicengine/graphics/graphics.h include/ionicengine/graphics/screen.h include/ionicengine/graphics/textures.h include/ionicengine/graphics/shader.h include/ionicengine/graphics/font.h include/ionicengine/graphics/animation.h include/ionicengine/graphics/gui.h)
 set(HEADERS_INPUT include/ionicengine/input/inputmanager.h include/ionicengine/input/controller.h)
 set(HEADERS_WINDOW include/ionicengine/window/monitor.h include/ionicengine/window/window.h)
 set(HEADERS_FILES ${HEADERS_GRAPHICS} ${HEADERS_INPUT} ${HEADERS_WINDOW} include/ionicengine/ionicengine.h include/ionicengine/includes.h)
-set(SOURCES_GRAPHICS src/graphics/graphics.cpp src/graphics/screen.cpp src/graphics/textures.cpp src/graphics/shader.cpp src/graphics/font.cpp)
+set(SOURCES_GRAPHICS src/graphics/graphics.cpp src/graphics/screen.cpp src/graphics/textures.cpp src/graphics/shader.cpp src/graphics/font.cpp src/graphics/animation.cpp src/graphics/gui.cpp)
 set(SOURCES_INPUT src/input/inputmanager.cpp src/input/controller.cpp)
 set(SOURCES_WINDOW src/window/monitor.cpp src/window/window.cpp)
 set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ionicengine.cpp)
@@ -51,7 +51,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine ${LAMBDACOMMON_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES} ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES})
+target_link_libraries(ionicengine AperLambda::lambdacommon ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine
@@ -72,10 +72,21 @@ if (IONICENGINE_INSTALL)
         install(FILES ${LOOP_HEADER} DESTINATION ${HEADER_PARENT_DIR})
     endforeach ()
     install(FILES ${CMAKE_BINARY_DIR}/exports/ionicengine_exports.h DESTINATION include/ionicengine)
+	install(DIRECTORY ${CMAKE_SOURCE_DIR}/resources/ionicengine DESTINATION resources)
     install(TARGETS ionicengine
             RUNTIME DESTINATION bin COMPONENT libraries
             LIBRARY DESTINATION lib COMPONENT libraries
             ARCHIVE DESTINATION lib COMPONENT libraries)
+
+	# Uninstall target
+	if(NOT TARGET uninstall)
+		configure_file(
+				"${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+				"${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+				IMMEDIATE @ONLY)
+
+		add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+	endif()
 #    if (IONICENGINE_BUILD_STATIC)
 #        install(TARGETS ionicengine_static
 #                RUNTIME DESTINATION bin COMPONENT libraries

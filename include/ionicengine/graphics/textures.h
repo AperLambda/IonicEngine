@@ -21,7 +21,7 @@ namespace ionicengine
 	{
 		CLAMP = 0x2900,
 		CLAMP_TO_EDGE = 0x812F,
-		REPEAT = 0x2901
+		TEXTURE_REPEAT = 0x2901
 	};
 
 	enum TextureFilterMode

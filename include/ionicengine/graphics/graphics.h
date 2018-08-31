@@ -14,6 +14,7 @@
 #include "textures.h"
 #include "shader.h"
 #include <lambdacommon/graphics/color.h>
+#include <lambdacommon/maths.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <map>
@@ -32,6 +33,8 @@ namespace ionicengine
 	public:
 		Graphics(const std::pair<uint32_t, uint32_t> &framebufferSize);
 
+		virtual ~Graphics();
+
 		std::pair<uint32_t, uint32_t> getFramebufferSize() const;
 
 		/*!
@@ -47,10 +50,29 @@ namespace ionicengine
 		uint32_t getHeight() const;
 
 		/*!
+		 * Gets the width of the frame buffer in pixels.
+		 * @return The width of the frame buffer.
+		 */
+		float getFloatingWidth() const;
+
+		/*!
+		 * Gets the height of the frame buffer in pixels.
+		 * @return The height of the frame buffer.
+		 */
+		float getFloatingHeight() const;
+
+		/*!
 		 * Gets the matrix of the orthographic projection.
 		 * @return The orthographic projection.
 		 */
 		glm::mat4 getOrthoProjection() const;
+
+		/*!
+		 * Updates the graphics with a new width and height.
+		 * @param width Width.
+		 * @param height Height.
+		 */
+		void updateFramebufferSize(uint32_t width, uint32_t height);
 
 		/*!
 		 * Sets the color of the objects to draw.
@@ -71,17 +93,21 @@ namespace ionicengine
 
 		void rotate(float radians, const glm::vec3 &axis);
 
+		void rotate2DCentered(float radians, uint32_t width, uint32_t height);
+
 		void scale(float xScale, float yScale, float zScale = 1.0f);
 
 		void scale(const glm::vec3 &scale);
 
-		virtual void drawLine2D(float x, float y, float x2, float y2) = 0;
+		virtual void drawLine2D(int x, int y, int x2, int y2) = 0;
 
-		virtual void drawQuad(float x, float y, float width, float height) = 0;
+		virtual void drawQuad(int x, int y, uint32_t width, uint32_t height) = 0;
 
-		virtual void drawImage(const lambdacommon::ResourceName &texture, float x, float y, float width, float height, const TextureRegion &region = TextureRegion::BASE);
+		virtual void
+		drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
+				  const TextureRegion &region = TextureRegion::BASE);
 
-		virtual void drawImage(const Texture &texture, float x, float y, float width, float height,
+		virtual void drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
 							   const TextureRegion &region = TextureRegion::BASE) = 0;
 
 		/*!
@@ -92,7 +118,8 @@ namespace ionicengine
 		 * @param text The text to draw.
 		 * @param scale The scale of the text.
 		 */
-		virtual void drawText(const Font &font, float x, float y, const std::string &text, float scale = 1.0) = 0;
+		virtual void drawText(const Font &font, float x, float y, const std::string &text, float maxWidth = 0.f,
+							  float maxHeight = 0.f, float scale = 1.0) = 0;
 	};
 
 	//typedef Graphics* (*newGraphicsFunction)(const glm::mat4 &projection);

@@ -12,6 +12,7 @@
 #include "../../include/ionicengine/graphics/textures.h"
 //#include <harfbuzz/hb.h>
 //#include <harfbuzz/hb-ft.h>
+#include <sstream>
 
 namespace ionicengine
 {
@@ -49,6 +50,8 @@ namespace ionicengine
 
 	uint32_t Font::getTextLength(const std::string &text) const
 	{
+		if (text.empty())
+			return 0;
 		uint32_t length{0};
 		std::string tab;
 		for (uint32_t i = 0; i < getTabSize(); i++)
@@ -66,6 +69,43 @@ namespace ionicengine
 				length = x;
 		}
 		return length;
+	}
+
+	std::string Font::trimTextToLength(const std::string &input, uint32_t length, bool reverse) const
+	{
+		std::stringstream ss;
+		uint32_t i = 0;
+		int j = reverse ? static_cast<int>(input.length()) - 1 : 0;
+		int increment = reverse ? -1 : 1;
+
+		for (int l = j; l >= 0 && l < input.length() && i < length; l += increment)
+		{
+			char currentChar = input.at(l);
+			uint32_t width = getCharacter(currentChar).advance >> 6;
+
+			i += width;
+
+			if (reverse)
+			{
+				const std::string &temp = ss.str();
+				ss.seekp(0);
+				ss << currentChar;
+				ss << temp;
+			}
+			else
+				ss << currentChar;
+		}
+
+		return ss.str();
+	}
+
+	std::string Font::trimTextToLengthDotted(const std::string &input, uint32_t length) const
+	{
+		auto trimmedText = trimTextToLength(input, length);
+		if (trimmedText != input)
+			trimmedText = trimmedText.substr(0, trimmedText.length() - 3) + "...";
+
+		return trimmedText;
 	}
 
 	uint32_t Font::getTextHeight(const std::string &text) const
@@ -126,7 +166,7 @@ namespace ionicengine
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		// Load the first 256 ASCII characters. @TODO Add more characters.
-		for (uint32_t c = 0; c < 256; c++)
+		for (uint32_t c = 0; c < 10023; c++)
 		{
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER))
 			{

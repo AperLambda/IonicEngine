@@ -8,6 +8,7 @@
  */
 
 #include "../../include/ionicengine/window/window.h"
+#include "../../include/ionicengine/input/inputmanager.h"
 
 namespace ionicengine
 {
@@ -78,6 +79,11 @@ namespace ionicengine
 	bool Window::shouldClose() const
 	{
 		return glfwWindowShouldClose(_pointer) == GLFW_TRUE;
+	}
+
+	void Window::setShouldClose(bool shouldClose)
+	{
+		glfwSetWindowShouldClose(_pointer, shouldClose);
 	}
 
 	void Window::show() const
@@ -203,6 +209,7 @@ namespace ionicengine
 													  monitor->getHandle(), nullptr);
 				Window ionicWindow{window};
 				windows.push_back(ionicWindow);
+				InputManager::INPUT_MANAGER.attachWindow(ionicWindow);
 				return ionicWindow;
 			}
 			else
@@ -210,6 +217,7 @@ namespace ionicengine
 				GLFWwindow *window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 				Window ionicWindow{window};
 				windows.push_back(ionicWindow);
+				InputManager::INPUT_MANAGER.attachWindow(ionicWindow);
 				return ionicWindow;
 			}
 		}

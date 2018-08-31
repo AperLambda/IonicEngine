@@ -11,11 +11,19 @@
 #define IONICENGINE_INPUTMANAGER_H
 
 #include "controller.h"
+#include "../window/window.h"
 #include <vector>
 #include <thread>
 
 namespace ionicengine
 {
+	enum IONICENGINE_API InputAction
+	{
+		PRESS = GLFW_PRESS,
+		REPEAT = GLFW_REPEAT,
+		RELEASE = GLFW_RELEASE
+	};
+
 	class IONICENGINE_API ControllerBaseListener
 	{
 	public:
@@ -38,11 +46,20 @@ namespace ionicengine
 		virtual void onAxisRelease(const Controller &controller, uint8_t axis) = 0;
 	};
 
+	class IONICENGINE_API KeyboardListener
+	{
+	public:
+		virtual void onKeyInput(Window &window, int key, int scancode, InputAction action, int mods) = 0;
+
+		virtual void onCharInput(Window &window, char32_t codepoint) = 0;
+	};
+
 	class IONICENGINE_API InputManager
 	{
 	private:
 		std::vector<Controller *> controllers;
 
+		std::vector<KeyboardListener *> keyboardListeners;
 		std::vector<ControllerBaseListener *> controllerBaseListeners;
 		std::vector<ControllerInputListener *> controllerInputListeners;
 
@@ -57,12 +74,47 @@ namespace ionicengine
 		 *
 		 * This function inits the input manager.
 		 */
-		void init();
+		void init(bool useController = true);
 
 		/*! @biref Shutdown the input manager.
 		 * DO NOT CALL THIS ON YOURSELF!
 		 */
 		void shutdown();
+
+		/*!
+		 * Attaches a window to the input manager.
+		 * @param window Window to attach.
+		 */
+		void attachWindow(const Window &window);
+
+		/*!
+		 * Gets the name of a keyboard key.
+		 * @param key The key to query.
+		 * @param scancode The scancode of the key to query.
+		 * @return The UTF-8 encoded, layout-specific name of the key, or {@code NULL}
+		 */
+		std::string getKeyName(int key, int scancode);
+
+		/*!
+		 * Adds a keyboard listener.
+		 * @param listener The pointer of the listener to add.
+		 */
+		void addKeyboardListener(KeyboardListener *listener);
+
+		/*!
+		 * Removes a keyboard listener.
+		 * @param listener The pointer of the listener to add.
+		 */
+		bool removeKeyboardListener(KeyboardListener *listener);
+
+		/*!
+		 * Checks whether a keyboard listener is registered.
+		 * @param listener The pointer of the listener to check.
+		 * @return True if the listener was found else false.
+		 */
+		bool hasKeyboardListener(KeyboardListener *listener);
+
+		std::vector<KeyboardListener *> getKeyboardListeners() const;
 
 		/*! @brief Gets an controller by his defined ID.
 		 *

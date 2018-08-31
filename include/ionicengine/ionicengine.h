@@ -36,7 +36,14 @@ namespace ionicengine
 
 	const lambdacommon::ResourceName SHADER_TEXT = IONICENGINE_SHADERS_TEXT;
 
-	extern bool IONICENGINE_API init(bool debug, lambdacommon::fs::FilePath path = lambdacommon::fs::getCurrentWorkingDirectory());
+	struct IonicOptions
+	{
+		bool useControllers = true;
+		bool debug = false;
+		lambdacommon::fs::FilePath path = lambdacommon::fs::getCurrentWorkingDirectory();
+	};
+
+	extern bool IONICENGINE_API init(IonicOptions options);
 
 	/*!
 	 * Shutdowns the library.

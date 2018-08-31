@@ -19,6 +19,10 @@ using namespace lambdacommon;
 #define DISABLE_OPENGL_OPTIONS glDisable(GL_CULL_FACE); \
                                 glDisable(GL_BLEND);
 
+#define toFloat(i) static_cast<float>(i)
+#define clampX(i) toFloat(lambdacommon::maths::clamp(i, 0, static_cast<int>(getWidth())))
+#define clampY(i) toFloat(lambdacommon::maths::clamp(i, 0, static_cast<int>(getHeight())))
+
 namespace ionicengine
 {
 	Graphics::Graphics(const std::pair<uint32_t, uint32_t> &framebufferSize)
@@ -26,6 +30,8 @@ namespace ionicengine
 			glm::ortho(0.0f, static_cast<float>(framebufferSize.first), static_cast<float>(framebufferSize.second),
 					   0.0f))
 	{}
+
+	Graphics::~Graphics() = default;
 
 	std::pair<uint32_t, uint32_t> Graphics::getFramebufferSize() const
 	{
@@ -42,9 +48,25 @@ namespace ionicengine
 		return _framebufferSize.second;
 	}
 
+	float Graphics::getFloatingWidth() const
+	{
+		return static_cast<float>(this->getWidth());
+	}
+
+	float Graphics::getFloatingHeight() const
+	{
+		return static_cast<float>(this->getHeight());
+	}
+
 	glm::mat4 Graphics::getOrthoProjection() const
 	{
 		return _projection2d;
+	}
+
+	void Graphics::updateFramebufferSize(uint32_t width, uint32_t height)
+	{
+		_framebufferSize = {width, height};
+		_projection2d = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
 	}
 
 	void Graphics::resetTransform()
@@ -72,6 +94,16 @@ namespace ionicengine
 		_transform = glm::rotate(_transform, radians, axis);
 	}
 
+	void Graphics::rotate2DCentered(float radians, uint32_t width, uint32_t height)
+	{
+		float x = width / 2.f;
+		float y = height / 2.f;
+
+		this->translate(x, y);
+		this->rotate(radians, 0.f, 0.f, 1.f);
+		this->translate(-x, -y);
+	}
+
 	void Graphics::scale(float xScale, float yScale, float zScale)
 	{
 		scale(glm::vec3(xScale, yScale, zScale));
@@ -82,7 +114,7 @@ namespace ionicengine
 		_transform = glm::scale(_transform, scale);
 	}
 
-	void Graphics::drawImage(const lambdacommon::ResourceName &texture, float x, float y, float width, float height,
+	void Graphics::drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
 							 const TextureRegion &region)
 	{
 		if (!texture::hasTexture(texture))
@@ -105,7 +137,7 @@ namespace ionicengine
 			this->color = color;
 		}
 
-		void drawLine2D(float x, float y, float x2, float y2) override
+		void drawLine2D(int x, int y, int x2, int y2) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -114,8 +146,8 @@ namespace ionicengine
 			ENABLE_OPENGL_OPTIONS;
 
 			GLfloat vertices[2][4] = {
-					{x,         y, 0.f, 0.f},
-					{x2, y2,          0.f, 0.f}
+					{clampX(x),  clampY(y),  0.f, 0.f},
+					{clampX(x2), clampY(y2), 0.f, 0.f}
 			};
 
 			// Shader
@@ -141,7 +173,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawQuad(float x, float y, float width, float height) override
+		void drawQuad(int x, int y, uint32_t width, uint32_t height) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -150,12 +182,12 @@ namespace ionicengine
 			ENABLE_OPENGL_OPTIONS;
 
 			GLfloat vertices[6][4] = {
-					{x,         y + height, 0.f, 0.f},
-					{x + width, y,          0.f, 0.f},
-					{x,         y,          0.f, 0.f},
-					{x,         y + height, 0.f, 0.f},
-					{x + width, y + height, 0.f, 0.f},
-					{x + width, y,          0.f,0.f}
+					{clampX(x),          toFloat(y + height), 0.f, 0.f},
+					{toFloat(x + width), clampY(y),           0.f, 0.f},
+					{clampX(x),          clampY(y),           0.f, 0.f},
+					{clampX(x),          toFloat(y + height), 0.f, 0.f},
+					{toFloat(x + width), toFloat(y + height), 0.f, 0.f},
+					{toFloat(x + width), clampY(y),           0.f, 0.f}
 			};
 
 			// Shader
@@ -181,7 +213,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawImage(const Texture &texture, float x, float y, float width, float height,
+		void drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
 					   const TextureRegion &region) override
 		{
 			if (!texture)
@@ -192,13 +224,15 @@ namespace ionicengine
 			// Set OpenGL options.
 			ENABLE_OPENGL_OPTIONS;
 
+			auto realX = clampX(x);
+
 			GLfloat vertices[6][4] = {
-					{x,         y + height, region.minX(), region.maxY()},
-					{x + width, y,          region.maxX(), region.minY()},
-					{x,         y,          region.minX(), region.minY()},
-					{x,         y + height, region.minX(), region.maxY()},
-					{x + width, y + height, region.maxX(), region.maxY()},
-					{x + width, y,          region.maxX(), region.minY()}
+					{realX,          toFloat(y + height), region.minX(), region.maxY()},
+					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()},
+					{realX,          clampY(y),           region.minX(), region.minY()},
+					{realX,          toFloat(y + height), region.minX(), region.maxY()},
+					{toFloat(realX + width), toFloat(y + height), region.maxX(), region.maxY()},
+					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()}
 			};
 
 			// Shader
@@ -229,7 +263,8 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawText(const Font &font, float x, float y, const std::string &text, float scale) override
+		void drawText(const Font &font, float x, float y, const std::string &text, float maxWidth, float maxHeight,
+					  float scale) override
 		{
 			if (!shader::hasShader(SHADER_TEXT))
 				return;
@@ -254,6 +289,14 @@ namespace ionicengine
 			for (c = text.begin(); c != text.end(); c++)
 			{
 				Character ch = font.getCharacter(*c);
+
+				if (maxWidth != 0.f && x + (ch.advance >> 6) >= (originalX + maxWidth))
+				{
+					x = originalX;
+					y += font.getHeight() * scale;
+				}
+				if (maxHeight != 0.f && (y + font.getHeight() / 2.f) > (originalY + maxHeight))
+					break;
 
 				// Special characters handling.
 				if (*c == '\t')
