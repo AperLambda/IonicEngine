@@ -13,6 +13,7 @@
 #include "font.h"
 #include "textures.h"
 #include "shader.h"
+#include "utils.h"
 #include <lambdacommon/graphics/color.h>
 #include <lambdacommon/maths.h>
 #include <glm/glm.hpp>
@@ -22,6 +23,10 @@
 
 namespace ionicengine
 {
+	static uint32_t quadVAO = 0, quadVBO = 0,
+			quadOutlineVAO = 0, quadOutlineVBO = 0,
+			textureVAO = 0, textureVBO = 0;
+
 	class IONICENGINE_API Graphics
 	{
 	protected:
@@ -102,6 +107,8 @@ namespace ionicengine
 		virtual void drawLine2D(int x, int y, int x2, int y2) = 0;
 
 		virtual void drawQuad(int x, int y, uint32_t width, uint32_t height) = 0;
+
+		virtual void drawQuadOutline(int x, int y, uint32_t width, uint32_t height) = 0;
 
 		virtual void
 		drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,

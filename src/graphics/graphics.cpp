@@ -145,6 +145,8 @@ namespace ionicengine
 			// Set OpenGL options.
 			ENABLE_OPENGL_OPTIONS;
 
+			glm::mat4 model{1.f};
+
 			GLfloat vertices[2][4] = {
 					{clampX(x),  clampY(y),  0.f, 0.f},
 					{clampX(x2), clampY(y2), 0.f, 0.f}
@@ -154,20 +156,21 @@ namespace ionicengine
 			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
 			shader.use();
 			shader.setMatrix4f("projection", _projection2d);
+			shader.setMatrix4f("model", model);
 			shader.setMatrix4f("transform", _transform);
 			shader.setColor(color);
 
-			glBindVertexArray(this->vao);
+			vao::bind(this->vao);
 
 			// Update content of VBO memory.
-			glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+			vbo::bind(this->vbo);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			vbo::bind(0);
 			// Render quad.
 			glDrawArrays(GL_LINES, 0, 2);
 
-			glBindVertexArray(0);
+			vao::unbind();
 
 			// Unset OpenGL options.
 			DISABLE_OPENGL_OPTIONS;
@@ -181,33 +184,51 @@ namespace ionicengine
 			// Set OpenGL options.
 			ENABLE_OPENGL_OPTIONS;
 
-			GLfloat vertices[6][4] = {
-					{clampX(x),          toFloat(y + height), 0.f, 0.f},
-					{toFloat(x + width), clampY(y),           0.f, 0.f},
-					{clampX(x),          clampY(y),           0.f, 0.f},
-					{clampX(x),          toFloat(y + height), 0.f, 0.f},
-					{toFloat(x + width), toFloat(y + height), 0.f, 0.f},
-					{toFloat(x + width), clampY(y),           0.f, 0.f}
-			};
+			glm::mat4 model{1.f};
+			model = glm::translate(model, {x, y, 0.f});
+			model = glm::scale(model, {width, height, 1.f});
 
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
 			shader.use();
 			shader.setMatrix4f("projection", _projection2d);
+			shader.setMatrix4f("model", model);
 			shader.setMatrix4f("transform", _transform);
 			shader.setColor(color);
 
-			glBindVertexArray(this->vao);
-
-			// Update content of VBO memory.
-			glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			vao::bind(quadVAO);
 			// Render quad.
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			vao::unbind();
 
-			glBindVertexArray(0);
+			// Unset OpenGL options.
+			DISABLE_OPENGL_OPTIONS;
+		}
+
+		void drawQuadOutline(int x, int y, uint32_t width, uint32_t height) override
+		{
+			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
+				return;
+
+			// Set OpenGL options.
+			ENABLE_OPENGL_OPTIONS;
+
+			glm::mat4 model{1.f};
+			model = glm::translate(model, {x, y, 0.f});
+			model = glm::scale(model, {width, height, 1.f});
+
+			// Shader
+			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
+			shader.use();
+			shader.setMatrix4f("projection", _projection2d);
+			shader.setMatrix4f("model", model);
+			shader.setMatrix4f("transform", _transform);
+			shader.setColor(color);
+
+			vao::bind(quadOutlineVAO);
+			// Render quad.
+			glDrawArrays(GL_LINE_LOOP, 0, 4);
+			vao::unbind();
 
 			// Unset OpenGL options.
 			DISABLE_OPENGL_OPTIONS;
@@ -224,38 +245,57 @@ namespace ionicengine
 			// Set OpenGL options.
 			ENABLE_OPENGL_OPTIONS;
 
-			auto realX = clampX(x);
+			glm::mat4 model{1.f};
+			model = glm::translate(model, {x, y, 0.f});
+			model = glm::scale(model, {width, height, 1.f});
 
-			GLfloat vertices[6][4] = {
-					{realX,          toFloat(y + height), region.minX(), region.maxY()},
-					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()},
-					{realX,          clampY(y),           region.minX(), region.minY()},
-					{realX,          toFloat(y + height), region.minX(), region.maxY()},
-					{toFloat(realX + width), toFloat(y + height), region.maxX(), region.maxY()},
-					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()}
+			//auto realX = clampX(x);
+
+			GLfloat texCoords[4][2] = {
+					{region.minX(), region.maxY()},
+					{region.maxX(), region.maxY()},
+					{region.minX(), region.minY()},
+					{region.maxX(), region.minY()}
 			};
+
+			/*GLfloat vertices[4][4] = {
+					{realX,                  toFloat(y + height), region.minX(), region.maxY()},
+					{toFloat(realX + width), toFloat(y + height), region.maxX(), region.maxY()},
+					{realX,                  clampY(y),           region.minX(), region.minY()},
+					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()}
+			};*/
 
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_IMAGE);
 			shader.use();
 			shader.setMatrix4f("projection", _projection2d);
+			shader.setMatrix4f("model", model);
 			shader.setMatrix4f("transform", _transform);
+			for (size_t i = 0; i < 4; i++)
+			{
+				shader.setVector2f("texCoordsData[" + std::to_string(i) + "]", texCoords[i][0], texCoords[i][1]);
+			}
 			shader.setInteger("image", 0);
 			shader.setColor(color);
 
 			texture.bind();
 
-			glBindVertexArray(this->vao);
+			vao::bind(textureVAO);
+			// Render quad.
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			vao::unbind();
+
+			/*vao::bind(this->vao);
 
 			// Update content of VBO memory.
-			glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+			vbo::bind(this->vbo);
 			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			vbo::unbind();
 			// Render quad.
-			glDrawArrays(GL_TRIANGLES, 0, 6);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-			glBindVertexArray(0);
+			vao::unbind();*/
 
 			texture.unbind();
 
@@ -279,7 +319,7 @@ namespace ionicengine
 			shader.setInteger("text", 0);
 			shader.setColor(color);
 			glActiveTexture(GL_TEXTURE0);
-			glBindVertexArray(this->vao);
+			vao::bind(this->vao);
 
 			float originalX = x;
 			float originalY = y;
@@ -330,22 +370,82 @@ namespace ionicengine
 				// Render glyph texture over quad.
 				glBindTexture(GL_TEXTURE_2D, ch.textureId);
 				// Update content of VBO memory.
-				glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+				vbo::bind(this->vbo);
 				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				vbo::unbind();
 				// Render quad.
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 				// Now advance cursors for next glyph.
 				x += (ch.advance >> 6) * scale;
 			}
-			glBindVertexArray(0);
+			vao::unbind();
 			texture::unbind();
 
 			// Unset OpenGL options
 			DISABLE_OPENGL_OPTIONS;
 		}
 	};
+
+	void shapeQuadInit()
+	{
+		GLfloat outlineVertices[] = {0.f, 1.f,
+									 0.f, 0.f,
+									 1.f, 0.f,
+									 1.f, 1.f};
+
+		GLfloat fillVertices[] = {0.f, 0.f,
+								  0.f, 1.f,
+								  1.f, 0.f,
+								  1.f, 1.f};
+
+		glGenVertexArrays(1, &quadVAO);
+		glGenBuffers(1, &quadVBO);
+
+		vbo::bind(quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(fillVertices), fillVertices, GL_STATIC_DRAW);
+
+		vao::bind(quadVAO);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+		vbo::unbind();
+		vao::unbind();
+
+		glGenVertexArrays(1, &quadOutlineVAO);
+		glGenBuffers(1, &quadOutlineVBO);
+
+		vbo::bind(quadOutlineVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(outlineVertices), outlineVertices, GL_STATIC_DRAW);
+
+		vao::bind(quadOutlineVAO);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
+		vbo::unbind();
+		vao::unbind();
+	}
+
+	void shapeTextureInit()
+	{
+		// Defines vertices, z is texture coordinates index.
+		GLfloat vertices[4][3] = {
+				{0.f, 1.f, 0},
+				{1.f, 1.f, 1},
+				{0.f, 0.f, 2},
+				{1.f, 0.f, 3}
+		};
+
+		glGenVertexArrays(1, &textureVAO);
+		glGenBuffers(1, &textureVBO);
+
+		vbo::bind(textureVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+		vao::bind(textureVAO);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
+		vbo::unbind();
+		vao::unbind();
+	}
 
 	GraphicsManager::GraphicsManager() : _graphicsUsed(GRAPHICS_GL3)
 	{}
@@ -363,13 +463,16 @@ namespace ionicengine
 		// Configure VAO/VBO for texture quads
 		glGenVertexArrays(1, &this->vao);
 		glGenBuffers(1, &this->vbo);
-		glBindVertexArray(this->vao);
-		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
+		vao::bind(this->vao);
+		vbo::bind(this->vbo);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		vbo::unbind();
+		vao::unbind();
+
+		shapeQuadInit();
+		shapeTextureInit();
 
 		if (!shader::compile(IONICENGINE_SHADERS_2DBASIC))
 			throw std::runtime_error("Cannot load 2d basic shaders.");

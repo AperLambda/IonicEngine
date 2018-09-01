@@ -45,14 +45,15 @@ namespace ionicengine
 	void Border::draw(int x, int y, uint32_t width, uint32_t height, Graphics *graphics)
 	{
 		graphics->setColor(color);
-		// Top
+		graphics->drawQuadOutline(x, y, width, height);
+		/*// Top
 		graphics->drawLine2D(x, y, x + width, y);
 		// Left
 		graphics->drawLine2D(x, y, x, y + height + 1);
 		// Bottom
 		graphics->drawLine2D(x, y + height, x + width, y + height);
 		// Right
-		graphics->drawLine2D(x + width, y, x + width, y + height);
+		graphics->drawLine2D(x + width, y, x + width, y + height);*/
 	}
 
 	void EmptyBorder::draw(int x, int y, uint32_t width, uint32_t height, Graphics *graphics)
