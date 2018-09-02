@@ -27,9 +27,10 @@ find_package(OpenAL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Freetype REQUIRED)
+find_package(libsndfile REQUIRED)
 #find_package(HarfBuzz REQUIRED)
 
-include_directories(${LAMBDACOMMON_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${HARFBUZZ_INCLUDE_DIRS} ${OPENAL_INCLUDE_DIR} dependencies/stb)
+include_directories(${LAMBDACOMMON_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${HARFBUZZ_INCLUDE_DIRS} ${OPENAL_INCLUDE_DIR} ${libsndfile_INCLUDE_DIRS} dependencies/stb)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -37,12 +38,14 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 set(HEADERS_GRAPHICS include/ionicengine/graphics/graphics.h include/ionicengine/graphics/screen.h include/ionicengine/graphics/textures.h include/ionicengine/graphics/shader.h include/ionicengine/graphics/font.h include/ionicengine/graphics/animation.h include/ionicengine/graphics/gui.h include/ionicengine/graphics/utils.h)
 set(HEADERS_INPUT include/ionicengine/input/inputmanager.h include/ionicengine/input/controller.h)
+set(HEADERS_SOUND include/ionicengine/sound/sound.h include/ionicengine/sound/wav.h)
 set(HEADERS_WINDOW include/ionicengine/window/monitor.h include/ionicengine/window/window.h)
-set(HEADERS_FILES ${HEADERS_GRAPHICS} ${HEADERS_INPUT} ${HEADERS_WINDOW} include/ionicengine/ionicengine.h include/ionicengine/includes.h)
+set(HEADERS_FILES ${HEADERS_GRAPHICS} ${HEADERS_INPUT} ${HEADERS_SOUND} ${HEADERS_WINDOW} include/ionicengine/ionicengine.h include/ionicengine/includes.h)
 set(SOURCES_GRAPHICS src/graphics/graphics.cpp src/graphics/screen.cpp src/graphics/textures.cpp src/graphics/shader.cpp src/graphics/font.cpp src/graphics/animation.cpp src/graphics/gui.cpp src/graphics/utils.cpp)
 set(SOURCES_INPUT src/input/inputmanager.cpp src/input/controller.cpp)
+set(SOURCES_SOUND src/sound/sound.cpp src/sound/wav.cpp)
 set(SOURCES_WINDOW src/window/monitor.cpp src/window/window.cpp)
-set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ionicengine.cpp)
+set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_SOUND} ${SOURCES_WINDOW} src/ionicengine.cpp)
 
 # Now build the library
 # Build static if the option is on.
@@ -52,7 +55,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine AperLambda::lambdacommon ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW OpenGL::GL GLEW::GLEW Freetype::Freetype ${OPENAL_LIBRARY} ${HARFBUZZ_LIBRARIES})
+target_link_libraries(ionicengine AperLambda::lambdacommon ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW OpenGL::GL GLEW::GLEW Freetype::Freetype ${OPENAL_LIBRARY} MegaNerd::libsndfile ${HARFBUZZ_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine

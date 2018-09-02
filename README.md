@@ -27,6 +27,7 @@ Build the sources with CMake and make and install with `make install`, and keep 
 
 Fire and cat animation:
 ![Fire and Cat animation](showcase/fire_cat_animation.gif)
+[Fire and Cat animation (with Sound)](https://www.youtube.com/watch?v=_-C3E4uoOtY)
 
 Resources monitor (simple desktop application example):
 

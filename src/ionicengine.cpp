@@ -28,6 +28,8 @@ namespace ionicengine
 		if (!glfwInit())
 			return false;
 		fontManager = new FontManager();
+		if (!sound::init())
+			return false;
 		running = true;
 		InputManager::INPUT_MANAGER.init(options.useControllers);
 		return true;

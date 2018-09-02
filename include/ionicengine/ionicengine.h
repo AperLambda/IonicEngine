@@ -18,6 +18,7 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include "graphics/font.h"
+#include "sound/sound.h"
 
 #define IONICENGINE_VERSION_MAJOR 0
 #define IONICENGINE_VERSION_MINOR 0

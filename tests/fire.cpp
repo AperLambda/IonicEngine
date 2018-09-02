@@ -10,6 +10,7 @@
 #include <ionicengine/graphics/screen.h>
 #include <ionicengine/graphics/animation.h>
 #include <ionicengine/input/inputmanager.h>
+#include <ionicengine/sound/wav.h>
 #include <lambdacommon/system/terminal.h>
 
 using namespace ionicengine;
@@ -17,6 +18,8 @@ using namespace lambdacommon;
 
 BitmapAnimation *fireAnimation = nullptr, *catAnimation = nullptr;
 TexturesAnimation *fireLightAnimation = nullptr;
+
+bool soundsState = true;
 
 class KeyboardListenerImpl : public KeyboardListener
 {
@@ -41,6 +44,8 @@ public:
 					catAnimation->stop();
 				else
 					catAnimation->start();
+
+				soundsState = !soundsState;
 			}
 		}
 	}
@@ -54,11 +59,14 @@ class MainScreen : public Screen
 private:
 	Color grassColor = color::mix(Color::COLOR_GREEN, Color::COLOR_BLACK, 0.5f);
 	uint32_t fireX = 0, fireY = 0, quadY = 0;
+	int firePlace = 0, crickets = 0;
 
 public:
 	MainScreen()
 	{
 		setBackgroundColor(Color::COLOR_BLUE);
+		firePlace = sound::play({"ionic_tests:sounds/fireplace"}, true);
+		crickets = sound::play({"ionic_tests:sounds/129678__freethinkeranon__crickets"}, true);
 	}
 
 	void init() override
@@ -93,6 +101,10 @@ public:
 		fireAnimation->update();
 		fireLightAnimation->update();
 		catAnimation->update();
+		if (soundsState)
+			sound::resumeAll();
+		else
+			sound::pauseAll();
 	}
 };
 
@@ -164,6 +176,13 @@ int main()
 
 	auto font = ionicengine::getFontManager().loadFont(std::string{"Roboto.ttf"}, 14);
 	if (!font)
+	{
+		ionicengine::shutdown();
+		return EXIT_FAILURE;
+	}
+
+	if (sound::wav::load({"ionic_tests", "sounds/fireplace"}) < 0 ||
+		sound::wav::load({"ionic_tests", "sounds/129678__freethinkeranon__crickets"}) < 0)
 	{
 		ionicengine::shutdown();
 		return EXIT_FAILURE;
