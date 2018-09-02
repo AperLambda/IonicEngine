@@ -23,12 +23,13 @@ find_package(LAMBDACOMMON REQUIRED)
 find_package(Threads)
 find_package(GLFW REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(OpenAL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Freetype REQUIRED)
 #find_package(HarfBuzz REQUIRED)
 
-include_directories(${LAMBDACOMMON_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${HARFBUZZ_INCLUDE_DIRS} dependencies/stb)
+include_directories(${LAMBDACOMMON_INCLUDE_DIRS} ${GLFW_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${GLM_INCLUDE_DIRS} ${FREETYPE_INCLUDE_DIRS} ${HARFBUZZ_INCLUDE_DIRS} ${OPENAL_INCLUDE_DIR} dependencies/stb)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
@@ -51,7 +52,7 @@ set(SOURCES_FILES ${SOURCES_GRAPHICS} ${SOURCES_INPUT} ${SOURCES_WINDOW} src/ion
 #endif ()
 
 add_library(ionicengine ${HEADERS_FILES} ${SOURCES_FILES})
-target_link_libraries(ionicengine AperLambda::lambdacommon ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW ${OPENGL_gl_LIBRARY} ${GLEW_LIBRARIES} ${FREETYPE_LIBRARIES} ${HARFBUZZ_LIBRARIES})
+target_link_libraries(ionicengine AperLambda::lambdacommon ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW OpenGL::GL GLEW::GLEW Freetype::Freetype ${OPENAL_LIBRARY} ${HARFBUZZ_LIBRARIES})
 
 GENERATE_EXPORT_HEADER(ionicengine
         BASE_NAME ionicengine
