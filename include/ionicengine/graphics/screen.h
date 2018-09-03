@@ -27,6 +27,10 @@ namespace ionicengine
 		void update() override;
 
 		void refresh(uint32_t width, uint32_t height);
+
+		virtual bool onMousePressed(int button, int mouseX, int mouseY);
+
+		virtual bool onMouseReleased(int button, int mouseX, int mouseY);
 	};
 
 	class IONICENGINE_API Overlay : public Screen
@@ -108,12 +112,24 @@ namespace ionicengine
 
 		float getDeltaTime() const;
 
+		bool onMouseButton(int button, InputAction action, int mods);
+
 		void render();
 
 		void update();
 
 		void startLoop();
 	};
+
+	namespace screen
+	{
+		/*!
+		 * Gets the attached ScreenManager of the specified Window.
+		 * @param window The Window.
+		 * @return The pointer of the ScreenManager to get.
+		 */
+		extern ScreenManager * IONICENGINE_API getScreenManager(const Window &window);
+	}
 }
 
 #endif //IONICENGINE_SCREEN_H

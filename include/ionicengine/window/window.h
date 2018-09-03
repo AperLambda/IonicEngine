@@ -38,6 +38,8 @@ namespace ionicengine
 
 	const WindowOptions DEFAULT_WINDOW_OPTIONS{};
 
+	using namespace std::rel_ops;
+
 	class IONICENGINE_API Window
 	{
 	private:
@@ -57,6 +59,8 @@ namespace ionicengine
 		std::pair<uint32_t, uint32_t> getFramebufferSize() const;
 
 		std::pair<int, int> getPosition() const;
+
+		std::pair<double, double> getCursorPosition() const;
 
 		void setPosition(int x, int y);
 
@@ -95,6 +99,10 @@ namespace ionicengine
 		void requestContext() const;
 
 		void destroy();
+
+		bool operator==(const Window &window) const;
+
+		bool operator<(const Window &window) const;
 
 		explicit operator bool();
 	};

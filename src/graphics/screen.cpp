@@ -37,6 +37,36 @@ namespace ionicengine
 		components.clear();
 	}
 
+	bool Screen::onMousePressed(int button, int mouseX, int mouseY)
+	{
+		for (GuiComponent *component : components)
+		{
+			if (component->isEnabled() && component->isVisible() && mouseX >= component->getX() &&
+				mouseY >= component->getY() && mouseX < component->getX() + static_cast<int>(component->width) &&
+				mouseY < component->getY() + static_cast<int>(component->height))
+			{
+				component->onMousePressed(button, mouseX, mouseY);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Screen::onMouseReleased(int button, int mouseX, int mouseY)
+	{
+		for (GuiComponent *component : components)
+		{
+			if (component->isEnabled() && component->isVisible() && mouseX >= component->getX() &&
+				mouseY >= component->getY() && mouseX < component->getX() + static_cast<int>(component->width) &&
+				mouseY < component->getY() + static_cast<int>(component->height))
+			{
+				component->onMouseReleased(button, mouseX, mouseY);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/*
 	 * NULLSCREEN
 	 */
@@ -191,11 +221,6 @@ namespace ionicengine
 			_activeOverlays.erase(std::find(_activeOverlays.begin(), _activeOverlays.end(), name));
 	}
 
-	void ScreenManager::attachWindow(const Window &window)
-	{
-		_window = {window};
-	}
-
 	std::optional<Window> ScreenManager::getAttachedWindow() const
 	{
 		return _window;
@@ -219,6 +244,50 @@ namespace ionicengine
 	void ScreenManager::setDeltaTime(float deltaTime)
 	{
 		ScreenManager::deltaTime = deltaTime;
+	}
+
+	bool ScreenManager::onMouseButton(int button, InputAction action, int mods)
+	{
+		if (!_window)
+			return false;
+
+		auto cursorPosition = _window->getCursorPosition();
+
+		for (const auto &activeOverlay : _activeOverlays)
+		{
+			if (hasOverlay(activeOverlay))
+			{
+				Overlay *overlay = getOverlay(activeOverlay);
+				if (action == InputAction::PRESS)
+				{
+					if (overlay->onMousePressed(button, static_cast<int>(cursorPosition.first),
+												static_cast<int>(cursorPosition.second)))
+						return true;
+				}
+				else if (action == InputAction::RELEASE)
+				{
+					if (overlay->onMouseReleased(button, static_cast<int>(cursorPosition.first),
+												 static_cast<int>(cursorPosition.second)))
+						return true;
+				}
+			}
+		}
+
+		auto screen = getActiveScreen();
+		if (action == InputAction::PRESS)
+		{
+			if (screen->onMousePressed(button, static_cast<int>(cursorPosition.first),
+									   static_cast<int>(cursorPosition.second)))
+				return true;
+		}
+		else if (action == InputAction::RELEASE)
+		{
+			if (screen->onMouseReleased(button, static_cast<int>(cursorPosition.first),
+										static_cast<int>(cursorPosition.second)))
+				return true;
+		}
+
+		return false;
 	}
 
 	void ScreenManager::render()
@@ -341,5 +410,21 @@ namespace ionicengine
 		delete graphics;
 
 		_window->destroy();
+	}
+
+	namespace screen
+	{
+		std::map<Window, ScreenManager *> screenManagers;
+
+		ScreenManager *getScreenManager(const Window &window)
+		{
+			return screenManagers.at(window);
+		}
+	}
+
+	void ScreenManager::attachWindow(const Window &window)
+	{
+		_window = {window};
+		screen::screenManagers.insert({window, this});
 	}
 }

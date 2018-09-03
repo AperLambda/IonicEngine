@@ -209,5 +209,5 @@ int main()
 	delete catAnimation;
 	ionicengine::shutdown();
 
-	return EXIT_SUCCESS;
+	return 0;
 }

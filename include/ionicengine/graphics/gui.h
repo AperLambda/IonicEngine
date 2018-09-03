@@ -11,6 +11,7 @@
 #define IONICENGINE_GUI_H
 
 #include "graphics.h"
+#include "../input/inputmanager.h"
 
 namespace ionicengine
 {
@@ -64,8 +65,13 @@ namespace ionicengine
 	protected:
 		lambdacommon::Color color = lambdacommon::Color::COLOR_WHITE;
 		Border *border = new Border(lambdacommon::Color::COLOR_BLACK);
+		int x, y;
+		bool visible = true;
+		bool enabled = true;
 
 	public:
+		GuiComponent(int x, int y);
+
 		virtual ~GuiComponent() override;
 
 		const lambdacommon::Color &getColor() const;
@@ -75,12 +81,35 @@ namespace ionicengine
 		Border *getBorder() const;
 
 		void setBorder(Border *border);
+
+		int getX() const;
+
+		int getY() const;
+
+		/*!
+		 * Checks whether the component is visible or not.
+		 * @return True if the component is visible, else false.
+		 */
+		bool isVisible() const;
+
+		/*!
+		 * Sets whether the component is visible or not.
+		 * @param visible True if the component is visible, else false.
+		 */
+		void setVisible(bool visible);
+
+		bool isEnabled() const;
+
+		void setEnabled(bool enabled);
+
+		virtual void onMousePressed(int button, int mouseX, int mouseY) = 0;
+
+		virtual void onMouseReleased(int button, int mouseX, int mouseY) = 0;
 	};
 
 	class IONICENGINE_API GuiProgressBar : public GuiComponent
 	{
 	private:
-		int x, y;
 		uint32_t progress{0};
 		bool indeterminate = false;
 		int indeterminateIndex = 0;
@@ -103,10 +132,30 @@ namespace ionicengine
 		void draw(Graphics *graphics) override;
 
 		void update() override;
+
+		void onMousePressed(int button, int x, int y) override;
+
+		void onMouseReleased(int button, int x, int y) override;
 	};
 
 	class IONICENGINE_API GuiButton : public GuiComponent
 	{
+	private:
+		std::string text;
+		bool hovered = false;
+		Font font;
+		std::function<void()> onButtonClickListener = [](){};
+
+	public:
+		void init() override;
+
+		void draw(Graphics *graphics) override;
+
+		void update() override;
+
+		void onMousePressed(int button, int x, int y) override;
+
+		void onMouseReleased(int button, int x, int y) override;
 	};
 }
 

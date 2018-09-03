@@ -51,6 +51,13 @@ namespace ionicengine
 		return {x, y};
 	}
 
+	std::pair<double, double> Window::getCursorPosition() const
+	{
+		double x, y;
+		glfwGetCursorPos(_pointer, &x, &y);
+		return {x, y};
+	}
+
 	void Window::setPosition(int x, int y)
 	{
 		glfwSetWindowPos(_pointer, x, y);
@@ -157,6 +164,16 @@ namespace ionicengine
 		if (!*this)
 			glfwDestroyWindow(_pointer);
 		_pointer = nullptr;
+	}
+
+	bool Window::operator==(const Window &window) const
+	{
+		return _pointer == window._pointer;
+	}
+
+	bool Window::operator<(const Window &window) const
+	{
+		return _pointer < window._pointer;
 	}
 
 	Window::operator bool()

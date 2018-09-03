@@ -54,12 +54,27 @@ namespace ionicengine
 		virtual void onCharInput(Window &window, char32_t codepoint) = 0;
 	};
 
+	class IONICENGINE_API MouseListener
+	{
+	public:
+		virtual void onMouseButton(Window &window, int button, InputAction action, int mods) = 0;
+
+		virtual void onMousePosition(Window &window, double x, double y) = 0;
+		
+		virtual void onMouseEnter(Window &window) = 0;
+		
+		virtual void onMouseExit(Window &window) = 0;
+
+		virtual void onMouseScroll(Window &window, double xoffset, double yoffset) = 0;
+	};
+
 	class IONICENGINE_API InputManager
 	{
 	private:
 		std::vector<Controller *> controllers;
 
 		std::vector<KeyboardListener *> keyboardListeners;
+		std::vector<MouseListener *> mouseListeners;
 		std::vector<ControllerBaseListener *> controllerBaseListeners;
 		std::vector<ControllerInputListener *> controllerInputListeners;
 
@@ -115,6 +130,27 @@ namespace ionicengine
 		bool hasKeyboardListener(KeyboardListener *listener);
 
 		std::vector<KeyboardListener *> getKeyboardListeners() const;
+
+		/*!
+		 * Adds a mouse listener.
+		 * @param listener The pointer of the listener to add.
+		 */
+		void addMouseListener(MouseListener *listener);
+
+		/*!
+		 * Removes a mouse listener.
+		 * @param listener The pointer of the listener to add.
+		 */
+		bool removeMouseListener(MouseListener *listener);
+
+		/*!
+		 * Checks whether a mouse listener is registered.
+		 * @param listener The pointer of the listener to check.
+		 * @return True if the listener was found else false.
+		 */
+		bool hasMouseListener(MouseListener *listener);
+
+		std::vector<MouseListener *> getMouseListeners() const;
 
 		/*! @brief Gets an controller by his defined ID.
 		 *

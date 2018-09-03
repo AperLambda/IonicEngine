@@ -8,6 +8,7 @@
  */
 
 #include "../../include/ionicengine/input/inputmanager.h"
+#include "../../include/ionicengine/graphics/screen.h"
 #include <algorithm>
 #include <stdexcept>
 #include <thread>
@@ -169,6 +170,55 @@ namespace ionicengine
 		}
 	}
 
+	void mouse_button_callback(GLFWwindow *window, int button, int action, int mods)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		if (!screen::getScreenManager(ionicWindow.value())->onMouseButton(button, static_cast<InputAction>(action),
+																		  mods))
+			for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
+			{
+				listener->onMouseButton(ionicWindow.value(), button, static_cast<InputAction>(action), mods);
+			}
+	}
+
+	void mouse_position_callback(GLFWwindow *window, double x, double y)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
+		{
+			listener->onMousePosition(ionicWindow.value(), x, y);
+		}
+	}
+
+	void mouse_enter_callback(GLFWwindow *window, int entered)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
+		{
+			if (entered)
+				listener->onMouseEnter(ionicWindow.value());
+			else
+				listener->onMouseExit(ionicWindow.value());
+		}
+	}
+
+	void scroll(GLFWwindow *window, double xoffset, double yoffset)
+	{
+		auto ionicWindow = window::getByHandle(window);
+		if (!ionicWindow)
+			ionicWindow = {Window{window}};
+		for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
+		{
+			listener->onMouseScroll(ionicWindow.value(), xoffset, yoffset);
+		}
+	}
+
 	void InputManager::init(bool useController)
 	{
 		glfwSetJoystickCallback(invokeControllerBaseEvent);
@@ -187,6 +237,10 @@ namespace ionicengine
 	{
 		glfwSetKeyCallback(window.getHandle(), key_callback);
 		glfwSetCharCallback(window.getHandle(), char_callback);
+		glfwSetMouseButtonCallback(window.getHandle(), mouse_button_callback);
+		glfwSetCursorPosCallback(window.getHandle(), mouse_position_callback);
+		glfwSetCursorEnterCallback(window.getHandle(), mouse_enter_callback);
+		glfwSetScrollCallback(window.getHandle(), scroll);
 	}
 
 	std::string InputManager::getKeyName(int key, int scancode)
@@ -221,6 +275,32 @@ namespace ionicengine
 	std::vector<KeyboardListener *> InputManager::getKeyboardListeners() const
 	{
 		return keyboardListeners;
+	}
+
+	void InputManager::addMouseListener(MouseListener *listener)
+	{
+		if (!hasMouseListener(listener))
+			mouseListeners.push_back(listener);
+	}
+
+	bool InputManager::removeMouseListener(MouseListener *listener)
+	{
+		if (!hasMouseListener(listener))
+			return false;
+		mouseListeners.erase(std::remove(mouseListeners.begin(), mouseListeners.end(), listener),
+							 mouseListeners.end());
+		return true;
+	}
+
+	bool InputManager::hasMouseListener(MouseListener *listener)
+	{
+		return std::find(mouseListeners.begin(), mouseListeners.end(), listener) !=
+			   mouseListeners.end();
+	}
+
+	std::vector<MouseListener *> InputManager::getMouseListeners() const
+	{
+		return mouseListeners;
 	}
 
 	Controller *InputManager::getController(uint8_t id)
