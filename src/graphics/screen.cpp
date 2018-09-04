@@ -408,6 +408,7 @@ namespace ionicengine
 		}
 
 		delete graphics;
+		graphics = nullptr;
 
 		_window->destroy();
 	}

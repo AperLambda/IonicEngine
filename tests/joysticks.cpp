@@ -161,13 +161,16 @@ int main()
 {
 	cout << "Starting joysticks.cpp with IonicEngine v" << ionicengine::getVersion() << "..." << endl;
 	terminal::setup();
-	ionicengine::init(true);
+	IonicOptions options;
+	options.debug = true;
+	ionicengine::init(options);
 	glfwSetErrorCallback(error_callback);
 
 	auto gamecontrollerdb = fs::getCurrentWorkingDirectory() / "gamecontrollerdb.txt";
 	if (!gamecontrollerdb.exists())
 	{
 		cerr << "gamecontrollerdb.txt not found." << endl;
+		ionicengine::shutdown();
 		return EXIT_FAILURE;
 	}
 	ifstream read{};
@@ -190,7 +193,8 @@ int main()
 		controller->setAxisInverted(3, true);
 		cout << "Controller{" << terminal::YELLOW << "\"id\"" << terminal::RESET << ':' << terminal::CYAN
 			 << to_string(controller->getId()) << terminal::RESET << ',' << terminal::YELLOW << "\"name\""
-			 << terminal::RESET << ':' << terminal::CYAN << '"' << controller->getName() << '"' << terminal::RESET << ','
+			 << terminal::RESET << ':' << terminal::CYAN << '"' << controller->getName() << '"' << terminal::RESET
+			 << ','
 			 << terminal::YELLOW << "\"guid\'" << terminal::RESET << ':' << terminal::CYAN << '"'
 			 << controller->getGUID() << '"' << terminal::RESET << ','
 			 << terminal::YELLOW << "\"isConnected\"" << terminal::RESET << ':' << terminal::CYAN
@@ -215,8 +219,7 @@ int main()
 	auto window = window::createWindow("IonicEngine - Game Controllers", 512, 512, windowOptions);
 	window.requestContext();
 	glewExperimental = GL_TRUE;
-	glfwSwapInterval(0);
-	GLenum  err = glewInit();
+	GLenum err = glewInit();
 	if (err != GLEW_OK)
 	{
 		ionicengine::shutdown();

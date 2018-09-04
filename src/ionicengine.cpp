@@ -40,8 +40,8 @@ namespace ionicengine
 		running = false;
 		printDebug("[IonicEngine] Shutting down...");
 		window::destroyAll();
-		InputManager::INPUT_MANAGER.shutdown();
 		sound::shutdown();
+		InputManager::INPUT_MANAGER.shutdown();
 		glfwTerminate();
 	}
 

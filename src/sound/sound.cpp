@@ -66,17 +66,14 @@ namespace ionicengine
 			if (running)
 				return false;
 
-			ALCdevice *sliDevice;
-			ALCcontext *sliContext;
-
 			// Open audio device.
-			sliDevice = alcOpenDevice(nullptr);
-			if (!sliDevice)
+			device = alcOpenDevice(nullptr);
+			if (!device)
 				return false;
 
 			// Create an OpenAL context.
-			sliContext = alcCreateContext(sliDevice, nullptr);
-			if (!sliContext || !alcMakeContextCurrent(sliContext))
+			context = alcCreateContext(device, nullptr);
+			if (!context || !alcMakeContextCurrent(context))
 				return false;
 
 			// Enable support for up to IONIC_SOUND_MAX_BUFFERS different sounds.
