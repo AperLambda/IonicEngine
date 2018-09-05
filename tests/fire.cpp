@@ -174,7 +174,7 @@ int main()
 	bitmapAnimation->setInvertOnRepeat(true);
 	catAnimation = bitmapAnimation;
 
-	auto font = ionicengine::getFontManager().loadFont(std::string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::getFontManager()->loadFont({"google:fonts/roboto"}, std::string{"Roboto.ttf"}, 14);
 	if (!font)
 	{
 		ionicengine::shutdown();

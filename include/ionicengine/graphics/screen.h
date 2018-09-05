@@ -28,9 +28,11 @@ namespace ionicengine
 
 		void refresh(uint32_t width, uint32_t height);
 
-		virtual bool onMousePressed(int button, int mouseX, int mouseY);
+		virtual bool onMouseMove(int x, int y);
 
-		virtual bool onMouseReleased(int button, int mouseX, int mouseY);
+		virtual bool onMousePressed(Window &window, int button, int mouseX, int mouseY);
+
+		virtual bool onMouseReleased(Window &window, int button, int mouseX, int mouseY);
 	};
 
 	class IONICENGINE_API Overlay : public Screen
@@ -111,6 +113,8 @@ namespace ionicengine
 		void setDeltaTime(float deltaTime);
 
 		float getDeltaTime() const;
+
+		bool onMouseMove(int x, int y);
 
 		bool onMouseButton(int button, InputAction action, int mods);
 

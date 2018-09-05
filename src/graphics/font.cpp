@@ -16,6 +16,18 @@
 
 namespace ionicengine
 {
+	bool Character::operator==(const Character &rhs) const
+	{
+		return codepoint == rhs.codepoint &&
+			   textureId == rhs.textureId &&
+			   advance == rhs.advance;
+	}
+
+	bool Character::operator<(const Character &rhs) const
+	{
+		return std::tie(codepoint, textureId, advance) < std::tie(rhs.codepoint, rhs.textureId, rhs.advance);
+	}
+
 	Font::Font(const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize) : _chars(charactersMap),
 																								  _size(size),
 																								  _tabSize(tabSize)
@@ -122,10 +134,33 @@ namespace ionicengine
 		return belowOrigin + maxBearingY + 4;
 	}
 
+	bool Font::operator==(const Font &font) const
+	{
+		return _chars == font._chars &&
+			   _size == font._size &&
+			   _tabSize == font._tabSize;
+	}
+
+	bool Font::operator<(const Font &font) const
+	{
+		return std::tie(_chars, _size, _tabSize) < std::tie(font._chars, font._size, font._tabSize);
+	}
+
+	std::map<lambdacommon::ResourceName, Font *> fonts;
+
 	FontManager::FontManager()
 	{
 		if (FT_Init_FreeType(&ft))
 			throw std::runtime_error("Cannot initialize FreeType library!");
+
+#ifdef LAMBDA_WINDOWS
+		defaultFont = {"windows:fonts/arial"};
+		if (!this->loadFont(defaultFont, std::string("C:\\Windows\\Fonts\\arial.ttf"), 12))
+			throw std::runtime_error("Cannot load arial.ttf");
+#else
+		if (!this->loadFont(defaultFont, std::string("LiberationSans-Regular.ttf"), 12))
+			throw std::runtime_error("Cannot load LiberationSans-Regular.ttf");
+#endif
 	}
 
 	FontManager::~FontManager()
@@ -133,19 +168,43 @@ namespace ionicengine
 		FT_Done_FreeType(ft);
 	}
 
+	void FontManager::shutdown()
+	{
+		for (auto font : fonts)
+			delete font.second;
+	}
+
+	lambdacommon::ResourceName FontManager::getDefaultFontName() const
+	{
+		return defaultFont;
+	}
+
+	Font *FontManager::getDefaultFont() const
+	{
+		return getFont(defaultFont);
+	}
+
+	Font *FontManager::getFont(const lambdacommon::ResourceName &fontName) const
+	{
+		return fonts.at(fontName);
+	}
+
 	std::optional<Font> FontManager::loadFont(const lambdacommon::ResourceName &fontName, uint32_t size) const
 	{
 		if (!getResourcesManager().doesResourceExist(fontName, "ttf"))
 			return std::nullopt;
-		return loadFont(getResourcesManager().getResourcePath(fontName, "ttf"), size);
+		return loadFont(fontName, getResourcesManager().getResourcePath(fontName, "ttf"), size);
 	}
 
-	std::optional<Font> FontManager::loadFont(const lambdacommon::fs::FilePath &path, uint32_t size) const
+	std::optional<Font>
+	FontManager::loadFont(const lambdacommon::ResourceName &fontName, const lambdacommon::fs::FilePath &path,
+						  uint32_t size) const
 	{
-		return loadFont(path.toString(), size);
+		return loadFont(fontName, path.toString(), size);
 	}
 
-	std::optional<Font> FontManager::loadFont(const std::string &path, uint32_t size) const
+	std::optional<Font>
+	FontManager::loadFont(const lambdacommon::ResourceName &fontName, const std::string &path, uint32_t size) const
 	{
 		FT_Face face;
 		if (FT_New_Face(ft, path.c_str(), 0, &face))
@@ -209,8 +268,9 @@ namespace ionicengine
 		//hb_font_destroy(hb_ft_font);
 		FT_Done_Face(face);
 
-		printDebug("[IonicEngine] Font at '" + path + "' loaded successfully!");
-
-		return {Font{charactersMap, size}};
+		Font *font = new Font{charactersMap, size};
+		printDebug("[IonicEngine] Font '" + fontName.toString() + "' at '" + path + "' loaded successfully!");
+		fonts[fontName] = font;
+		return {*font};
 	}
 }

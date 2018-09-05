@@ -59,7 +59,7 @@ namespace ionicengine
 
 	extern lambdacommon::ResourcesManager &IONICENGINE_API getResourcesManager();
 
-	extern FontManager IONICENGINE_API getFontManager();
+	extern FontManager *IONICENGINE_API getFontManager();
 
 	extern std::string IONICENGINE_API getVersion();
 }

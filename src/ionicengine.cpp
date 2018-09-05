@@ -41,8 +41,10 @@ namespace ionicengine
 		printDebug("[IonicEngine] Shutting down...");
 		window::destroyAll();
 		sound::shutdown();
+		fontManager->shutdown();
 		InputManager::INPUT_MANAGER.shutdown();
 		glfwTerminate();
+		IONIC_DELETE_POINTER(fontManager);
 	}
 
 	bool IONICENGINE_API isRunning()
@@ -66,9 +68,9 @@ namespace ionicengine
 		return manager;
 	}
 
-	FontManager getFontManager()
+	FontManager *getFontManager()
 	{
-		return *fontManager;
+		return fontManager;
 	}
 
 	std::string IONICENGINE_API getVersion()

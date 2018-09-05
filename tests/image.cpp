@@ -73,7 +73,10 @@ int main()
 	terminal::setup();
 	std::cout << "Running ionic_image with IonicEngine v" + ionicengine::getVersion() << "...\n";
 
-	if (!ionicengine::init(true))
+	IonicOptions ionicOptions;
+	ionicOptions.debug = true;
+	ionicOptions.useControllers = false;
+	if (!ionicengine::init(ionicOptions))
 		return EXIT_FAILURE;
 
 	KeyboardListenerImpl keyboardListener{};
@@ -110,7 +113,7 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	auto font = ionicengine::getFontManager().loadFont(std::string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::getFontManager()->loadFont({"google:fonts/roboto"}, std::string{"Roboto.ttf"}, 14);
 	if (!font)
 	{
 		ionicengine::shutdown();

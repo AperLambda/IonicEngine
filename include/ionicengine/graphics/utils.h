@@ -14,6 +14,11 @@
 
 namespace ionicengine
 {
+	namespace graphics
+	{
+		bool isMouseInBox(int mouseX, int mouseY, int x, int y, uint32_t width, uint32_t height);
+	}
+
 	namespace vao
 	{
 		void bind(uint32_t id);

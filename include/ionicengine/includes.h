@@ -14,6 +14,8 @@
 
 #define GLFW_INCLUDE_NONE
 
+#define IONIC_DELETE_POINTER(pointer) delete pointer; pointer = nullptr;
+
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 

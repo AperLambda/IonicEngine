@@ -37,22 +37,51 @@ namespace ionicengine
 		components.clear();
 	}
 
-	bool Screen::onMousePressed(int button, int mouseX, int mouseY)
+	bool Screen::onMouseMove(int x, int y)
 	{
 		for (GuiComponent *component : components)
 		{
-			if (component->isEnabled() && component->isVisible() && mouseX >= component->getX() &&
-				mouseY >= component->getY() && mouseX < component->getX() + static_cast<int>(component->width) &&
-				mouseY < component->getY() + static_cast<int>(component->height))
+			if (component->isVisible())
 			{
-				component->onMousePressed(button, mouseX, mouseY);
+				if (component->isHovered())
+				{
+					if (graphics::isMouseInBox(x, y, component->getX(), component->getY(), component->width,
+											   component->height))
+						return true;
+					else
+						component->setHovered(false);
+				}
+				else
+				{
+					if (graphics::isMouseInBox(x, y, component->getX(), component->getY(), component->width,
+											   component->height))
+					{
+						component->setHovered(true);
+						component->onHover();
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
+	bool Screen::onMousePressed(Window &window, int button, int mouseX, int mouseY)
+	{
+		for (GuiComponent *component : components)
+		{
+			if (component->isEnabled() && component->isVisible() &&
+				graphics::isMouseInBox(mouseX, mouseY, component->getX(), component->getY(), component->width,
+									   component->height))
+			{
+				component->onMousePressed(window, button, mouseX, mouseY);
 				return true;
 			}
 		}
 		return false;
 	}
 
-	bool Screen::onMouseReleased(int button, int mouseX, int mouseY)
+	bool Screen::onMouseReleased(Window &window, int button, int mouseX, int mouseY)
 	{
 		for (GuiComponent *component : components)
 		{
@@ -60,7 +89,7 @@ namespace ionicengine
 				mouseY >= component->getY() && mouseX < component->getX() + static_cast<int>(component->width) &&
 				mouseY < component->getY() + static_cast<int>(component->height))
 			{
-				component->onMouseReleased(button, mouseX, mouseY);
+				component->onMouseReleased(window, button, mouseX, mouseY);
 				return true;
 			}
 		}
@@ -246,6 +275,25 @@ namespace ionicengine
 		ScreenManager::deltaTime = deltaTime;
 	}
 
+	bool ScreenManager::onMouseMove(int x, int y)
+	{
+		if (!_window)
+			return false;
+
+		for (const auto &activeOverlay : _activeOverlays)
+		{
+			if (hasOverlay(activeOverlay))
+			{
+				Overlay *overlay = getOverlay(activeOverlay);
+				if (overlay->onMouseMove(x, y))
+					return true;
+			}
+		}
+
+		auto screen = getActiveScreen();
+		return screen->onMouseMove(x, y);
+	}
+
 	bool ScreenManager::onMouseButton(int button, InputAction action, int mods)
 	{
 		if (!_window)
@@ -260,13 +308,13 @@ namespace ionicengine
 				Overlay *overlay = getOverlay(activeOverlay);
 				if (action == InputAction::PRESS)
 				{
-					if (overlay->onMousePressed(button, static_cast<int>(cursorPosition.first),
+					if (overlay->onMousePressed(_window.value(), button, static_cast<int>(cursorPosition.first),
 												static_cast<int>(cursorPosition.second)))
 						return true;
 				}
 				else if (action == InputAction::RELEASE)
 				{
-					if (overlay->onMouseReleased(button, static_cast<int>(cursorPosition.first),
+					if (overlay->onMouseReleased(_window.value(), button, static_cast<int>(cursorPosition.first),
 												 static_cast<int>(cursorPosition.second)))
 						return true;
 				}
@@ -276,13 +324,13 @@ namespace ionicengine
 		auto screen = getActiveScreen();
 		if (action == InputAction::PRESS)
 		{
-			if (screen->onMousePressed(button, static_cast<int>(cursorPosition.first),
+			if (screen->onMousePressed(_window.value(), button, static_cast<int>(cursorPosition.first),
 									   static_cast<int>(cursorPosition.second)))
 				return true;
 		}
 		else if (action == InputAction::RELEASE)
 		{
-			if (screen->onMouseReleased(button, static_cast<int>(cursorPosition.first),
+			if (screen->onMouseReleased(_window.value(), button, static_cast<int>(cursorPosition.first),
 										static_cast<int>(cursorPosition.second)))
 				return true;
 		}

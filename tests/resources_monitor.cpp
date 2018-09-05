@@ -32,6 +32,9 @@ public:
 		progressBar = new GuiProgressBar(5, 10 + _font.getHeight(), 300, 15);
 		progressBar->setColor(color::fromHex(0x26A1DCFF));
 		components.push_back(progressBar);
+		auto button = new GuiButton(5, 20 + 15 + _font.getHeight(), 150, 18, "Quit");
+		button->setClickListener([](Window &window){window.setShouldClose(true);});
+		components.push_back(button);
 	}
 
 	void draw(Graphics *graphics) override
@@ -83,7 +86,7 @@ int main()
 		return err;
 	}
 
-	auto font = ionicengine::getFontManager().loadFont(std::string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::getFontManager()->loadFont({"google:fonts/roboto"}, std::string{"Roboto.ttf"}, 14);
 	if (!font)
 	{
 		ionicengine::shutdown();

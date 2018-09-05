@@ -188,10 +188,11 @@ namespace ionicengine
 		auto ionicWindow = window::getByHandle(window);
 		if (!ionicWindow)
 			ionicWindow = {Window{window}};
-		for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
-		{
-			listener->onMousePosition(ionicWindow.value(), x, y);
-		}
+		if (!screen::getScreenManager(ionicWindow.value())->onMouseMove(static_cast<int>(x), static_cast<int>(y)))
+			for (MouseListener *listener : InputManager::INPUT_MANAGER.getMouseListeners())
+			{
+				listener->onMousePosition(ionicWindow.value(), x, y);
+			}
 	}
 
 	void mouse_enter_callback(GLFWwindow *window, int entered)

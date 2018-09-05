@@ -48,7 +48,7 @@ namespace ionicengine
 
 		void setColor(const lambdacommon::Color &color);
 
-		virtual void draw(int x, int y, uint32_t width, uint32_t  height, Graphics *graphics);
+		virtual void draw(int x, int y, uint32_t width, uint32_t height, Graphics *graphics);
 	};
 
 	class IONICENGINE_API EmptyBorder : public Border
@@ -66,8 +66,7 @@ namespace ionicengine
 		lambdacommon::Color color = lambdacommon::Color::COLOR_WHITE;
 		Border *border = new Border(lambdacommon::Color::COLOR_BLACK);
 		int x, y;
-		bool visible = true;
-		bool enabled = true;
+		bool visible = true, enabled = true, hovered = false;
 
 	public:
 		GuiComponent(int x, int y);
@@ -102,9 +101,15 @@ namespace ionicengine
 
 		void setEnabled(bool enabled);
 
-		virtual void onMousePressed(int button, int mouseX, int mouseY) = 0;
+		bool isHovered() const;
 
-		virtual void onMouseReleased(int button, int mouseX, int mouseY) = 0;
+		void setHovered(bool hovered);
+
+		virtual void onHover() = 0;
+
+		virtual void onMousePressed(Window &window, int button, int mouseX, int mouseY) = 0;
+
+		virtual void onMouseReleased(Window &window, int button, int mouseX, int mouseY) = 0;
 	};
 
 	class IONICENGINE_API GuiProgressBar : public GuiComponent
@@ -133,29 +138,46 @@ namespace ionicengine
 
 		void update() override;
 
-		void onMousePressed(int button, int x, int y) override;
+		void onHover() override;
 
-		void onMouseReleased(int button, int x, int y) override;
+		void onMousePressed(Window &window, int button, int x, int y) override;
+
+		void onMouseReleased(Window &window, int button, int x, int y) override;
 	};
 
 	class IONICENGINE_API GuiButton : public GuiComponent
 	{
 	private:
 		std::string text;
-		bool hovered = false;
-		Font font;
-		std::function<void()> onButtonClickListener = [](){};
+		lambdacommon::Color hoverColor = lambdacommon::color::fromHex(
+				0xA0CDE1FF), clickColor = lambdacommon::color::fromHex(0x6CBADFFF);
+		Font *font;
+		std::function<void(Window &window)> onButtonClickListener = [](Window &window){};
 
 	public:
+		GuiButton(int x, int y, uint32_t width, uint32_t height, const std::string &text);
+
 		void init() override;
 
 		void draw(Graphics *graphics) override;
 
 		void update() override;
 
-		void onMousePressed(int button, int x, int y) override;
+		void onHover() override;
 
-		void onMouseReleased(int button, int x, int y) override;
+		void onMousePressed(Window &window, int button, int x, int y) override;
+
+		void onMouseReleased(Window &window, int button, int x, int y) override;
+
+		const lambdacommon::Color &getHoverColor() const;
+
+		void setHoverColor(const lambdacommon::Color &hoverColor);
+
+		const lambdacommon::Color &getClickColor() const;
+
+		void setClickColor(const lambdacommon::Color &clickColor);
+
+		void setClickListener(const std::function<void(Window &window)> &onButtonClickListener);
 	};
 }
 

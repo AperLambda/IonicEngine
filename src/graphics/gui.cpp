@@ -127,6 +127,16 @@ namespace ionicengine
 		GuiComponent::enabled = enabled;
 	}
 
+	bool GuiComponent::isHovered() const
+	{
+		return hovered;
+	}
+
+	void GuiComponent::setHovered(bool hovered)
+	{
+		GuiComponent::hovered = hovered;
+	}
+
 	/*
 	 * GUI PROGRESS BAR
 	 */
@@ -155,24 +165,27 @@ namespace ionicengine
 		// Background
 		graphics->setColor(backgroundColor);
 		graphics->drawQuad(x, y, width, height);
-		if (indeterminate)
+		if (isEnabled())
 		{
-			graphics->setColor(color);
-			int currentX = lambdacommon::maths::clamp(x + indeterminateIndex, x, x + (int) width);
-			if (currentX + getIndeterminateBoxLength() >= 0)
+			if (indeterminate)
 			{
-				auto indeterminateWidth = static_cast<uint32_t>(getIndeterminateBoxLength());
-				if (indeterminateIndex < 0)
-					indeterminateWidth += indeterminateIndex;
-				else if (indeterminateIndex > (int) width - getIndeterminateBoxLength())
-					indeterminateWidth = (x + width) - currentX;
-				graphics->drawQuad(currentX, y, indeterminateWidth, height);
+				graphics->setColor(color);
+				int currentX = lambdacommon::maths::clamp(x + indeterminateIndex, x, x + (int) width);
+				if (currentX + getIndeterminateBoxLength() >= 0)
+				{
+					auto indeterminateWidth = static_cast<uint32_t>(getIndeterminateBoxLength());
+					if (indeterminateIndex < 0)
+						indeterminateWidth += indeterminateIndex;
+					else if (indeterminateIndex > (int) width - getIndeterminateBoxLength())
+						indeterminateWidth = (x + width) - currentX;
+					graphics->drawQuad(currentX, y, indeterminateWidth, height);
+				}
 			}
-		}
-		else
-		{
-			graphics->setColor(color);
-			graphics->drawQuad(x, y, static_cast<uint32_t>((progress / 100.f) * width), height);
+			else
+			{
+				graphics->setColor(color);
+				graphics->drawQuad(x, y, static_cast<uint32_t>((progress / 100.f) * width), height);
+			}
 		}
 		border->draw(x, y, width, height, graphics);
 	}
@@ -187,10 +200,13 @@ namespace ionicengine
 		}
 	}
 
-	void GuiProgressBar::onMousePressed(int button, int x, int y)
+	void GuiProgressBar::onHover()
 	{}
 
-	void GuiProgressBar::onMouseReleased(int button, int x, int y)
+	void GuiProgressBar::onMousePressed(Window &window, int button, int x, int y)
+	{}
+
+	void GuiProgressBar::onMouseReleased(Window &window, int button, int x, int y)
 	{}
 
 	uint32_t GuiProgressBar::getProgress() const
@@ -217,6 +233,16 @@ namespace ionicengine
 	 * GUI BUTTON
 	 */
 
+	GuiButton::GuiButton(int x, int y, uint32_t width, uint32_t height, const std::string &text) : GuiComponent(x, y), text(text)
+	{
+		this->width = width;
+		this->height = height;
+		font = getFontManager()->getDefaultFont();
+		backgroundColor = lambdacommon::color::fromHex(0xE6E6E4FF);
+		color = lambdacommon::Color::COLOR_BLACK;
+		setBorder(new Border(lambdacommon::color::fromHex(0xD6D5D6FF)));
+	}
+
 	void GuiButton::init()
 	{
 
@@ -227,11 +253,14 @@ namespace ionicengine
 		if (!isVisible())
 			return;
 
-		graphics->setColor(backgroundColor);
+		if (isHovered())
+			graphics->setColor(hoverColor);
+		else
+			graphics->setColor(backgroundColor);
 		graphics->drawQuad(x, y, width, height);
 		graphics->setColor(color);
 		auto drawableText = text;
-		auto textHeight = font.getTextHeight(drawableText);
+		auto textHeight = font->getTextHeight(drawableText);
 		while (textHeight > height - 4)
 		{
 			auto newLine = drawableText.find_last_of('\n');
@@ -239,10 +268,11 @@ namespace ionicengine
 				// Fuck it and draw it.
 				break;
 			drawableText = drawableText.substr(0, newLine + 1);
-			textHeight = font.getTextHeight(drawableText);
+			textHeight = font->getTextHeight(drawableText);
 		}
-		drawableText = font.trimTextToLengthDotted(drawableText, width - 4);
-		graphics->drawText(font, x + ((width / 2.f) - (font.getTextLength(drawableText) / 2.f)), y + ((height / 2.f) - (textHeight / 2.f)), drawableText);
+		drawableText = font->trimTextToLengthDotted(drawableText, width - 4);
+		graphics->drawText(*font, x + ((width / 2.f) - (font->getTextLength(drawableText) / 2.f)),
+						   y + ((height / 2.f) - (textHeight / 2.f)), drawableText);
 
 		border->draw(x, y, width, height, graphics);
 	}
@@ -252,11 +282,40 @@ namespace ionicengine
 
 	}
 
-	void GuiButton::onMousePressed(int button, int x, int y)
+	void GuiButton::onHover()
+	{}
+
+	void GuiButton::onMousePressed(Window &window, int button, int x, int y)
 	{
-		onButtonClickListener();
+		if (button == GLFW_MOUSE_BUTTON_1)
+			onButtonClickListener(window);
 	}
 
-	void GuiButton::onMouseReleased(int button, int x, int y)
+	void GuiButton::onMouseReleased(Window &window, int button, int x, int y)
 	{}
+
+	const lambdacommon::Color &GuiButton::getHoverColor() const
+	{
+		return hoverColor;
+	}
+
+	void GuiButton::setHoverColor(const lambdacommon::Color &hoverColor)
+	{
+		GuiButton::hoverColor = hoverColor;
+	}
+
+	const lambdacommon::Color &GuiButton::getClickColor() const
+	{
+		return clickColor;
+	}
+
+	void GuiButton::setClickColor(const lambdacommon::Color &clickColor)
+	{
+		GuiButton::clickColor = clickColor;
+	}
+
+	void GuiButton::setClickListener(const std::function<void(Window &window)> &onButtonClickListener)
+	{
+		GuiButton::onButtonClickListener = onButtonClickListener;
+	}
 }

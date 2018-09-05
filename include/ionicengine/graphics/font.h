@@ -19,6 +19,8 @@
 
 namespace ionicengine
 {
+	using namespace std::rel_ops;
+
 	struct Character
 	{
 		uint32_t codepoint;
@@ -26,6 +28,10 @@ namespace ionicengine
 		glm::ivec2 size;
 		glm::ivec2 bearing;
 		uint32_t advance;
+
+		bool operator==(const Character &rhs) const;
+
+		bool operator<(const Character &rhs) const;
 	};
 
 	class Font
@@ -103,17 +109,43 @@ namespace ionicengine
 		 * @return The general height.
 		 */
 		uint32_t getHeight() const;
+
+		bool operator==(const Font &font) const;
+
+		bool operator<(const Font &font) const;
 	};
 
 	class FontManager
 	{
 	private:
 		FT_Library ft;
+		lambdacommon::ResourceName defaultFont{"liberation:fonts/sans"};
 
 	public:
 		FontManager();
 
 		~FontManager();
+
+		void shutdown();
+
+		/*!
+		 * Gets the default font name.
+		 * @return The default font name.
+		 */
+		lambdacommon::ResourceName getDefaultFontName() const;
+
+		/*!
+		 * Gets the default font.
+		 * @return The pointer of the default font.
+		 */
+		Font *getDefaultFont() const;
+
+		/*!
+		 * Gets a loaded font.
+		 * @param fontName The name of the font.
+		 * @return The pointer of the font.
+		 */
+		Font *getFont(const lambdacommon::ResourceName &fontName) const;
 
 		/*!
 		 * Loads the font with the specified resource name.
@@ -125,19 +157,23 @@ namespace ionicengine
 
 		/*!
 		 * Loads the font at the specified path.
+		 * @param fontName The font's resource name.
 		 * @param path The path where the font file resides.
 		 * @param size The font size to load.
 		 * @return An optional Font.
 		 */
-		std::optional<Font> loadFont(const lambdacommon::fs::FilePath &path, uint32_t size) const;
+		std::optional<Font> loadFont(const lambdacommon::ResourceName &fontName, const lambdacommon::fs::FilePath &path,
+									 uint32_t size) const;
 
 		/*!
 		 * Loads the font at the specified path.
+		 * @param fontName The font's resource name.
 		 * @param path The path where the font file resides.
 		 * @param size The font size to load.
 		 * @return An optional Font.
 		 */
-		std::optional<Font> loadFont(const std::string &path, uint32_t size) const;
+		std::optional<Font>
+		loadFont(const lambdacommon::ResourceName &fontName, const std::string &path, uint32_t size) const;
 	};
 }
 
