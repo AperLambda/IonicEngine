@@ -25,8 +25,8 @@ target_link_libraries(ionic_fire_animation AperLambda::lambdacommon ionicengine 
 add_executable(ionic_text_area text_input.cpp)
 target_link_libraries(ionic_text_area AperLambda::lambdacommon ionicengine GLFW::GLFW ${LD_LIBRARY} ${X11_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} OpenGL::GL GLEW::GLEW)
 
-add_executable(ionic_cubes_lightning cubes_lightning.cpp learnopengl/camera.h)
-target_link_libraries(ionic_cubes_lightning AperLambda::lambdacommon ionicengine ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW ${LD_LIBRARY} ${X11_LIBRARIES} OpenGL::GL GLEW::GLEW)
+#add_executable(ionic_cubes_lightning cubes_lightning.cpp learnopengl/camera.h)
+#target_link_libraries(ionic_cubes_lightning AperLambda::lambdacommon ionicengine ${CMAKE_THREAD_LIBS_INIT} GLFW::GLFW ${LD_LIBRARY} ${X11_LIBRARIES} OpenGL::GL GLEW::GLEW)
 
 add_executable(ionic_monitors monitors.cpp)
 target_link_libraries(ionic_monitors ionicengine AperLambda::lambdacommon GLFW::GLFW ${LD_LIBRARY} ${X11_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} OpenGL::GL GLEW::GLEW)

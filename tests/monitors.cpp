@@ -24,7 +24,9 @@ int main()
 {
 	cout << "Starting monitors.cpp with IonicEngine v" << ionicengine::getVersion() << "..." << endl;
 	terminal::setup();
-	ionicengine::init(true);
+	IonicOptions ionicOptions;
+	ionicOptions.debug = true;
+	ionicengine::init(ionicOptions);
 	glfwSetErrorCallback(error_callback);
 
 	if (!glfwInit())

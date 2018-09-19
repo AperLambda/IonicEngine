@@ -67,15 +67,14 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		float ratio5Width = .10f * graphics->getWidth(), ratio5Height = .10f * graphics->getHeight();
+		auto ratio5Width = static_cast<uint32_t>(.10f * width), ratio5Height = static_cast<uint32_t>(.10f * height);
 		auto textureWidth = width, textureHeight = height;
-		float quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
+		uint32_t quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
 		graphics->setColor(Color::COLOR_WHITE);
 		graphics->drawImage({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, 0, 0, textureWidth,
 							textureHeight);
 		graphics->drawImage(texture, ratio5Width, ratio5Height, quadWidth, quadHeight, texture::newTextureRegion(
-				textureWidth, textureHeight, static_cast<uint32_t>(ratio5Width), static_cast<uint32_t>(ratio5Height),
-				static_cast<uint32_t>(quadWidth), static_cast<uint32_t>(quadHeight)));
+				textureWidth, textureHeight, ratio5Width, ratio5Height, quadWidth, quadHeight));
 		graphics->setColor({0.f, 0.f, 0.f, .25f});
 		graphics->drawQuad(ratio5Width, ratio5Height, quadWidth, quadHeight);
 		graphics->setColor(Color::COLOR_BLACK);
@@ -86,16 +85,15 @@ public:
 		graphics->drawLine2D(ratio5Width + quadWidth, ratio5Height, ratio5Width + quadWidth, ratio5Height + quadHeight);
 
 		graphics->setColor(Color::COLOR_WHITE);
-		graphics->drawText(font, ratio5Width + 5, ratio5Height + 5, textArea, quadWidth - 10, quadHeight - 10);
+		graphics->drawText(font, ratio5Width + 5.f, ratio5Height + 5.f, textArea, quadWidth - 10.f, quadHeight - 10.f);
 		auto splitted = lambdastring::split(textArea + "a", '\n');
-		float textLength = 0.f;
+		uint32_t textLength = 0;
 		if (splitted.size() != 0)
-			textLength = static_cast<float>(font.getTextLength(splitted[splitted.size() - 1]) -
-											font.getTextLength("a"));
-		auto cursorX = maths::clamp(ratio5Width + 5.f + textLength + 2.f, ratio5Width + 7.f, ratio5Width + quadWidth);
-		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(splitted.size() - 1.f, 0.f, quadHeight);
+			textLength = font.getTextLength(splitted[splitted.size() - 1]) - font.getTextLength("a");
+		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, ratio5Width + 7, ratio5Width + quadWidth);
+		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(static_cast<uint32_t>(splitted.size() - 1), static_cast<uint32_t>(0), quadHeight);
 		graphics->setColor({1.f, 1.f, 1.f, opacity});
-		graphics->drawLine2D(cursorX, cursorY, cursorX, cursorY + font.getHeight());
+		graphics->drawLine2D(cursorX, static_cast<int>(cursorY), cursorX, static_cast<int>(cursorY + font.getHeight()));
 	}
 
 	void update() override

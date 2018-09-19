@@ -228,7 +228,7 @@ int main()
 
 	glEnable(GL_MULTISAMPLE);
 
-	auto font = ionicengine::getFontManager().loadFont(string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::getFontManager()->loadFont(string{"Roboto.ttf"}, 14);
 	if (!font)
 	{
 		ionicengine::shutdown();

@@ -26,7 +26,7 @@ public:
 		}
 	}
 
-	void onCharInput(Window	&window, char32_t codepoint) override
+	void onCharInput(Window &window, char32_t codepoint) override
 	{}
 };
 
@@ -44,16 +44,16 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		float ratio5Width = .10f * graphics->getWidth(), ratio5Height = .10f * graphics->getHeight();
-		auto textureWidth = static_cast<float>(graphics->getWidth()), textureHeight = static_cast<float>(graphics->getHeight());
-		float quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
+		auto ratio5Width = static_cast<uint32_t>(.10f * width), ratio5Height = static_cast<uint32_t>(.10f * height);
+		auto textureWidth = width, textureHeight = height;
+		uint32_t quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
 		graphics->setColor(Color::COLOR_WHITE);
 		graphics->drawImage({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, 0, 0, textureWidth,
 							textureHeight);
 		graphics->drawImage(texture, ratio5Width, ratio5Height, quadWidth, quadHeight, texture::newTextureRegion(
-				static_cast<uint32_t>(textureWidth), static_cast<uint32_t>(textureHeight),
-				static_cast<uint32_t>(ratio5Width), static_cast<uint32_t>(ratio5Height),
-				static_cast<uint32_t>(quadWidth), static_cast<uint32_t>(quadHeight)));
+				textureWidth, textureHeight,
+				ratio5Width, ratio5Height,
+				quadWidth, quadHeight));
 		graphics->setColor({0.f, 0.f, 0.f, .25f});
 		graphics->drawQuad(ratio5Width, ratio5Height, quadWidth, quadHeight);
 		graphics->setColor(Color::COLOR_BLACK);
