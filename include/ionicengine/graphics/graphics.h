@@ -90,6 +90,8 @@ namespace ionicengine
 		 */
 		void resetTransform();
 
+		void translate(int x, int y, int z = 0);
+
 		void translate(float x, float y, float z = 0.0f);
 
 		void translate(const glm::vec3 &translateVector);
@@ -125,8 +127,8 @@ namespace ionicengine
 		 * @param text The text to draw.
 		 * @param scale The scale of the text.
 		 */
-		virtual void drawText(const Font &font, float x, float y, const std::string &text, float maxWidth = 0.f,
-							  float maxHeight = 0.f, float scale = 1.0) = 0;
+		virtual void drawText(const Font &font, int x, int y, const std::string &text, uint32_t maxWidth = 0,
+							  uint32_t maxHeight = 0, float scale = 1.0) = 0;
 	};
 
 	//typedef Graphics* (*newGraphicsFunction)(const glm::mat4 &projection);

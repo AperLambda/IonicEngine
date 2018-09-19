@@ -158,6 +158,12 @@ namespace ionicengine
 		glfwMakeContextCurrent(_pointer);
 	}
 
+	bool Window::initContext() const
+	{
+		glewExperimental = GL_TRUE;
+		return glewInit() == GLEW_OK;
+	}
+
 	void Window::destroy()
 	{
 		// I don't understand this.

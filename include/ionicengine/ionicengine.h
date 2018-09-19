@@ -21,8 +21,8 @@
 #include "sound/sound.h"
 
 #define IONICENGINE_VERSION_MAJOR 0
-#define IONICENGINE_VERSION_MINOR 0
-#define IONICENGINE_VERSION_PATCH 1
+#define IONICENGINE_VERSION_MINOR 1
+#define IONICENGINE_VERSION_PATCH 0
 
 #define IONICENGINE_NULL_RESOURCE lambdacommon::ResourceName("ionicengine", "null")
 #define IONICENGINE_GRAPHICS_GL3 lambdacommon::ResourceName("ionicengine", "graphics/gl3")

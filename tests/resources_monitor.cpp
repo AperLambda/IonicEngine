@@ -32,7 +32,7 @@ public:
 		progressBar = new GuiProgressBar(5, 10 + _font.getHeight(), 300, 15);
 		progressBar->setColor(color::fromHex(0x26A1DCFF));
 		components.push_back(progressBar);
-		auto button = new GuiButton(5, 20 + 15 + _font.getHeight(), 150, 18, "Quit");
+		auto button = new GuiButton(5, 20 + 15 + _font.getHeight(), 150, 24, "Quit");
 		button->setClickListener([](Window &window){window.setShouldClose(true);});
 		components.push_back(button);
 	}
@@ -40,7 +40,7 @@ public:
 	void draw(Graphics *graphics) override
 	{
 		graphics->setColor(Color::COLOR_BLACK);
-		graphics->drawText(_font, 5.f, 5.f,
+		graphics->drawText(_font, 5, 5,
 						   "Memory: " + std::to_string(system::getMemoryUsed() / 1073741824.0) + "GB / " +
 						   std::to_string(system::getMemoryTotal() / 1073741824.0) + "GB (" +
 						   std::to_string(progressBar->getProgress()) + "%)");

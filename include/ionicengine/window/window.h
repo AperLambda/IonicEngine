@@ -98,6 +98,8 @@ namespace ionicengine
 
 		void requestContext() const;
 
+		bool initContext() const;
+
 		void destroy();
 
 		bool operator==(const Window &window) const;

@@ -271,8 +271,10 @@ namespace ionicengine
 			textHeight = font->getTextHeight(drawableText);
 		}
 		drawableText = font->trimTextToLengthDotted(drawableText, width - 4);
-		graphics->drawText(*font, x + ((width / 2.f) - (font->getTextLength(drawableText) / 2.f)),
-						   y + ((height / 2.f) - (textHeight / 2.f)), drawableText);
+		printDebug("Button X: " + std::to_string(x));
+		printDebug("X: " + std::to_string(x + ((width / 2) - (font->getTextLength(drawableText) / 2))));
+		graphics->drawText(*font, x + ((width / 2) - (font->getTextLength(drawableText) / 2)),
+						   y + ((height / 2) - (textHeight / 2)), drawableText);
 
 		border->draw(x, y, width, height, graphics);
 	}

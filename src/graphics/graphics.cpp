@@ -74,6 +74,11 @@ namespace ionicengine
 		_transform = glm::mat4{1.0f};
 	}
 
+	void Graphics::translate(int x, int y, int z)
+	{
+		translate(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z));
+	}
+
 	void Graphics::translate(float x, float y, float z)
 	{
 		translate(glm::vec3(x, y, z));
@@ -303,7 +308,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawText(const Font &font, float x, float y, const std::string &text, float maxWidth, float maxHeight,
+		void drawText(const Font &font, int xPos, int yPos, const std::string &text, uint32_t maxWidth, uint32_t maxHeight,
 					  float scale) override
 		{
 			if (!shader::hasShader(SHADER_TEXT))
@@ -321,6 +326,8 @@ namespace ionicengine
 			glActiveTexture(GL_TEXTURE0);
 			vao::bind(this->vao);
 
+			auto x = static_cast<float>(xPos);
+			auto y = static_cast<float>(yPos);
 			float originalX = x;
 			float originalY = y;
 

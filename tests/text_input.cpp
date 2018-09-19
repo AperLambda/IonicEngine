@@ -85,7 +85,7 @@ public:
 		graphics->drawLine2D(ratio5Width + quadWidth, ratio5Height, ratio5Width + quadWidth, ratio5Height + quadHeight);
 
 		graphics->setColor(Color::COLOR_WHITE);
-		graphics->drawText(font, ratio5Width + 5.f, ratio5Height + 5.f, textArea, quadWidth - 10.f, quadHeight - 10.f);
+		graphics->drawText(font, ratio5Width + 5, ratio5Height + 5, textArea, quadWidth - 10, quadHeight - 10);
 		auto splitted = lambdastring::split(textArea + "a", '\n');
 		uint32_t textLength = 0;
 		if (splitted.size() != 0)
@@ -165,9 +165,10 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	auto font = ionicengine::getFontManager()->loadFont(std::string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::getFontManager()->loadFont({"google:fonts/roboto"}, std::string("Roboto.ttf"), 14);
 	if (!font)
 	{
+		std::cerr << "Roboto cannot be loaded!\n";
 		ionicengine::shutdown();
 		return EXIT_FAILURE;
 	}
