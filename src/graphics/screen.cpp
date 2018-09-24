@@ -74,6 +74,7 @@ namespace ionicengine
 				graphics::isMouseInBox(mouseX, mouseY, component->getX(), component->getY(), component->width,
 									   component->height))
 			{
+				component->setClicked(true);
 				component->onMousePressed(window, button, mouseX, mouseY);
 				return true;
 			}
@@ -89,6 +90,7 @@ namespace ionicengine
 				mouseY >= component->getY() && mouseX < component->getX() + static_cast<int>(component->width) &&
 				mouseY < component->getY() + static_cast<int>(component->height))
 			{
+				component->setClicked(false);
 				component->onMouseReleased(window, button, mouseX, mouseY);
 				return true;
 			}
@@ -455,8 +457,7 @@ namespace ionicengine
 			}
 		}
 
-		delete graphics;
-		graphics = nullptr;
+		LCOMMON_DELETE_POINTER(graphics);
 
 		_window->destroy();
 	}

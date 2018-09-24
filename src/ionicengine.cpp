@@ -42,9 +42,10 @@ namespace ionicengine
 		window::destroyAll();
 		sound::shutdown();
 		fontManager->shutdown();
+		texture::shutdown();
 		InputManager::INPUT_MANAGER.shutdown();
 		glfwTerminate();
-		IONIC_DELETE_POINTER(fontManager);
+		LCOMMON_DELETE_POINTER(fontManager);
 	}
 
 	bool IONICENGINE_API isRunning()

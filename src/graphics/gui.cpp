@@ -137,6 +137,16 @@ namespace ionicengine
 		GuiComponent::hovered = hovered;
 	}
 
+	bool GuiComponent::isClicked() const
+	{
+		return clicked;
+	}
+
+	void GuiComponent::setClicked(bool clicked)
+	{
+		GuiComponent::clicked = clicked;
+	}
+
 	/*
 	 * GUI PROGRESS BAR
 	 */
@@ -233,14 +243,15 @@ namespace ionicengine
 	 * GUI BUTTON
 	 */
 
-	GuiButton::GuiButton(int x, int y, uint32_t width, uint32_t height, const std::string &text) : GuiComponent(x, y), text(text)
+	GuiButton::GuiButton(int x, int y, uint32_t width, uint32_t height, const std::string &text) : GuiComponent(x, y),
+																								   text(text)
 	{
 		this->width = width;
 		this->height = height;
 		font = getFontManager()->getDefaultFont();
-		backgroundColor = lambdacommon::color::fromHex(0xE6E6E4FF);
+		backgroundColor = lambdacommon::color::fromHex(0xE1E1E1FF);
 		color = lambdacommon::Color::COLOR_BLACK;
-		setBorder(new Border(lambdacommon::color::fromHex(0xD6D5D6FF)));
+		setBorder(new Border(lambdacommon::color::fromHex(0xADADADFF)));
 	}
 
 	void GuiButton::init()
@@ -253,10 +264,21 @@ namespace ionicengine
 		if (!isVisible())
 			return;
 
-		if (isHovered())
+		if (isClicked())
+		{
+			graphics->setColor(lambdacommon::color::fromHex(0xC9E0F7FF));
+			border->setColor(lambdacommon::color::fromHex(0x62A2E4FF));
+		}
+		else if (isHovered())
+		{
 			graphics->setColor(hoverColor);
+			border->setColor(lambdacommon::color::fromHex(0x0078D7FF));
+		}
 		else
+		{
 			graphics->setColor(backgroundColor);
+			border->setColor(lambdacommon::color::fromHex(0xADADADFF));
+		}
 		graphics->drawQuad(x, y, width, height);
 		graphics->setColor(color);
 		auto drawableText = text;
@@ -271,10 +293,8 @@ namespace ionicengine
 			textHeight = font->getTextHeight(drawableText);
 		}
 		drawableText = font->trimTextToLengthDotted(drawableText, width - 4);
-		printDebug("Button X: " + std::to_string(x));
-		printDebug("X: " + std::to_string(x + ((width / 2) - (font->getTextLength(drawableText) / 2))));
 		graphics->drawText(*font, x + ((width / 2) - (font->getTextLength(drawableText) / 2)),
-						   y + ((height / 2) - (textHeight / 2)), drawableText);
+						   y + ((height / 2) - (textHeight / 2)) + 4, drawableText);
 
 		border->draw(x, y, width, height, graphics);
 	}
@@ -319,5 +339,25 @@ namespace ionicengine
 	void GuiButton::setClickListener(const std::function<void(Window &window)> &onButtonClickListener)
 	{
 		GuiButton::onButtonClickListener = onButtonClickListener;
+	}
+
+	const std::string &GuiButton::getText() const
+	{
+		return text;
+	}
+
+	void GuiButton::setText(const std::string &text)
+	{
+		GuiButton::text = text;
+	}
+
+	Font *GuiButton::getFont() const
+	{
+		return font;
+	}
+
+	void GuiButton::setFont(Font *font)
+	{
+		GuiButton::font = font;
 	}
 }

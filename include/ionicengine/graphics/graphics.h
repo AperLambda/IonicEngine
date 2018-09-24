@@ -106,17 +106,106 @@ namespace ionicengine
 
 		void scale(const glm::vec3 &scale);
 
-		virtual void drawLine2D(int x, int y, int x2, int y2) = 0;
+		/*!
+		 * Draws a line in 2D.
+		 * @param x The X start position.
+		 * @param y The y start position.
+		 * @param x2 The X end position.
+		 * @param y2 The Y end position.
+		 */
+		void drawLine2D(int x, int y, int x2, int y2);
 
-		virtual void drawQuad(int x, int y, uint32_t width, uint32_t height) = 0;
+		/*!
+		 * Draws a line in 2D.
+		 * @param x The X start position.
+		 * @param y The y start position.
+		 * @param x2 The X end position.
+		 * @param y2 The Y end position.
+		 */
+		virtual void drawLine2D(float x, float y, float x2, float y2) = 0;
 
-		virtual void drawQuadOutline(int x, int y, uint32_t width, uint32_t height) = 0;
+		/*!
+		 * Draws a quad in 2D.
+		 * @param x The X coordinate of the quad.
+		 * @param y The Y coordinate of the quad.
+		 * @param width The width.
+		 * @param height The height.
+		 */
+		void drawQuad(int x, int y, uint32_t width, uint32_t height);
 
-		virtual void
-		drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
-				  const TextureRegion &region = TextureRegion::BASE);
+		/*!
+	 	 * Draws a quad in 2D.
+	 	 * @param x The X coordinate of the quad.
+	 	 * @param y The Y coordinate of the quad.
+	 	 * @param width The width.
+	 	 * @param height The height.
+	 	 */
+		virtual void drawQuad(float x, float y, float width, float height) = 0;
 
-		virtual void drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
+		/*!
+		 * Draws an outline of a quad in 2D.
+		 * @param x The X coordinate of the outlined quad.
+		 * @param y The Y coordinate of the outlined quad.
+		 * @param width The width.
+		 * @param height The height.
+		 */
+		void drawQuadOutline(int x, int y, uint32_t width, uint32_t height);
+
+		/*!
+		 * Draws an outline of a quad in 2D.
+		 * @param x The X coordinate of the outlined quad.
+		 * @param y The Y coordinate of the outlined quad.
+		 * @param width The width.
+		 * @param height The height.
+		 */
+		virtual void drawQuadOutline(float x, float y, float width, float height) = 0;
+
+		/*!
+		 * Draws a texture in 2D.
+		 * @param texture The texture to draw.
+		 * @param x The X coordinate of the texture.
+		 * @param y The Y coordinate of the texture.
+		 * @param width The width.
+		 * @param height The height.
+		 * @param region The region of the texture to draw.
+		 */
+		void drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
+					   const TextureRegion &region = TextureRegion::BASE);
+
+		/*!
+		 * Draws a texture in 2D.
+		 * @param texture The texture to draw.
+		 * @param x The X coordinate of the texture.
+		 * @param y The Y coordinate of the texture.
+		 * @param width The width.
+		 * @param height The height.
+		 * @param region The region of the texture to draw.
+		 */
+		void drawImage(const lambdacommon::ResourceName &texture, float x, float y, float width, float height,
+					   const TextureRegion &region = TextureRegion::BASE);
+
+		/*!
+		 * Draws a texture in 2D.
+		 * @param texture The texture to draw.
+		 * @param x The X coordinate of the texture.
+		 * @param y The Y coordinate of the texture.
+		 * @param width The width.
+		 * @param height The height.
+		 * @param region The region of the texture to draw.
+		 */
+		void drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
+					   const TextureRegion &region = TextureRegion::BASE);
+
+		/*!
+		 * Draws a texture in 2D.
+		 * @param texture The texture to draw.
+		 * @param x The X coordinate of the texture.
+		 * @param y The Y coordinate of the texture.
+		 * @param width The width.
+		 * @param height The height.
+		 * @param region The region of the texture to draw.
+		 */
+		virtual void drawImage(const Texture &texture, float x, float y, float width, float height,
 							   const TextureRegion &region = TextureRegion::BASE) = 0;
 
 		/*!

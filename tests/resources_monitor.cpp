@@ -76,7 +76,7 @@ int main()
 	options.opengl_forward_compat = true;
 #endif
 
-	auto window = window::createWindow("IonicEngine - Basic resources monitor", 310, 50, options);
+	auto window = window::createWindow("IonicEngine - Basic resources monitor", 310, 80, options);
 	window.requestContext();
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();

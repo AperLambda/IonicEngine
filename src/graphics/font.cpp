@@ -28,14 +28,17 @@ namespace ionicengine
 		return std::tie(codepoint, textureId, advance) < std::tie(rhs.codepoint, rhs.textureId, rhs.advance);
 	}
 
-	Font::Font(const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize) : _chars(charactersMap),
-																								  _size(size),
-																								  _tabSize(tabSize)
+	Font::Font(uint32_t textureId, const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize)
+			: _textureId(textureId),
+			  _chars(charactersMap),
+			  _size(size),
+			  _tabSize(tabSize)
 	{}
 
 	Font::Font(const Font &font) = default;
 
-	Font::Font(Font &&font) noexcept : _chars(std::move(font._chars)), _size(font._size), _tabSize(font._tabSize)
+	Font::Font(Font &&font) noexcept : _textureId(font._textureId), _chars(std::move(font._chars)), _size(font._size),
+									   _tabSize(font._tabSize)
 	{}
 
 	Character Font::getCharacter(char c) const
@@ -268,7 +271,7 @@ namespace ionicengine
 		//hb_font_destroy(hb_ft_font);
 		FT_Done_Face(face);
 
-		Font *font = new Font{charactersMap, size};
+		Font *font = new Font{0, charactersMap, size};
 		printDebug("[IonicEngine] Font '" + fontName.toString() + "' at '" + path + "' loaded successfully!");
 		fonts[fontName] = font;
 		return {*font};

@@ -20,8 +20,8 @@ using namespace lambdacommon;
                                 glDisable(GL_BLEND);
 
 #define toFloat(i) static_cast<float>(i)
-#define clampX(i) toFloat(lambdacommon::maths::clamp(i, 0, static_cast<int>(getWidth())))
-#define clampY(i) toFloat(lambdacommon::maths::clamp(i, 0, static_cast<int>(getHeight())))
+#define clampX(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(getWidth())))
+#define clampY(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(getHeight())))
 
 namespace ionicengine
 {
@@ -119,12 +119,41 @@ namespace ionicengine
 		_transform = glm::scale(_transform, scale);
 	}
 
+	void Graphics::drawLine2D(int x, int y, int x2, int y2)
+	{
+		drawLine2D(static_cast<float>(x), static_cast<float>(y), static_cast<float>(x2), static_cast<float>(y2));
+	}
+
+	void Graphics::drawQuad(int x, int y, uint32_t width, uint32_t height)
+	{
+		drawQuad(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height));
+	}
+
+	void Graphics::drawQuadOutline(int x, int y, uint32_t width, uint32_t height)
+	{
+		drawQuadOutline(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+						static_cast<float>(height));
+	}
+
 	void Graphics::drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
+							 const TextureRegion &region)
+	{
+		drawImage(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+				  static_cast<float>(height), region);
+	}
+
+	void Graphics::drawImage(const lambdacommon::ResourceName &texture, float x, float y, float width, float height,
 							 const TextureRegion &region)
 	{
 		if (!texture::hasTexture(texture))
 			return;
 		drawImage(texture::getTexture(texture), x, y, width, height, region);
+	}
+
+	void Graphics::drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
+							 const TextureRegion &region)
+	{
+		drawImage(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height), region);
 	}
 
 	class GraphicsGL3 : public Graphics
@@ -142,7 +171,7 @@ namespace ionicengine
 			this->color = color;
 		}
 
-		void drawLine2D(int x, int y, int x2, int y2) override
+		void drawLine2D(float x, float y, float x2, float y2) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -181,7 +210,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawQuad(int x, int y, uint32_t width, uint32_t height) override
+		void drawQuad(float x, float y, float width, float height) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -210,7 +239,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawQuadOutline(int x, int y, uint32_t width, uint32_t height) override
+		void drawQuadOutline(float x, float y, float width, float height) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -239,7 +268,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
+		void drawImage(const Texture &texture, float x, float y, float width, float height,
 					   const TextureRegion &region) override
 		{
 			if (!texture)
@@ -254,21 +283,12 @@ namespace ionicengine
 			model = glm::translate(model, {x, y, 0.f});
 			model = glm::scale(model, {width, height, 1.f});
 
-			//auto realX = clampX(x);
-
 			GLfloat texCoords[4][2] = {
 					{region.minX(), region.maxY()},
 					{region.maxX(), region.maxY()},
 					{region.minX(), region.minY()},
 					{region.maxX(), region.minY()}
 			};
-
-			/*GLfloat vertices[4][4] = {
-					{realX,                  toFloat(y + height), region.minX(), region.maxY()},
-					{toFloat(realX + width), toFloat(y + height), region.maxX(), region.maxY()},
-					{realX,                  clampY(y),           region.minX(), region.minY()},
-					{toFloat(realX + width), clampY(y),           region.maxX(), region.minY()}
-			};*/
 
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_IMAGE);
@@ -290,26 +310,15 @@ namespace ionicengine
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			vao::unbind();
 
-			/*vao::bind(this->vao);
-
-			// Update content of VBO memory.
-			vbo::bind(this->vbo);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-			vbo::unbind();
-			// Render quad.
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-			vao::unbind();*/
-
 			texture.unbind();
 
 			// Unset OpenGL options.
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawText(const Font &font, int xPos, int yPos, const std::string &text, uint32_t maxWidth, uint32_t maxHeight,
-					  float scale) override
+		void
+		drawText(const Font &font, int xPos, int yPos, const std::string &text, uint32_t maxWidth, uint32_t maxHeight,
+				 float scale) override
 		{
 			if (!shader::hasShader(SHADER_TEXT))
 				return;
@@ -325,6 +334,8 @@ namespace ionicengine
 			shader.setColor(color);
 			glActiveTexture(GL_TEXTURE0);
 			vao::bind(this->vao);
+
+			glm::mat4 model{1.f};
 
 			auto x = static_cast<float>(xPos);
 			auto y = static_cast<float>(yPos);
@@ -359,28 +370,18 @@ namespace ionicengine
 					continue;
 				}
 
+				// Define model position and scale.
+				model = glm::mat4(1.f);
 				GLfloat xpos = x + ch.bearing.x * scale;
 				GLfloat ypos = y + (font.getCharacter('H').bearing.y - ch.bearing.y) * scale;
-
+				model = glm::translate(model, {xpos, ypos, 0.f});
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
-				// Update VBO for each character.
-				GLfloat vertices[6][4] = {
-						{xpos,     ypos + h, 0.0, 1.0},
-						{xpos + w, ypos,     1.0, 0.0},
-						{xpos,     ypos,     0.0, 0.0},
+				model = glm::scale(model, {w, h, 0.f});
 
-						{xpos,     ypos + h, 0.0, 1.0},
-						{xpos + w, ypos + h, 1.0, 1.0},
-						{xpos + w, ypos,     1.0, 0.0}
-				};
+				shader.setMatrix4f("model", model);
 				// Render glyph texture over quad.
 				glBindTexture(GL_TEXTURE_2D, ch.textureId);
-				// Update content of VBO memory.
-				vbo::bind(this->vbo);
-				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-
-				vbo::unbind();
 				// Render quad.
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 				// Now advance cursors for next glyph.
@@ -396,10 +397,14 @@ namespace ionicengine
 
 	void shapeQuadInit()
 	{
-		GLfloat outlineVertices[] = {0.f, 1.f,
+		/*GLfloat outlineVertices[] = {0.f, 1.f,
 									 0.f, 0.f,
 									 1.f, 0.f,
-									 1.f, 1.f};
+									 1.f, 1.f};*/
+		GLfloat outlineVertices[] = {0.f, 0.f,
+									 1.f, 0.f,
+									 1.f, 1.f,
+									 0.f, 1.f};
 
 		GLfloat fillVertices[] = {0.f, 0.f,
 								  0.f, 1.f,
@@ -472,7 +477,16 @@ namespace ionicengine
 		glGenBuffers(1, &this->vbo);
 		vao::bind(this->vao);
 		vbo::bind(this->vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, nullptr, GL_DYNAMIC_DRAW);
+		GLfloat textVertices[6][4] = {
+				{0.f, 1.f, 0.0, 1.0},
+				{1.f, 0.f, 1.0, 0.0},
+				{0.f, 0.f, 0.0, 0.0},
+
+				{0.f, 1.f, 0.0, 1.0},
+				{1.f, 1.f, 1.0, 1.0},
+				{1.f, 0.f, 1.0, 0.0}
+		};
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, textVertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
 		vbo::unbind();

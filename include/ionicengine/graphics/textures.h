@@ -155,6 +155,8 @@ namespace ionicengine
 
 		void unbind() const;
 
+		void deleteTexture();
+
 		bool operator==(const Texture &other) const;
 
 		bool operator<(const Texture &other) const;
@@ -182,7 +184,11 @@ namespace ionicengine
 		newTextureRegion(uint32_t textureWidth, uint32_t textureHeight, uint32_t x, uint32_t y, uint32_t width,
 						 uint32_t height);
 
+		extern void IONICENGINE_API deleteTexture(const lambdacommon::ResourceName &name);
+
 		extern void IONICENGINE_API unbind();
+
+		extern void IONICENGINE_API shutdown();
 	}
 }
 

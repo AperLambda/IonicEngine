@@ -37,12 +37,13 @@ namespace ionicengine
 	class Font
 	{
 	private:
+		uint32_t _textureId{};
 		std::map<char, Character> _chars;
 		uint32_t _size;
 		uint32_t _tabSize{4};
 
 	public:
-		Font(const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize = 4);
+		Font(uint32_t textureId, const std::map<char, Character> &charactersMap, uint32_t size, uint32_t tabSize = 4);
 
 		Font(const Font &font);
 

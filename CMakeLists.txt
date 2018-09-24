@@ -19,7 +19,7 @@ elseif (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 endif ()
 
-find_package(LAMBDACOMMON REQUIRED)
+find_package(lambdacommon REQUIRED)
 find_package(Threads)
 find_package(GLFW REQUIRED)
 find_package(OpenGL REQUIRED)

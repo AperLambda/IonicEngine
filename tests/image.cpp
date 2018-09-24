@@ -44,7 +44,7 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		auto ratio5Width = static_cast<uint32_t>(.10f * width), ratio5Height = static_cast<uint32_t>(.10f * height);
+		auto ratio5Width = static_cast<int>(.10f * width), ratio5Height = static_cast<int>(.10f * height);
 		auto textureWidth = width, textureHeight = height;
 		uint32_t quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
 		graphics->setColor(Color::COLOR_WHITE);
@@ -52,7 +52,7 @@ public:
 							textureHeight);
 		graphics->drawImage(texture, ratio5Width, ratio5Height, quadWidth, quadHeight, texture::newTextureRegion(
 				textureWidth, textureHeight,
-				ratio5Width, ratio5Height,
+				static_cast<uint32_t>(ratio5Width), static_cast<uint32_t>(ratio5Height),
 				quadWidth, quadHeight));
 		graphics->setColor({0.f, 0.f, 0.f, .25f});
 		graphics->drawQuad(ratio5Width, ratio5Height, quadWidth, quadHeight);

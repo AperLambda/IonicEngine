@@ -20,8 +20,8 @@
 #include "graphics/font.h"
 #include "sound/sound.h"
 
-#define IONICENGINE_VERSION_MAJOR 0
-#define IONICENGINE_VERSION_MINOR 1
+#define IONICENGINE_VERSION_MAJOR 1
+#define IONICENGINE_VERSION_MINOR 0
 #define IONICENGINE_VERSION_PATCH 0
 
 #define IONICENGINE_NULL_RESOURCE lambdacommon::ResourceName("ionicengine", "null")

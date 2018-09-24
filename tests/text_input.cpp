@@ -67,7 +67,7 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		auto ratio5Width = static_cast<uint32_t>(.10f * width), ratio5Height = static_cast<uint32_t>(.10f * height);
+		auto ratio5Width = static_cast<int>(.10f * width), ratio5Height = static_cast<int>(.10f * height);
 		auto textureWidth = width, textureHeight = height;
 		uint32_t quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
 		graphics->setColor(Color::COLOR_WHITE);
@@ -90,7 +90,7 @@ public:
 		uint32_t textLength = 0;
 		if (splitted.size() != 0)
 			textLength = font.getTextLength(splitted[splitted.size() - 1]) - font.getTextLength("a");
-		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, ratio5Width + 7, ratio5Width + quadWidth);
+		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, static_cast<uint32_t>(ratio5Width + 7), ratio5Width + quadWidth);
 		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(static_cast<uint32_t>(splitted.size() - 1), static_cast<uint32_t>(0), quadHeight);
 		graphics->setColor({1.f, 1.f, 1.f, opacity});
 		graphics->drawLine2D(cursorX, static_cast<int>(cursorY), cursorX, static_cast<int>(cursorY + font.getHeight()));

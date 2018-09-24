@@ -123,6 +123,14 @@ namespace ionicengine
 		texture::unbind();
 	}
 
+	void Texture::deleteTexture()
+	{
+		unbind();
+		GLuint textures[] = {static_cast<GLuint>(_id)};
+		glDeleteTextures(1, textures);
+		_id = 0;
+	}
+
 	bool Texture::operator==(const Texture &other) const
 	{
 		return _id == other._id;
@@ -210,9 +218,24 @@ namespace ionicengine
 					(static_cast<float>(x + width) / textureWidth), (static_cast<float>(y + height) / textureHeight)};
 		}
 
+		void IONICENGINE_API deleteTexture(const lambdacommon::ResourceName &name)
+		{
+			if (!hasTexture(name))
+				return;
+			getTexture(name).deleteTexture();
+		}
+
 		void IONICENGINE_API unbind()
 		{
 			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+
+		void IONICENGINE_API shutdown()
+		{
+			for(auto const& [key, val] : textures)
+			{
+				deleteTexture(key);
+			}
 		}
 	}
 }

@@ -66,7 +66,7 @@ namespace ionicengine
 		lambdacommon::Color color = lambdacommon::Color::COLOR_WHITE;
 		Border *border = new Border(lambdacommon::Color::COLOR_BLACK);
 		int x, y;
-		bool visible = true, enabled = true, hovered = false;
+		bool visible = true, enabled = true, hovered = false, clicked = false;
 
 	public:
 		GuiComponent(int x, int y);
@@ -104,6 +104,10 @@ namespace ionicengine
 		bool isHovered() const;
 
 		void setHovered(bool hovered);
+
+		bool isClicked() const;
+
+		void setClicked(bool clicked);
 
 		virtual void onHover() = 0;
 
@@ -150,7 +154,7 @@ namespace ionicengine
 	private:
 		std::string text;
 		lambdacommon::Color hoverColor = lambdacommon::color::fromHex(
-				0xA0CDE1FF), clickColor = lambdacommon::color::fromHex(0x6CBADFFF);
+				0xE5F1FBFF), clickColor = lambdacommon::color::fromHex(0x6CBADFFF);
 		Font *font;
 		std::function<void(Window &window)> onButtonClickListener = [](Window &window){};
 
@@ -178,6 +182,14 @@ namespace ionicengine
 		void setClickColor(const lambdacommon::Color &clickColor);
 
 		void setClickListener(const std::function<void(Window &window)> &onButtonClickListener);
+
+		const std::string &getText() const;
+
+		void setText(const std::string &text);
+
+		Font *getFont() const;
+
+		void setFont(Font *font);
 	};
 }
 
