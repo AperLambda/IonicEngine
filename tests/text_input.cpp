@@ -74,7 +74,8 @@ public:
 		graphics->drawImage({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, 0, 0, textureWidth,
 							textureHeight);
 		graphics->drawImage(texture, ratio5Width, ratio5Height, quadWidth, quadHeight, texture::newTextureRegion(
-				textureWidth, textureHeight, ratio5Width, ratio5Height, quadWidth, quadHeight));
+				textureWidth, textureHeight, static_cast<uint32_t>(ratio5Width), static_cast<uint32_t>(ratio5Height),
+				quadWidth, quadHeight));
 		graphics->setColor({0.f, 0.f, 0.f, .25f});
 		graphics->drawQuad(ratio5Width, ratio5Height, quadWidth, quadHeight);
 		graphics->setColor(Color::COLOR_BLACK);
@@ -86,12 +87,14 @@ public:
 
 		graphics->setColor(Color::COLOR_WHITE);
 		graphics->drawText(font, ratio5Width + 5, ratio5Height + 5, textArea, quadWidth - 10, quadHeight - 10);
-		auto splitted = lambdastring::split(textArea + "a", '\n');
+		auto splitted = lstring::split(textArea + "a", '\n');
 		uint32_t textLength = 0;
 		if (splitted.size() != 0)
 			textLength = font.getTextLength(splitted[splitted.size() - 1]) - font.getTextLength("a");
-		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, static_cast<uint32_t>(ratio5Width + 7), ratio5Width + quadWidth);
-		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(static_cast<uint32_t>(splitted.size() - 1), static_cast<uint32_t>(0), quadHeight);
+		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, static_cast<uint32_t>(ratio5Width + 7),
+									ratio5Width + quadWidth);
+		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(static_cast<uint32_t>(splitted.size() - 1),
+																			static_cast<uint32_t>(0), quadHeight);
 		graphics->setColor({1.f, 1.f, 1.f, opacity});
 		graphics->drawLine2D(cursorX, static_cast<int>(cursorY), cursorX, static_cast<int>(cursorY + font.getHeight()));
 	}

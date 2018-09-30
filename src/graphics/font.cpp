@@ -71,8 +71,8 @@ namespace ionicengine
 		std::string tab;
 		for (uint32_t i = 0; i < getTabSize(); i++)
 			tab += " ";
-		auto reformattedText = lambdacommon::lambdastring::replaceAll(text, "\t", tab);
-		for (const auto &line : lambdacommon::lambdastring::split(reformattedText, '\n'))
+		auto reformattedText = lambdacommon::lstring::replaceAll(text, "\t", tab);
+		for (const auto &line : lambdacommon::lstring::split(reformattedText, '\n'))
 		{
 			uint32_t x{0};
 			std::string::const_iterator c;
@@ -125,7 +125,7 @@ namespace ionicengine
 
 	uint32_t Font::getTextHeight(const std::string &text) const
 	{
-		return static_cast<uint32_t>(lambdacommon::lambdastring::split(text, '\n').size() * getHeight());
+		return static_cast<uint32_t>(lambdacommon::lstring::split(text, '\n').size() * getHeight());
 	}
 
 	uint32_t Font::getHeight() const

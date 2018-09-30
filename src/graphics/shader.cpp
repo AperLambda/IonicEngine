@@ -134,7 +134,7 @@ namespace ionicengine
 	{
 		int success;
 		char infoLog[1024];
-		if (!lambdacommon::lambdastring::equalsIgnoreCase(type, "program"))
+		if (!lambdacommon::lstring::equalsIgnoreCase(type, "program"))
 		{
 			glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 			if (!success)
