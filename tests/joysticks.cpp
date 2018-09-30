@@ -67,7 +67,7 @@ public:
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Pressing Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::getColorByIntRGBA(255, 255, 0));
+			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::color::fromIntRGBA(255, 255, 0));
 		}
 	}
 
@@ -91,7 +91,7 @@ public:
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
 			cout << "[Controller " << to_string(controller.getId()) << "] Repeating Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::getColorByIntRGBA(255, 255, 0));
+			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::color::fromIntRGBA(255, 255, 0));
 		}
 	}
 
@@ -126,7 +126,7 @@ public:
 	void onAxisMove(const Controller &controller, uint8_t axis, float value) override
 	{
 		cout << "[Controller " << to_string(controller.getId()) << "] Moving axis " << to_string(axis) << " with value "
-			 << to_string(value) << " is inverted " << lambdastring::to_string(controller.isAxisInverted(axis)) << endl;
+			 << to_string(value) << " is inverted " << lstring::to_string(controller.isAxisInverted(axis)) << endl;
 	}
 
 	void onAxisRelease(const Controller &controller, uint8_t axis) override
@@ -198,9 +198,9 @@ int main()
 			 << terminal::YELLOW << "\"guid\'" << terminal::RESET << ':' << terminal::CYAN << '"'
 			 << controller->getGUID() << '"' << terminal::RESET << ','
 			 << terminal::YELLOW << "\"isConnected\"" << terminal::RESET << ':' << terminal::CYAN
-			 << lambdastring::to_string(controller->isConnected()) << terminal::RESET << ','
+			 << lstring::to_string(controller->isConnected()) << terminal::RESET << ','
 			 << terminal::YELLOW << "\"isGamepad\"" << terminal::RESET << ':' << terminal::CYAN
-			 << lambdastring::to_string(controller->isGamepad()) << terminal::RESET << '}' << endl;
+			 << lstring::to_string(controller->isGamepad()) << terminal::RESET << '}' << endl;
 	}
 
 	ScreenManager screenManager{};
