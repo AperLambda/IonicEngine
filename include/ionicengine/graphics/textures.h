@@ -40,81 +40,81 @@ namespace ionicengine
 		/*!
 		 * Stores the top-left texture X coordinate, with a value between 0.0 and 1.0.
 		 */
-		float _minX;
+		float _min_x;
 
 		/*!
 		 * Stores the top-left texture Y coordinate, with a value between 0.0 and 1.0.
 		 */
-		float _minY;
+		float _min_y;
 
 		/*!
 		 * Stores the bottom-right texture X coordinate, with a value between 0.0 and 1.0.
 		 */
-		float _maxX;
+		float _max_x;
 
 		/*!
 		 * Stores the bottom-right texture Y coordinate, with a value between 0.0 and 1.0.
 		 */
-		float _maxY;
+		float _max_y;
 
 	public:
-		TextureRegion(float minX, float minY, float maxX, float maxY);
+		TextureRegion(float min_x, float min_y, float max_x, float max_y);
 
 		/*!
 		 * Gets the top-left corner texture X coordinate.
 		 *
 		 * @return X coordinate between 0.0 and 1.0.
 		 */
-		float minX() const;
+		float min_x() const;
 
 		/*!
 		 * Gets the top-left corner texture Y coordinate.
 		 *
 		 * @return Y coordinate between 0.0 and 1.0.
 		 */
-		float minY() const;
+		float min_y() const;
 
 		/*!
 		 * Gets the bottom-right corner texture X coordinate.
 		 *
 		 * @return X coordinate between 0.0 and 1.0.
 		 */
-		float maxX() const;
+		float max_x() const;
 
 		/*!
 		 * Gets the bottom-right corner texture Y coordinate.
 		 *
 		 * @return Y coordinate between 0.0 and 1.0.
 		 */
-		float maxY() const;
+		float max_y() const;
 
 		/*!
 		 * Sets the top-left corner texture X coordinate.
 		 *
-		 * @param minX X coordinate between 0.0 and 1.0.
+		 * @param min_x X coordinate between 0.0 and 1.0.
 		 */
-		void minX(float minX);
+		void min_x(float min_x);
 
 		/*!
 		 * Sets the top-left corner texture Y coordinate.
 		 *
-		 * @param minY Y coordinate between 0.0 and 1.0.
+		 * @param min_y Y coordinate between 0.0 and 1.0.
 		 */
-		void minY(float minY);
+		void min_y(float min_y);
 
 		/*!
 		 * Sets the bottom-right corner texture X coordinate.
 		 *
-		 * @param maxX X coordinate between 0.0 and 1.0.
+		 * @param max_x X coordinate between 0.0 and 1.0.
 		 */
-		void maxX(float maxX);
+		void max_x(float max_x);
 
 		/*!
 		 * Sets the bottom-right corner texture Y coordinate.
 		 *
-		 * @param maxY Y coordinate between 0.0 and 1.0.
+		 * @param max_y Y coordinate between 0.0 and 1.0.
 		 */
-		void maxY(float maxY);
+		void max_y(float max_y);
 
 		bool operator==(const TextureRegion &other) const;
 
@@ -137,25 +137,25 @@ namespace ionicengine
 	public:
 		Texture(uint32_t id, uint32_t width, uint32_t height, uint32_t channels);
 
-		uint32_t getId() const;
+		uint32_t get_id() const;
 
-		uint32_t getWidth() const;
+		uint32_t get_width() const;
 
-		uint32_t getHeight() const;
+		uint32_t get_height() const;
 
-		uint32_t getChannels() const;
+		uint32_t get_channels() const;
 
-		TextureRegion getRegion(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const;
+		TextureRegion new_region(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const;
 
 		/*!
 		 * Binds the texture at the specified texture unit. Default texture unit is {@code GL_TEXTURE0}.
-		 * @param textureUnit The texture unit to bind.
+		 * @param texture_unit The texture unit to bind.
 		 */
-		void bind(uint32_t textureUnit = GL_TEXTURE0) const;
+		void bind(uint32_t texture_unit = GL_TEXTURE0) const;
 
 		void unbind() const;
 
-		void deleteTexture();
+		void delete_texture();
 
 		bool operator==(const Texture &other) const;
 
@@ -168,23 +168,25 @@ namespace ionicengine
 	{
 		extern std::optional<Texture> IONICENGINE_API
 		load(const lambdacommon::ResourceName &name, const std::string &extension = "png",
-			 TextureWrapMode wrapMode = CLAMP, TextureFilterMode filterMode = NEAREST_MIPMAP_LINEAR,
-			 bool useMipmap = true);
+			 TextureWrapMode wrap_mode = CLAMP, TextureFilterMode filter_mode = NEAREST_MIPMAP_LINEAR,
+			 bool use_mipmap = true);
 
 		extern Texture IONICENGINE_API
 		create(const lambdacommon::ResourceName &name, unsigned char image[], uint32_t width, uint32_t height,
-			   uint32_t channels = 4, TextureWrapMode wrapMode = CLAMP,
-			   TextureFilterMode filterMode = NEAREST_MIPMAP_LINEAR, bool useMipmap = true);
+			   uint32_t channels = 4, TextureWrapMode wrap_mode = CLAMP,
+			   TextureFilterMode filter_mode = NEAREST_MIPMAP_LINEAR, bool use_mipmap = true);
 
-		extern Texture IONICENGINE_API getTexture(const lambdacommon::ResourceName &name);
+		extern Texture IONICENGINE_API get_texture(const lambdacommon::ResourceName &name);
 
-		extern bool IONICENGINE_API hasTexture(const lambdacommon::ResourceName &name);
+		extern bool IONICENGINE_API has_texture(const lambdacommon::ResourceName &name);
 
 		extern TextureRegion
-		newTextureRegion(uint32_t textureWidth, uint32_t textureHeight, uint32_t x, uint32_t y, uint32_t width,
-						 uint32_t height);
+		new_texture_region(uint32_t textureWidth, uint32_t textureHeight, uint32_t x, uint32_t y, uint32_t width,
+						   uint32_t height);
 
-		extern void IONICENGINE_API deleteTexture(const lambdacommon::ResourceName &name);
+		extern void IONICENGINE_API delete_texture(const lambdacommon::ResourceName &name);
+
+		extern void IONICENGINE_API bind(uint32_t id);
 
 		extern void IONICENGINE_API unbind();
 

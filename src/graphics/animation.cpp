@@ -21,27 +21,27 @@ namespace ionicengine
 		else state--;
 	}
 
-	uint32_t Animation::getX() const
+	uint32_t Animation::get_x() const
 	{
 		return x;
 	}
 
-	void Animation::setX(uint32_t x)
+	void Animation::set_x(uint32_t x)
 	{
 		Animation::x = x;
 	}
 
-	uint32_t Animation::getY() const
+	uint32_t Animation::get_y() const
 	{
 		return y;
 	}
 
-	void Animation::setY(uint32_t y)
+	void Animation::set_y(uint32_t y)
 	{
 		Animation::y = y;
 	}
 
-	bool Animation::isRunning() const
+	bool Animation::is_running() const
 	{
 		return running;
 	}
@@ -56,65 +56,65 @@ namespace ionicengine
 		running = false;
 	}
 
-	uint32_t Animation::getFrameTime() const
+	uint32_t Animation::get_frame_time() const
 	{
 		return frametime;
 	}
 
-	void Animation::setFrameTime(uint32_t rate)
+	void Animation::set_frame_time(uint32_t rate)
 	{
 		Animation::frametime = rate;
 	}
 
-	bool Animation::isRepeated() const
+	bool Animation::is_repeated() const
 	{
 		return repeat;
 	}
 
-	void Animation::setRepeat(bool repeat)
+	void Animation::set_repeat(bool repeat)
 	{
 		this->repeat = repeat;
 	}
 
-	bool Animation::isInvertOnRepeat() const
+	bool Animation::is_inverted_on_repeat() const
 	{
-		return invertOnRepeat;
+		return invert_on_repeat;
 	}
 
-	void Animation::setInvertOnRepeat(bool invertOnRepeat)
+	void Animation::set_invert_on_repeat(bool invert_on_repeat)
 	{
-		this->invertOnRepeat = invertOnRepeat;
+		this->invert_on_repeat = invert_on_repeat;
 	}
 
 	void Animation::reset()
 	{
-		setState(0);
+		set_state(0);
 		updates = 0;
 	}
 
-	size_t Animation::getState() const
+	size_t Animation::get_state() const
 	{
 		return state;
 	}
 
-	void Animation::setState(size_t state)
+	void Animation::set_state(size_t state)
 	{
 		Animation::state = state;
 	}
 
 	void Animation::update()
 	{
-		if (!this->isRunning())
+		if (!this->is_running())
 			return;
 		updates++;
 		if (updates == frametime)
 		{
 			updateState();
-			if (state > this->getMaxState() - 1 || state < 0)
+			if (state > this->get_max_state() - 1 || state < 0)
 			{
 				if (repeat)
 				{
-					if (invertOnRepeat)
+					if (invert_on_repeat)
 					{
 						forward = !forward;
 						updateState();
@@ -134,56 +134,56 @@ namespace ionicengine
 																				 textures(textures)
 	{}
 
-	const std::vector<Texture> &TexturesAnimation::getTextures() const
+	const std::vector<Texture> &TexturesAnimation::get_textures() const
 	{
 		return textures;
 	}
 
-	void TexturesAnimation::setState(size_t state)
+	void TexturesAnimation::set_state(size_t state)
 	{
-		Animation::setState(
+		Animation::set_state(
 				lambdacommon::maths::clamp(state, static_cast<size_t>(0), textures.size() - 1));
 	}
 
-	size_t TexturesAnimation::getMaxState()
+	size_t TexturesAnimation::get_max_state()
 	{
 		return textures.size();
 	}
 
 	void TexturesAnimation::render(Graphics *graphics)
 	{
-		graphics->drawImage(textures[lambdacommon::maths::clamp(state, static_cast<size_t>(0),
-																textures.size())], x, y, width,
-							height);
+		graphics->draw_image(textures[lambdacommon::maths::clamp(state, static_cast<size_t>(0),
+																 textures.size())], x, y, width,
+							 height);
 	}
 
 	BitmapAnimation::BitmapAnimation(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const Texture &texture,
 									 uint32_t regionHeight) : Animation(x, y, width, height), texture(texture)
 	{
 		TextureRegion base{0.0f, 0.0f, 1.0f, 1.0f};
-		float regionSize = static_cast<float>(regionHeight) / texture.getHeight();
-		for (size_t i = 0; i < (texture.getHeight() / regionHeight); i++)
+		float regionSize = static_cast<float>(regionHeight) / texture.get_height();
+		for (size_t i = 0; i < (texture.get_height() / regionHeight); i++)
 		{
-			base.minY(i * regionSize);
-			base.maxY(base.minY() + regionSize);
+			base.min_y(i * regionSize);
+			base.max_y(base.min_y() + regionSize);
 			regions.push_back(base);
 		}
 	}
 
-	void BitmapAnimation::setState(size_t state)
+	void BitmapAnimation::set_state(size_t state)
 	{
-		Animation::setState(lambdacommon::maths::clamp(state, (size_t) 0, regions.size() - 1));
+		Animation::set_state(lambdacommon::maths::clamp(state, (size_t) 0, regions.size() - 1));
 	}
 
-	size_t BitmapAnimation::getMaxState()
+	size_t BitmapAnimation::get_max_state()
 	{
 		return regions.size();
 	}
 
 	void BitmapAnimation::render(Graphics *graphics)
 	{
-		graphics->drawImage(texture, x, y, width, height,
-							regions[lambdacommon::maths::clamp(state, static_cast<size_t>(0),
-															   regions.size())]);
+		graphics->draw_image(texture, x, y, width, height,
+							 regions[lambdacommon::maths::clamp(state, static_cast<size_t>(0),
+																regions.size())]);
 	}
 }

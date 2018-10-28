@@ -17,29 +17,29 @@ namespace ionicengine
 	{
 		bool running = false;
 
-		std::map<lambdacommon::ResourceName, int> indexBuffer;
+		std::map<lambdacommon::ResourceName, int> index_buffer;
 
 		static ALCdevice *device;
 		static ALCcontext *context;
 
-		static int nextFreeBuffer = 0;
+		static int next_free_buffer = 0;
 		static ALuint buffers[IONIC_SOUND_MAX_BUFFERS];
 
-		static int nextFreeSource = 0;
+		static int next_free_source = 0;
 		static ALuint sources[IONIC_SOUND_MAX_SOURCES];
 
-		int isIndexValid(int sourceIndex)
+		int is_index_valid(int source_index)
 		{
-			return sourceIndex >= 0 && sourceIndex < IONIC_SOUND_MAX_SOURCES;
+			return source_index >= 0 && source_index < IONIC_SOUND_MAX_SOURCES;
 		}
 
 		/*!
 		 * Gets a free index of an audio source.
 		 * @return Either -1 or the index of a source that can be used.
 		 */
-		int getFreeSource()
+		int get_free_source()
 		{
-			int i = nextFreeSource;
+			int i = next_free_source;
 			int state;
 			int result = -1;
 
@@ -51,12 +51,12 @@ namespace ionicengine
 				if (state == AL_STOPPED || state == AL_INITIAL)
 				{
 					result = i;
-					nextFreeSource = (i + 1) % IONIC_SOUND_MAX_SOURCES;
+					next_free_source = (i + 1) % IONIC_SOUND_MAX_SOURCES;
 				}
 				else
 					i = (i + 1) % IONIC_SOUND_MAX_SOURCES;
 			}
-			while (result == -1 && i != nextFreeSource);
+			while (result == -1 && i != next_free_source);
 
 			return result;
 		}
@@ -101,56 +101,57 @@ namespace ionicengine
 			running = false;
 		}
 
-		void IONICENGINE_API addSoundIndex(const lambdacommon::ResourceName &sound, int index)
+		void IONICENGINE_API add_sound_index(const lambdacommon::ResourceName &sound, int index)
 		{
-			if (hasSound(sound) && getSoundIndex(sound) == index)
+			if (has_sound(sound) && get_sound_index(sound) == index)
 				throw std::runtime_error("Cannot add sound that was already indexed.");
-			indexBuffer.insert({sound, index});
+			index_buffer.insert({sound, index});
 		}
 
-		int IONICENGINE_API getSoundIndex(const lambdacommon::ResourceName &sound)
+		int IONICENGINE_API get_sound_index(const lambdacommon::ResourceName &sound)
 		{
-			if (!hasSound(sound))
+			if (!has_sound(sound))
 				return -1;
-			return indexBuffer.at(sound);
+			return index_buffer.at(sound);
 		}
 
-		bool IONICENGINE_API hasSound(const lambdacommon::ResourceName &sound)
+		bool IONICENGINE_API has_sound(const lambdacommon::ResourceName &sound)
 		{
-			return indexBuffer.count(sound);
+			return index_buffer.count(sound);
 		}
 
 		int IONICENGINE_API play(const lambdacommon::ResourceName &sound, bool loop)
 		{
-			if (hasSound(sound))
-				return play(getSoundIndex(sound), loop);
+			if (has_sound(sound))
+				return play(get_sound_index(sound), loop);
 			return -1;
 		}
 
 		int IONICENGINE_API play(int buffer, bool loop)
 		{
-			int freeSourceIndex = -1;
+			int free_source_index = -1;
 
 			if (buffer >= 0 && buffer < IONIC_SOUND_MAX_BUFFERS)
 			{
 				// Find a source that is not being used.
-				freeSourceIndex = getFreeSource();
-				if (freeSourceIndex >= 0)
+				free_source_index = get_free_source();
+				if (free_source_index >= 0)
 				{
-					alSourcei(sources[freeSourceIndex], AL_BUFFER, buffers[buffer]);
-					alSourcei(sources[freeSourceIndex], AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
-					alSourcePlay(sources[freeSourceIndex]);
+					alSourcei(sources[free_source_index], AL_BUFFER, buffers[buffer]);
+					alSourcei(sources[free_source_index], AL_LOOPING, loop ? AL_TRUE : AL_FALSE);
+					alSourcePlay(sources[free_source_index]);
 				}
 			}
 			else
-				printError("ionicengine::sound::play() => Sound buffer index " + std::to_string(buffer) + " is out of range [0," + std::to_string(IONIC_SOUND_MAX_BUFFERS - 1) + "]");
+				print_error("ionicengine::sound::play() => Sound buffer index " + std::to_string(buffer) +
+							" is out of range [0," + std::to_string(IONIC_SOUND_MAX_BUFFERS - 1) + "]");
 
-			return freeSourceIndex;
+			return free_source_index;
 		}
 
-		bool IONICENGINE_API isPlaying(int sound)
+		bool IONICENGINE_API is_playing(int sound)
 		{
-			if (isIndexValid(sound))
+			if (is_index_valid(sound))
 			{
 				int state;
 				alGetSourcei(sources[sound], AL_SOURCE_STATE, &state);
@@ -159,9 +160,9 @@ namespace ionicengine
 			return false;
 		}
 
-		bool IONICENGINE_API isLooping(int sound)
+		bool IONICENGINE_API is_looping(int sound)
 		{
-			if (isIndexValid(sound))
+			if (is_index_valid(sound))
 			{
 				int state;
 				alGetSourcei(sources[sound], AL_LOOPING, &state);
@@ -172,13 +173,13 @@ namespace ionicengine
 
 		void IONICENGINE_API pause(int sound)
 		{
-			if (isPlaying(sound))
+			if (is_playing(sound))
 				alSourcePause(sources[sound]);
 		}
 
-		bool IONICENGINE_API isPaused(int sound)
+		bool IONICENGINE_API is_paused(int sound)
 		{
-			if (isIndexValid(sound))
+			if (is_index_valid(sound))
 			{
 				int state;
 				alGetSourcei(sources[sound], AL_SOURCE_STATE, &state);
@@ -187,7 +188,7 @@ namespace ionicengine
 			return false;
 		}
 
-		void IONICENGINE_API pauseAll()
+		void IONICENGINE_API pause_all()
 		{
 			int state;
 
@@ -201,11 +202,11 @@ namespace ionicengine
 
 		void IONICENGINE_API resume(int sound)
 		{
-			if (isPaused(sound))
+			if (is_paused(sound))
 				alSourcePlay(sources[sound]);
 		}
 
-		void IONICENGINE_API resumeAll()
+		void IONICENGINE_API resume_all()
 		{
 			int state;
 			for (ALuint source : sources)
@@ -219,13 +220,13 @@ namespace ionicengine
 
 		void IONICENGINE_API stop(int sound)
 		{
-			if (!isStopped(sound))
+			if (!is_stopped(sound))
 				alSourceStop(sources[sound]);
 		}
 
-		bool IONICENGINE_API isStopped(int sound)
+		bool IONICENGINE_API is_stopped(int sound)
 		{
-			if (isIndexValid(sound))
+			if (is_index_valid(sound))
 			{
 				int state;
 				alGetSourcei(sources[sound], AL_SOURCE_STATE, &state);
@@ -234,20 +235,20 @@ namespace ionicengine
 			return false;
 		}
 
-		void IONICENGINE_API stopAll()
+		void IONICENGINE_API stop_all()
 		{
 			for (int sound = 0; sound < IONIC_SOUND_MAX_SOURCES; sound++)
 				stop(sound);
 		}
 
-		int IONICENGINE_API getNextFreeBuffer(bool increment)
+		int IONICENGINE_API get_next_free_buffer(bool increment)
 		{
 			if (increment)
-				return nextFreeBuffer++;
-			return nextFreeBuffer;
+				return next_free_buffer++;
+			return next_free_buffer;
 		}
 
-		ALuint IONICENGINE_API getBuffer(int index)
+		ALuint IONICENGINE_API get_buffer(int index)
 		{
 			return buffers[index];
 		}

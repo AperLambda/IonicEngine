@@ -20,7 +20,7 @@ namespace ionicengine
 	private:
 		bool running = true;
 	protected:
-		bool repeat = true, forward = true, invertOnRepeat = false;
+		bool repeat = true, forward = true, invert_on_repeat = false;
 		uint32_t x, y, width, height;
 		size_t state = 0;
 		uint32_t updates = 0, frametime = 1;
@@ -34,31 +34,31 @@ namespace ionicengine
 		 * Gets the X position of the animation.
 		 * @return The X position of the animation.
 		 */
-		uint32_t getX() const;
+		uint32_t get_x() const;
 
 		/*!
 		 * Sets the X position of the animation.
 		 * @param x The X position of the animation.
 		 */
-		void setX(uint32_t x);
+		void set_x(uint32_t x);
 
 		/*!
 		 * Gets the Y position of the animation.
 		 * @return The Y position of the animation.
 		 */
-		uint32_t getY() const;
+		uint32_t get_y() const;
 
 		/*!
 		 * Sets the Y position of the animation.
 		 * @param y The Y position of the animation.
 		 */
-		void setY(uint32_t y);
+		void set_y(uint32_t y);
 
 		/*!
 		 * Checks whether the animation is running or not.
 		 * @return True if the animation is running else false.
 		 */
-		bool isRunning() const;
+		bool is_running() const;
 
 		/*!
 		 * Starts the animation.
@@ -75,38 +75,38 @@ namespace ionicengine
 		 * The animation is updated after n number of updates, n is frame time.
 		 * @return The frame time of the animation.
 		 */
-		uint32_t getFrameTime() const;
+		uint32_t get_frame_time() const;
 
 		/*!
 		 * Sets the frame time of the animation.
 		 * The animation is updated after n number of updates, n is frame time.
 		 * @param rate The frame time of the animation.
 		 */
-		void setFrameTime(uint32_t rate);
+		void set_frame_time(uint32_t rate);
 
 		/*!
 		 * Checks whether the animation is repeated or not.
 		 * @return True if the animation is repeated else false.
 		 */
-		bool isRepeated() const;
+		bool is_repeated() const;
 
 		/*!
 		 * Sets whether the animation is repeated or not.
 		 * @param repeat True if the animation is repeated else false.
 		 */
-		void setRepeat(bool repeat);
+		void set_repeat(bool repeat);
 
 		/*!
 		 * Checks whether the animation indexes is inverted when repeated.
 		 * @return True if the animation indexes is inverted when repeated else false.
 		 */
-		bool isInvertOnRepeat() const;
+		bool is_inverted_on_repeat() const;
 
 		/*!
 		 * Sets whether the animation indexes is inverted when repeated.
-		 * @param invertOnRepeat True if the animation indexes is inverted when repeated else false.
+		 * @param invert_on_repeat True if the animation indexes is inverted when repeated else false.
 		 */
-		void setInvertOnRepeat(bool invertOnRepeat);
+		void set_invert_on_repeat(bool invert_on_repeat);
 
 		/*!
 		 * Resets the state of the animation.
@@ -117,15 +117,15 @@ namespace ionicengine
 		 * Gets the current state of the animation.
 		 * @return The current state of the animation.
 		 */
-		size_t getState() const;
+		size_t get_state() const;
 
 		/*!
 		 * Sets the current state of the animation.
 		 * @param state The current state of the animation.
 		 */
-		virtual void setState(size_t state);
+		virtual void set_state(size_t state);
 
-		virtual size_t getMaxState() = 0;
+		virtual size_t get_max_state() = 0;
 
 		virtual void render(Graphics *graphics) = 0;
 
@@ -140,11 +140,11 @@ namespace ionicengine
 	public:
 		TexturesAnimation(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const std::vector<Texture> &textures);
 
-		const std::vector<Texture> &getTextures() const;
+		const std::vector<Texture> &get_textures() const;
 
-		void setState(size_t state) override;
+		void set_state(size_t state) override;
 
-		virtual size_t getMaxState();
+		virtual size_t get_max_state();
 
 		void render(Graphics *graphics) override;
 	};
@@ -158,9 +158,9 @@ namespace ionicengine
 	public:
 		BitmapAnimation(uint32_t x, uint32_t y, uint32_t width, uint32_t height, const Texture &texture, uint32_t regionHeight);
 
-		void setState(size_t state) override;
+		void set_state(size_t state) override;
 
-		virtual size_t getMaxState() override;
+		virtual size_t get_max_state() override;
 
 		void render(Graphics *graphics) override;
 	};

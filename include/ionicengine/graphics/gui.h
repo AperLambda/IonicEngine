@@ -18,7 +18,7 @@ namespace ionicengine
 	class IONICENGINE_API Gui
 	{
 	protected:
-		lambdacommon::Color backgroundColor = lambdacommon::Color::COLOR_BLACK;
+		lambdacommon::Color background_color = lambdacommon::Color::COLOR_BLACK;
 
 	public:
 		uint32_t width{}, height{};
@@ -31,9 +31,9 @@ namespace ionicengine
 
 		virtual void update() = 0;
 
-		virtual lambdacommon::Color getBackgroundColor() const;
+		virtual lambdacommon::Color get_background_color() const;
 
-		void setBackgroundColor(const lambdacommon::Color &color);
+		void set_background_color(const lambdacommon::Color &color);
 	};
 
 	class IONICENGINE_API Border
@@ -44,9 +44,9 @@ namespace ionicengine
 	public:
 		Border(const lambdacommon::Color &color);
 
-		const lambdacommon::Color &getColor() const;
+		const lambdacommon::Color &get_color() const;
 
-		void setColor(const lambdacommon::Color &color);
+		void set_color(const lambdacommon::Color &color);
 
 		virtual void draw(int x, int y, uint32_t width, uint32_t height, Graphics *graphics);
 	};
@@ -73,47 +73,57 @@ namespace ionicengine
 
 		virtual ~GuiComponent() override;
 
-		const lambdacommon::Color &getColor() const;
+		const lambdacommon::Color &get_color() const;
 
-		void setColor(const lambdacommon::Color &color);
+		void set_color(const lambdacommon::Color &color);
 
-		Border *getBorder() const;
+		Border *get_border() const;
 
-		void setBorder(Border *border);
+		void set_border(Border *border);
 
-		int getX() const;
+		int get_x() const;
 
-		int getY() const;
+		int get_y() const;
 
 		/*!
 		 * Checks whether the component is visible or not.
 		 * @return True if the component is visible, else false.
 		 */
-		bool isVisible() const;
+		bool is_visible() const;
 
 		/*!
 		 * Sets whether the component is visible or not.
 		 * @param visible True if the component is visible, else false.
 		 */
-		void setVisible(bool visible);
+		void set_visible(bool visible);
 
-		bool isEnabled() const;
+		bool is_enabled() const;
 
-		void setEnabled(bool enabled);
+		void set_enabled(bool enabled);
 
-		bool isHovered() const;
+		bool is_hovered() const;
 
-		void setHovered(bool hovered);
+		void set_hovered(bool hovered);
 
-		bool isClicked() const;
+		bool is_clicked() const;
 
-		void setClicked(bool clicked);
+		void set_clicked(bool clicked);
 
-		virtual void onHover() = 0;
+		virtual bool is_focusable() const;
 
-		virtual void onMousePressed(Window &window, int button, int mouseX, int mouseY) = 0;
+		virtual bool does_disable_key_activate() const;
 
-		virtual void onMouseReleased(Window &window, int button, int mouseX, int mouseY) = 0;
+		virtual void on_hover() = 0;
+
+		virtual void on_activate(Window &window) = 0;
+
+		virtual void on_mouse_pressed(Window &window, int button, int mouseX, int mouseY) = 0;
+
+		virtual void on_mouse_released(Window &window, int button, int mouseX, int mouseY) = 0;
+
+		virtual void on_key_input(Window &window, int key, int scancode, InputAction action, int mods) = 0;
+
+		virtual void on_gamepad_button_input(Window &window, InputAction action, uint8_t button) = 0;
 	};
 
 	class IONICENGINE_API GuiProgressBar : public GuiComponent
@@ -121,20 +131,20 @@ namespace ionicengine
 	private:
 		uint32_t progress{0};
 		bool indeterminate = false;
-		int indeterminateIndex = 0;
+		int indeterminate_index = 0;
 
 		int getIndeterminateBoxLength() const;
 
 	public:
 		GuiProgressBar(int x, int y, uint32_t width, uint32_t height);
 
-		uint32_t getProgress() const;
+		uint32_t get_progress() const;
 
-		void setProgress(uint32_t progress);
+		void set_progress(uint32_t progress);
 
-		bool isIndeterminate() const;
+		bool is_indeterminate() const;
 
-		void setIndeterminate(bool indeterminate);
+		void set_indeterminate(bool indeterminate);
 
 		void init() override;
 
@@ -142,21 +152,29 @@ namespace ionicengine
 
 		void update() override;
 
-		void onHover() override;
+		bool is_focusable() const override;
 
-		void onMousePressed(Window &window, int button, int x, int y) override;
+		void on_hover() override;
 
-		void onMouseReleased(Window &window, int button, int x, int y) override;
+		void on_activate(Window &window) override;
+
+		void on_mouse_pressed(Window &window, int button, int x, int y) override;
+
+		void on_mouse_released(Window &window, int button, int x, int y) override;
+
+		void on_key_input(Window &window, int key, int scancode, InputAction action, int mods) override;
+
+		void on_gamepad_button_input(Window &window, InputAction action, uint8_t button) override;
 	};
 
 	class IONICENGINE_API GuiButton : public GuiComponent
 	{
 	private:
 		std::string text;
-		lambdacommon::Color hoverColor = lambdacommon::color::fromHex(
-				0xE5F1FBFF), clickColor = lambdacommon::color::fromHex(0x6CBADFFF);
+		lambdacommon::Color hover_color = lambdacommon::color::from_hex(0xE5F1FBFF),
+				click_color = lambdacommon::color::from_hex(0x6CBADFFF);
 		Font *font;
-		std::function<void(Window &window)> onButtonClickListener = [](Window &window){};
+		std::function<void(Window &window)> _on_activate_listener = [](Window &window) {};
 
 	public:
 		GuiButton(int x, int y, uint32_t width, uint32_t height, const std::string &text);
@@ -167,29 +185,35 @@ namespace ionicengine
 
 		void update() override;
 
-		void onHover() override;
+		void on_hover() override;
 
-		void onMousePressed(Window &window, int button, int x, int y) override;
+		void on_activate(Window &window) override;
 
-		void onMouseReleased(Window &window, int button, int x, int y) override;
+		void on_mouse_pressed(Window &window, int button, int x, int y) override;
 
-		const lambdacommon::Color &getHoverColor() const;
+		void on_mouse_released(Window &window, int button, int x, int y) override;
 
-		void setHoverColor(const lambdacommon::Color &hoverColor);
+		void on_key_input(Window &window, int key, int scancode, InputAction action, int mods) override;
 
-		const lambdacommon::Color &getClickColor() const;
+		void on_gamepad_button_input(Window &window, InputAction action, uint8_t button) override;
 
-		void setClickColor(const lambdacommon::Color &clickColor);
+		const lambdacommon::Color &get_hover_color() const;
 
-		void setClickListener(const std::function<void(Window &window)> &onButtonClickListener);
+		void set_hover_color(const lambdacommon::Color &hoverColor);
 
-		const std::string &getText() const;
+		const lambdacommon::Color &get_click_color() const;
 
-		void setText(const std::string &text);
+		void set_click_color(const lambdacommon::Color &clickColor);
 
-		Font *getFont() const;
+		void set_activate_listener(const std::function<void(Window &window)> &on_activate_listener);
 
-		void setFont(Font *font);
+		const std::string &get_text() const;
+
+		void set_text(const std::string &text);
+
+		Font *get_font() const;
+
+		void set_font(Font *font);
 	};
 }
 

@@ -14,12 +14,12 @@ namespace ionicengine
 	Controller::Controller(uint8_t id) : joystick(id)
 	{}
 
-	uint8_t Controller::getId() const
+	uint8_t Controller::get_id() const
 	{
 		return joystick;
 	}
 
-	std::string Controller::getName() const
+	std::string Controller::get_name() const
 	{
 		const char *name = glfwGetJoystickName(joystick);
 		if (name == nullptr)
@@ -27,7 +27,7 @@ namespace ionicengine
 		return std::string(name);
 	}
 
-	std::string Controller::getGUID() const
+	std::string Controller::get_guid() const
 	{
 		const char *name = glfwGetJoystickGUID(joystick);
 		if (name == nullptr)
@@ -35,26 +35,26 @@ namespace ionicengine
 		return std::string(name);
 	}
 
-	bool Controller::isConnected() const
+	bool Controller::is_connected() const
 	{
 		return glfwJoystickPresent(joystick) == GLFW_TRUE;
 	}
 
-	bool Controller::isGamepad() const
+	bool Controller::is_gamepad() const
 	{
 		return glfwJoystickIsGamepad(joystick) == GLFW_TRUE;
 	}
 
-	void Controller::setAxisInverted(uint8_t axis, bool inverted)
+	void Controller::set_axis_inverted(uint8_t axis, bool inverted)
 	{
 		if (axis < 6)
-			axisInverted[axis] = inverted;
+			axis_inverted[axis] = inverted;
 	}
 
-	bool Controller::isAxisInverted(uint8_t axis) const
+	bool Controller::is_axis_inverted(uint8_t axis) const
 	{
 		if (axis >= 6)
 			return false;
-		return axisInverted[axis];
+		return axis_inverted[axis];
 	}
 }

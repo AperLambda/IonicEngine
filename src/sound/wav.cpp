@@ -20,36 +20,36 @@ namespace ionicengine
 		{
 			int IONICENGINE_API load(const lambdacommon::ResourceName &name)
 			{
-				return load(name, getResourcesManager().getResourcePath(name, "wav"));
+				return load(name, get_resources_manager().get_resource_path(name, "wav"));
 			}
 
 			int IONICENGINE_API load(const lambdacommon::ResourceName &name, const lambdacommon::fs::FilePath &path)
 			{
-				if (getNextFreeBuffer(false)  < IONIC_SOUND_MAX_BUFFERS)
+				if (get_next_free_buffer(false)  < IONIC_SOUND_MAX_BUFFERS)
 				{
 					if (!path.exists())
 					{
-						printError("[IonicEngine] Cannot load sound (WAV) '" + name.toString() + "': path " +
-								   path.toString() + " cannot be found!");
+						print_error("[IonicEngine] Cannot load sound (WAV) '" + name.to_string() + "': path " +
+									path.to_string() + " cannot be found!");
 						return -404;
 					}
 
-					SF_INFO fileInfos;
-					SNDFILE *file = sf_open(path.toString().c_str(), SFM_READ, &fileInfos);
+					SF_INFO file_info;
+					SNDFILE *file = sf_open(path.to_string().c_str(), SFM_READ, &file_info);
 					if (!file)
 					{
-						printError("[IonicEngine] Cannot load sound (WAV) '" + name.toString() +
-								   "': libsndfile cannot open the file.");
+						print_error("[IonicEngine] Cannot load sound (WAV) '" + name.to_string() +
+									"': libsndfile cannot open the file.");
 						return -2;
 					}
 
-					auto nbSamples = static_cast<ALsizei>(fileInfos.channels * fileInfos.frames);
-					auto sampleRate = static_cast<ALsizei>(fileInfos.samplerate);
+					auto nb_samples = static_cast<ALsizei>(file_info.channels * file_info.frames);
+					auto sample_rate = static_cast<ALsizei>(file_info.samplerate);
 
-					std::vector<ALshort> samples(nbSamples);
-					if (sf_read_short(file, &samples[0], nbSamples) < nbSamples)
+					std::vector<ALshort> samples(nb_samples);
+					if (sf_read_short(file, &samples[0], nb_samples) < nb_samples)
 					{
-						printError("[IonicEngine] Cannot load sound (WAV) '" + name.toString() + "': invalid data.");
+						print_error("[IonicEngine] Cannot load sound (WAV) '" + name.to_string() + "': invalid data.");
 						return -3;
 					}
 
@@ -57,7 +57,7 @@ namespace ionicengine
 					sf_close(file);
 
 					ALenum format;
-					switch (fileInfos.channels)
+					switch (file_info.channels)
 					{
 						case 1:
 							format = AL_FORMAT_MONO16;
@@ -78,34 +78,34 @@ namespace ionicengine
 							format = alGetEnumValue("AL_FORMAT_71CHN16");
 							break;
 						default:
-							printError("[IonicEngine] Cannot load sound (WAV) '" + name.toString() +
-									   "': cannot determine format.");
+							print_error("[IonicEngine] Cannot load sound (WAV) '" + name.to_string() +
+										"': cannot determine format.");
 							return -4;
 					}
 
-					alBufferData(getBuffer(getNextFreeBuffer(true)), format, (void *) &samples[0], nbSamples * sizeof(ALushort),
-								 sampleRate);
+					alBufferData(get_buffer(get_next_free_buffer(true)), format, (void *) &samples[0], nb_samples * sizeof(ALushort),
+								 sample_rate);
 
 					ALenum error = alGetError();
 					if (error != AL_NO_ERROR)
 					{
-						printError("[IonicEngine] Cannot load sound (WAV) '" + name.toString() +
-								   "': OpenAL error occurred (" + std::to_string(error) + ").");
+						print_error("[IonicEngine] Cannot load sound (WAV) '" + name.to_string() +
+									"': OpenAL error occurred (" + std::to_string(error) + ").");
 						return -5;
 					}
 
-					printDebug("[IonicEngine] Sound (WAV) '" + name.toString() + "' loaded successfully with ID '" +
-							   std::to_string(getNextFreeBuffer(false) - 1) + "'!");
+					print_debug("[IonicEngine] Sound (WAV) '" + name.to_string() + "' loaded successfully with ID '" +
+								std::to_string(get_next_free_buffer(false) - 1) + "'!");
 				}
 				else
 				{
-					printError("Cannot load new sound, maximum buffers reached (" +
-							   std::to_string(IONIC_SOUND_MAX_BUFFERS) + ")");
+					print_error("Cannot load new sound, maximum buffers reached (" +
+								std::to_string(IONIC_SOUND_MAX_BUFFERS) + ")");
 					return -1;
 				}
 
-				addSoundIndex(name, getNextFreeBuffer(false)  - 1);
-				return getNextFreeBuffer(false)  - 1;
+				add_sound_index(name, get_next_free_buffer(false) - 1);
+				return get_next_free_buffer(false)  - 1;
 			}
 		}
 	}

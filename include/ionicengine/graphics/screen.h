@@ -20,6 +20,7 @@ namespace ionicengine
 	{
 	protected:
 		std::vector<GuiComponent *> components;
+		int32_t focus = -1;
 
 	public:
 		void draw(Graphics *graphics) override;
@@ -28,16 +29,24 @@ namespace ionicengine
 
 		void refresh(uint32_t width, uint32_t height);
 
-		virtual bool onMouseMove(int x, int y);
+		GuiComponent *get_focused_component() const;
 
-		virtual bool onMousePressed(Window &window, int button, int mouseX, int mouseY);
+		void change_focused_component(bool forward = true);
 
-		virtual bool onMouseReleased(Window &window, int button, int mouseX, int mouseY);
+		virtual bool on_mouse_move(int x, int y);
+
+		virtual bool on_mouse_pressed(Window &window, int button, int mouseX, int mouseY);
+
+		virtual bool on_mouse_released(Window &window, int button, int mouseX, int mouseY);
+
+		virtual bool on_key_input(Window &window, int key, int scancode, InputAction action, int mods);
+
+		virtual bool on_gamepad_button_input(Window &window, InputAction action, uint8_t button);
 	};
 
 	class IONICENGINE_API Overlay : public Screen
 	{
-		lambdacommon::Color getBackgroundColor() const override;
+		lambdacommon::Color get_background_color() const override;
 	};
 
 	class IONICENGINE_API OverlayFPS : public Overlay
@@ -58,71 +67,84 @@ namespace ionicengine
 		void updateFPS(int fps);
 	};
 
+	using namespace std::rel_ops;
+
 	class IONICENGINE_API ScreenManager
 	{
 	private:
+		uint32_t _id;
 		std::map<lambdacommon::ResourceName, Screen *> _screens;
 		std::map<lambdacommon::ResourceName, Overlay *> _overlays;
-		lambdacommon::ResourceName _activeScreen = IONICENGINE_NULL_RESOURCE;
-		std::vector<lambdacommon::ResourceName> _activeOverlays;
+		lambdacommon::ResourceName _active_screen = IONICENGINE_NULL_RESOURCE;
+		std::vector<lambdacommon::ResourceName> _active_overlays;
 
 		std::optional<Window> _window;
-		std::pair<uint32_t, uint32_t> oldFramebufferSize;
+		Dimension2D_u32 old_framebuffer_size{0, 0};
 		Graphics *graphics;
 
 		int fps{0}, updates{0};
-		float deltaTime{0.f};
+		float delta_time{0.f};
 
 	public:
 		ScreenManager();
 
 		~ScreenManager();
 
-		void registerScreen(const lambdacommon::ResourceName &name, Screen *screen);
+		void register_screen(const lambdacommon::ResourceName &name, Screen *screen);
 
-		bool hasScreen(const lambdacommon::ResourceName &name) const;
+		bool has_screen(const lambdacommon::ResourceName &name) const;
 
-		Screen *getScreen(const lambdacommon::ResourceName &name) const;
+		Screen *get_screen(const lambdacommon::ResourceName &name) const;
 
-		void registerOverlay(const lambdacommon::ResourceName &name, Overlay *overlay);
+		void register_overlay(const lambdacommon::ResourceName &name, Overlay *overlay);
 
-		bool hasOverlay(const lambdacommon::ResourceName &name) const;
+		bool has_overlay(const lambdacommon::ResourceName &name) const;
 
-		Overlay *getOverlay(const lambdacommon::ResourceName &name) const;
+		Overlay *get_overlay(const lambdacommon::ResourceName &name) const;
 
-		Screen *getActiveScreen() const;
+		Screen *get_active_screen() const;
 
-		void setActiveScreen(const lambdacommon::ResourceName &name);
+		void set_active_screen(const lambdacommon::ResourceName &name);
 
-		std::vector<lambdacommon::ResourceName> getActiveOverlays() const;
+		std::vector<lambdacommon::ResourceName> get_active_overlays() const;
 
-		void addActiveOverlay(const lambdacommon::ResourceName &name);
+		void add_active_overlay(const lambdacommon::ResourceName &name);
 
-		bool isOverlayActive(const lambdacommon::ResourceName &name);
+		bool is_overlay_active(const lambdacommon::ResourceName &name);
 
-		void removeActiveOverlay(const lambdacommon::ResourceName &name);
+		void remove_active_overlay(const lambdacommon::ResourceName &name);
 
-		void attachWindow(const Window &window);
+		void attach_window(const Window &window);
 
-		std::optional<Window> getAttachedWindow() const;
+		std::optional<Window> get_attached_window() const;
 
-		int getFPS() const;
+		int get_fps() const;
 
-		int getUpdates() const;
+		int get_updates() const;
 
-		void setDeltaTime(float deltaTime);
+		void set_delta_time(float delta_time);
 
-		float getDeltaTime() const;
+		float get_delta_time() const;
 
-		bool onMouseMove(int x, int y);
+		bool on_mouse_move(int x, int y);
 
-		bool onMouseButton(int button, InputAction action, int mods);
+		bool on_mouse_button(int button, InputAction action, int mods);
+
+		bool on_key_input(int key, int scancode, InputAction action, int mods);
+
+		bool on_gamepad_button_input(InputAction action, uint8_t button);
 
 		void render();
 
 		void update();
 
-		void startLoop();
+		void start();
+
+		void start_loop();
+
+		bool operator==(const ScreenManager &other) const;
+
+		bool operator<(const ScreenManager &other) const;
 	};
 
 	namespace screen
@@ -132,7 +154,7 @@ namespace ionicengine
 		 * @param window The Window.
 		 * @return The pointer of the ScreenManager to get.
 		 */
-		extern ScreenManager * IONICENGINE_API getScreenManager(const Window &window);
+		extern ScreenManager * IONICENGINE_API get_screen_manager(const Window &window);
 	}
 }
 

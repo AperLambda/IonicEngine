@@ -12,6 +12,7 @@
 
 #include "ionicengine_exports.h"
 #include <lambdacommon/resources.h>
+#include <lambdacommon/maths/geometry/geometry.h>
 
 #define GLFW_INCLUDE_NONE
 
@@ -22,7 +23,7 @@
 
 #define IONICENGINE_VERSION_MAJOR 1
 #define IONICENGINE_VERSION_MINOR 0
-#define IONICENGINE_VERSION_PATCH 1
+#define IONICENGINE_VERSION_PATCH 2
 
 #define IONICENGINE_NULL_RESOURCE lambdacommon::ResourceName("ionicengine", "null")
 #define IONICENGINE_GRAPHICS_GL3 lambdacommon::ResourceName("ionicengine", "graphics/gl3")
@@ -37,11 +38,13 @@ namespace ionicengine
 
 	const lambdacommon::ResourceName SHADER_TEXT = IONICENGINE_SHADERS_TEXT;
 
+	using lambdacommon::Dimension2D_u32;
+
 	struct IonicOptions
 	{
-		bool useControllers = true;
+		bool use_controllers = true;
 		bool debug = false;
-		lambdacommon::fs::FilePath path = lambdacommon::fs::getCurrentWorkingDirectory();
+		lambdacommon::fs::FilePath path = lambdacommon::fs::get_current_working_directory();
 	};
 
 	extern bool IONICENGINE_API init(IonicOptions options);
@@ -51,17 +54,23 @@ namespace ionicengine
 	 */
 	extern void IONICENGINE_API shutdown();
 
-	extern bool IONICENGINE_API isRunning();
+	extern bool IONICENGINE_API is_running();
 
-	extern void IONICENGINE_API printError(const std::string &message);
+	extern bool IONICENGINE_API post_init();
 
-	extern void IONICENGINE_API printDebug(const std::string &message);
+	extern void IONICENGINE_API run();
 
-	extern lambdacommon::ResourcesManager &IONICENGINE_API getResourcesManager();
+	extern void IONICENGINE_API stop();
 
-	extern FontManager *IONICENGINE_API getFontManager();
+	extern void IONICENGINE_API print_error(const std::string &message);
 
-	extern std::string IONICENGINE_API getVersion();
+	extern void IONICENGINE_API print_debug(const std::string &message);
+
+	extern lambdacommon::ResourcesManager &IONICENGINE_API get_resources_manager();
+
+	extern FontManager *IONICENGINE_API get_font_manager();
+
+	extern std::string IONICENGINE_API get_version();
 }
 
 #endif // IONICENGINE_LIBRARY_H

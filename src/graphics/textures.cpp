@@ -21,58 +21,58 @@ namespace ionicengine
 	 * TextureRegion
 	 */
 
-	TextureRegion::TextureRegion(float minX, float minY, float maxX, float maxY) : _minX(minX), _minY(minY),
-																				   _maxX(maxX), _maxY(maxY)
+	TextureRegion::TextureRegion(float min_x, float min_y, float max_x, float max_y) : _min_x(min_x), _min_y(min_y),
+																				   _max_x(max_x), _max_y(max_y)
 	{}
 
-	float TextureRegion::minX() const
+	float TextureRegion::min_x() const
 	{
-		return _minX;
+		return _min_x;
 	}
 
-	float TextureRegion::minY() const
+	float TextureRegion::min_y() const
 	{
-		return _minY;
+		return _min_y;
 	}
 
-	float TextureRegion::maxX() const
+	float TextureRegion::max_x() const
 	{
-		return _maxX;
+		return _max_x;
 	}
 
-	float TextureRegion::maxY() const
+	float TextureRegion::max_y() const
 	{
-		return _maxY;
+		return _max_y;
 	}
 
-	void TextureRegion::minX(float minX)
+	void TextureRegion::min_x(float min_x)
 	{
-		_minX = minX;
+		_min_x = min_x;
 	}
 
-	void TextureRegion::minY(float minY)
+	void TextureRegion::min_y(float min_y)
 	{
-		_minY = minY;
+		_min_y = min_y;
 	}
 
-	void TextureRegion::maxX(float maxX)
+	void TextureRegion::max_x(float max_x)
 	{
-		_maxX = maxX;
+		_max_x = max_x;
 	}
 
-	void TextureRegion::maxY(float maxY)
+	void TextureRegion::max_y(float max_y)
 	{
-		_maxY = maxY;
+		_max_y = max_y;
 	}
 
 	bool TextureRegion::operator==(const TextureRegion &other) const
 	{
-		return _minX == other._minX && _minY == other._minY && _maxX == other._maxX && _maxY == other._maxY;
+		return _min_x == other._min_x && _min_y == other._min_y && _max_x == other._max_x && _max_y == other._max_y;
 	}
 
 	bool TextureRegion::operator<(const TextureRegion &other) const
 	{
-		return std::tie(_minX, _minY, _maxX, _maxY) < std::tie(other._minX, other._minY, other._maxX, other._maxY);
+		return std::tie(_min_x, _min_y, _max_x, _max_y) < std::tie(other._min_x, other._min_y, other._max_x, other._max_y);
 	}
 
 	const TextureRegion TextureRegion::BASE{0.f, 0.f, 1.f, 1.f};
@@ -86,35 +86,35 @@ namespace ionicengine
 																						_channels(channels)
 	{}
 
-	uint32_t Texture::getId() const
+	uint32_t Texture::get_id() const
 	{
 		return _id;
 	}
 
-	uint32_t Texture::getWidth() const
+	uint32_t Texture::get_width() const
 	{
 		return _width;
 	}
 
-	uint32_t Texture::getHeight() const
+	uint32_t Texture::get_height() const
 	{
 		return _height;
 	}
 
-	uint32_t Texture::getChannels() const
+	uint32_t Texture::get_channels() const
 	{
 		return _channels;
 	}
 
-	TextureRegion Texture::getRegion(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const
+	TextureRegion Texture::new_region(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const
 	{
 		return {(static_cast<float>(x) / _width), (static_cast<float>(y) / _height),
 				(static_cast<float>(x + width) / _width), (static_cast<float>(y + height) / _height)};
 	}
 
-	void Texture::bind(uint32_t textureUnit) const
+	void Texture::bind(uint32_t texture_unit) const
 	{
-		glActiveTexture(textureUnit);
+		glActiveTexture(texture_unit);
 		glBindTexture(GL_TEXTURE_2D, _id);
 	}
 
@@ -123,7 +123,7 @@ namespace ionicengine
 		texture::unbind();
 	}
 
-	void Texture::deleteTexture()
+	void Texture::delete_texture()
 	{
 		unbind();
 		GLuint textures[] = {static_cast<GLuint>(_id)};
@@ -151,41 +151,40 @@ namespace ionicengine
 		std::map<lambdacommon::ResourceName, Texture> textures;
 
 		std::optional<Texture> IONICENGINE_API
-		load(const lambdacommon::ResourceName &name, const std::string &extension, TextureWrapMode wrapMode,
-			 TextureFilterMode filterMode,
-			 bool useMipmap)
+		load(const lambdacommon::ResourceName &name, const std::string &extension, TextureWrapMode wrap_mode,
+			 TextureFilterMode filter_mode, bool use_mipmap)
 		{
-			if (!getResourcesManager().doesResourceExist(name, extension))
+			if (!get_resources_manager().does_resource_exist(name, extension))
 				return std::nullopt;
 
 			//stbi_set_flip_vertically_on_load(true);
 
 			int width, height, channels;
-			auto image = stbi_load(getResourcesManager().getResourcePath(name, extension).toString().c_str(), &width,
+			auto image = stbi_load(get_resources_manager().get_resource_path(name, extension).to_string().c_str(), &width,
 								   &height, &channels, 4);
 			if (!image)
 				return {};
 			auto texture = create(name, image, static_cast<uint32_t>(width), static_cast<uint32_t>(height),
-								  static_cast<uint32_t>(channels), wrapMode, filterMode, useMipmap);
+								  static_cast<uint32_t>(channels), wrap_mode, filter_mode, use_mipmap);
 			stbi_image_free(image);
 			return texture;
 		}
 
 		Texture IONICENGINE_API
 		create(const lambdacommon::ResourceName &name, unsigned char *image, uint32_t width, uint32_t height,
-			   uint32_t channels, TextureWrapMode wrapMode, TextureFilterMode filterMode, bool useMipmap)
+			   uint32_t channels, TextureWrapMode wrap_mode, TextureFilterMode filter_mode, bool use_mipmap)
 		{
 			uint32_t id;
 			glGenTextures(1, &id);
 			glBindTexture(GL_TEXTURE_2D, id);
 			// Set texture options
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filterMode);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filterMode);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_mode);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap_mode);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter_mode);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter_mode);
 
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-			if (useMipmap)
+			if (use_mipmap)
 				glGenerateMipmap(GL_TEXTURE_2D);
 
 			unbind();
@@ -194,47 +193,52 @@ namespace ionicengine
 
 			textures.insert({name, texture});
 
-			printDebug("[IonicEngine] Texture '" + name.toString() + "' loaded successfully with ID '" +
-					   std::to_string(id) + "'!");
+			print_debug("[IonicEngine] Texture '" + name.to_string() + "' loaded successfully with ID '" +
+						std::to_string(id) + "'!");
 
 			return texture;
 		}
 
-		Texture IONICENGINE_API getTexture(const lambdacommon::ResourceName &name)
+		Texture IONICENGINE_API get_texture(const lambdacommon::ResourceName &name)
 		{
 			return textures.at(name);
 		}
 
-		bool IONICENGINE_API hasTexture(const lambdacommon::ResourceName &name)
+		bool IONICENGINE_API has_texture(const lambdacommon::ResourceName &name)
 		{
 			return textures.count(name);
 		}
 
 		TextureRegion IONICENGINE_API
-		newTextureRegion(uint32_t textureWidth, uint32_t textureHeight, uint32_t x, uint32_t y, uint32_t width,
-						 uint32_t height)
+		new_texture_region(uint32_t textureWidth, uint32_t textureHeight, uint32_t x, uint32_t y, uint32_t width,
+						   uint32_t height)
 		{
 			return {(static_cast<float>(x) / textureWidth), (static_cast<float>(y) / textureHeight),
 					(static_cast<float>(x + width) / textureWidth), (static_cast<float>(y + height) / textureHeight)};
 		}
 
-		void IONICENGINE_API deleteTexture(const lambdacommon::ResourceName &name)
+		void IONICENGINE_API delete_texture(const lambdacommon::ResourceName &name)
 		{
-			if (!hasTexture(name))
+			if (!has_texture(name))
 				return;
-			getTexture(name).deleteTexture();
+			get_texture(name).delete_texture();
+		}
+
+		void IONICENGINE_API bind(uint32_t id)
+		{
+			glBindTexture(GL_TEXTURE_2D, id);
 		}
 
 		void IONICENGINE_API unbind()
 		{
-			glBindTexture(GL_TEXTURE_2D, 0);
+			bind(0);
 		}
 
 		void IONICENGINE_API shutdown()
 		{
 			for(auto const& [key, val] : textures)
 			{
-				deleteTexture(key);
+				delete_texture(key);
 			}
 		}
 	}

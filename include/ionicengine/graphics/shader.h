@@ -33,31 +33,31 @@ namespace ionicengine
 
 		Shader(Shader &&shader) noexcept;
 
-		uint32_t getId() const;
+		uint32_t get_id() const;
 
 		Shader &use();
 
-		void setFloat(const std::string &name, float value, bool useShader = false);
+		void set_float(const std::string &name, float value, bool use_shader = false);
 
-		void setInteger(const std::string &name, int value, bool useShader = false);
+		void set_integer(const std::string &name, int value, bool use_shader = false);
 
-		void setVector2f(const std::string &name, float x, float y, bool useShader = false);
+		void set_vector_2f(const std::string &name, float x, float y, bool use_shader = false);
 
-		void setVector2f(const std::string &name, const glm::vec2 &value, bool useShader = false);
+		void set_vector_2f(const std::string &name, const glm::vec2 &value, bool use_shader = false);
 
-		void setVector3f(const std::string &name, float x, float y, float z, bool useShader = false);
+		void setVector3f(const std::string &name, float x, float y, float z, bool use_shader = false);
 
-		void setVector3f(const std::string &name, const glm::vec3 &value, bool useShader = false);
+		void setVector3f(const std::string &name, const glm::vec3 &value, bool use_shader = false);
 
-		void setVector4f(const std::string &name, float x, float y, float z, float w, bool useShader = false);
+		void set_vector_4f(const std::string &name, float x, float y, float z, float w, bool use_shader = false);
 
-		void setVector4f(const std::string &name, const glm::vec4 &value, bool useShader = false);
+		void set_vector_4f(const std::string &name, const glm::vec4 &value, bool use_shader = false);
 
-		void setColor(const lambdacommon::Color &color, bool useShader = false);
+		void set_color(const lambdacommon::Color &color, bool use_shader = false);
 
-		void setColor(const std::string &name, const lambdacommon::Color &color, bool useShader = false);
+		void set_color(const std::string &name, const lambdacommon::Color &color, bool use_shader = false);
 
-		void setMatrix4f(const std::string &name, const glm::mat4 &matrix, bool useShader = false);
+		void set_matrix_4f(const std::string &name, const glm::mat4 &matrix, bool use_shader = false);
 
 		explicit operator bool() const;
 
@@ -72,11 +72,11 @@ namespace ionicengine
 
 	namespace shader
 	{
-		extern std::optional<Shader> IONICENGINE_API compile(const lambdacommon::ResourceName &shaderName);
+		extern std::optional<Shader> IONICENGINE_API compile(const lambdacommon::ResourceName &shader_name);
 
-		extern bool IONICENGINE_API hasShader(const lambdacommon::ResourceName &shaderName);
+		extern bool IONICENGINE_API hasShader(const lambdacommon::ResourceName &shader_name);
 
-		extern const Shader &IONICENGINE_API getShader(const lambdacommon::ResourceName &shaderName);
+		extern const Shader &IONICENGINE_API getShader(const lambdacommon::ResourceName &shader_name);
 	}
 }
 

@@ -27,14 +27,14 @@ class ControllerBaseListenerImpl : public ControllerBaseListener
 public:
 	void connect(Controller *controller) override
 	{
-		cout << "Controller connected: id -> " << terminal::LIGHT_YELLOW << to_string(controller->getId())
-			 << terminal::RESET << ", name -> '" << controller->getName() << "', guid -> '" << terminal::LIGHT_YELLOW
-			 << controller->getGUID() << terminal::RESET << "'." << endl;
+		cout << "Controller connected: id -> " << terminal::LIGHT_YELLOW << to_string(controller->get_id())
+			 << terminal::RESET << ", name -> '" << controller->get_name() << "', guid -> '" << terminal::LIGHT_YELLOW
+			 << controller->get_guid() << terminal::RESET << "'." << endl;
 	}
 
 	void disconnect(Controller *controller) override
 	{
-		cout << "Controller disconnected: id -> " << terminal::LIGHT_YELLOW << to_string(controller->getId())
+		cout << "Controller disconnected: id -> " << terminal::LIGHT_YELLOW << to_string(controller->get_id())
 			 << terminal::RESET << endl;
 	}
 };
@@ -42,96 +42,96 @@ public:
 class ControllerInputListenerImpl : public ControllerInputListener
 {
 private:
-	ScreenManager *screenManager;
+	ScreenManager *screen_manager;
 public:
-	explicit ControllerInputListenerImpl(ScreenManager *screenManager) : screenManager(screenManager)
+	explicit ControllerInputListenerImpl(ScreenManager *screen_manager) : screen_manager(screen_manager)
 	{}
 
-	void onButtonPress(const Controller &controller, uint8_t button) override
+	void on_button_press(const Controller &controller, uint8_t button) override
 	{
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Pressing A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_GREEN);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Pressing A" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Pressing B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_RED);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Pressing B" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Pressing X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLUE);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Pressing X" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Pressing Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::color::fromIntRGBA(255, 255, 0));
+			cout << "[Controller " << to_string(controller.get_id()) << "] Pressing Y" << endl;
+			screen_manager->get_active_screen()->set_background_color(lambdacommon::color::from_int_rgba(255, 255, 0));
 		}
 	}
 
-	void onButtonRepeat(const Controller &controller, uint8_t button) override
+	void on_button_repeat(const Controller &controller, uint8_t button) override
 	{
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Repeating A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_GREEN);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Repeating A" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_GREEN);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Repeating B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_RED);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Repeating B" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_RED);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Repeating X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLUE);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Repeating X" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLUE);
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Repeating Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(lambdacommon::color::fromIntRGBA(255, 255, 0));
+			cout << "[Controller " << to_string(controller.get_id()) << "] Repeating Y" << endl;
+			screen_manager->get_active_screen()->set_background_color(lambdacommon::color::from_int_rgba(255, 255, 0));
 		}
 	}
 
-	void onButtonRelease(const Controller &controller, uint8_t button) override
+	void on_button_release(const Controller &controller, uint8_t button) override
 	{
 		if (button == GLFW_GAMEPAD_BUTTON_A)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Releasing A" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Releasing A" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_B)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Releasing B" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Releasing B" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLACK);
 			//backgroundColor = Color::COLOR_BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_X)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Releasing X" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Releasing X" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 		else if (button == GLFW_GAMEPAD_BUTTON_Y)
 		{
-			cout << "[Controller " << to_string(controller.getId()) << "] Releasing Y" << endl;
-			screenManager->getActiveScreen()->setBackgroundColor(Color::COLOR_BLACK);
+			cout << "[Controller " << to_string(controller.get_id()) << "] Releasing Y" << endl;
+			screen_manager->get_active_screen()->set_background_color(Color::COLOR_BLACK);
 			//backgroundColor = Color::BLACK;
 		}
 	}
 
-	void onAxisMove(const Controller &controller, uint8_t axis, float value) override
+	void on_axis_move(const Controller &controller, uint8_t axis, float value) override
 	{
-		cout << "[Controller " << to_string(controller.getId()) << "] Moving axis " << to_string(axis) << " with value "
-			 << to_string(value) << " is inverted " << lstring::to_string(controller.isAxisInverted(axis)) << endl;
+		cout << "[Controller " << to_string(controller.get_id()) << "] Moving axis " << to_string(axis) << " with value "
+			 << to_string(value) << " is inverted " << lstring::to_string(controller.is_axis_inverted(axis)) << endl;
 	}
 
-	void onAxisRelease(const Controller &controller, uint8_t axis) override
+	void on_axis_release(const Controller &controller, uint8_t axis) override
 	{
-		cout << "[Controller " << to_string(controller.getId()) << "] Releasing axis " << to_string(axis) << endl;
+		cout << "[Controller " << to_string(controller.get_id()) << "] Releasing axis " << to_string(axis) << endl;
 	}
 };
 
@@ -147,8 +147,8 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		graphics->setColor(Color::COLOR_WHITE);
-		graphics->drawText(font, 2, 3, "FPS: " + to_string(fps));
+		graphics->set_color(Color::COLOR_WHITE);
+		graphics->draw_text(font, 2, 3, "FPS: " + to_string(fps));
 	}
 
 	void update() override
@@ -159,14 +159,14 @@ public:
 
 int main()
 {
-	cout << "Starting joysticks.cpp with IonicEngine v" << ionicengine::getVersion() << "..." << endl;
+	cout << "Starting joysticks.cpp with IonicEngine v" << ionicengine::get_version() << "..." << endl;
 	terminal::setup();
 	IonicOptions options;
 	options.debug = true;
 	ionicengine::init(options);
 	glfwSetErrorCallback(error_callback);
 
-	auto gamecontrollerdb = fs::getCurrentWorkingDirectory() / "gamecontrollerdb.txt";
+	auto gamecontrollerdb = fs::get_current_working_directory() / "gamecontrollerdb.txt";
 	if (!gamecontrollerdb.exists())
 	{
 		cerr << "gamecontrollerdb.txt not found." << endl;
@@ -175,7 +175,7 @@ int main()
 	}
 	ifstream read{};
 	ostringstream mappings{};
-	read.open(gamecontrollerdb.toAbsolute().toString());
+	read.open(gamecontrollerdb.to_absolute().to_string());
 
 	if (read.is_open())
 	{
@@ -188,47 +188,45 @@ int main()
 
 	glfwUpdateGamepadMappings(mappings.str().c_str());
 
-	for (Controller *controller : InputManager::INPUT_MANAGER.getControllers())
+	for (Controller *controller : InputManager::INPUT_MANAGER.get_controllers())
 	{
-		controller->setAxisInverted(3, true);
+		controller->set_axis_inverted(3, true);
 		cout << "Controller{" << terminal::YELLOW << "\"id\"" << terminal::RESET << ':' << terminal::CYAN
-			 << to_string(controller->getId()) << terminal::RESET << ',' << terminal::YELLOW << "\"name\""
-			 << terminal::RESET << ':' << terminal::CYAN << '"' << controller->getName() << '"' << terminal::RESET
+			 << to_string(controller->get_id()) << terminal::RESET << ',' << terminal::YELLOW << "\"name\""
+			 << terminal::RESET << ':' << terminal::CYAN << '"' << controller->get_name() << '"' << terminal::RESET
 			 << ','
 			 << terminal::YELLOW << "\"guid\'" << terminal::RESET << ':' << terminal::CYAN << '"'
-			 << controller->getGUID() << '"' << terminal::RESET << ','
-			 << terminal::YELLOW << "\"isConnected\"" << terminal::RESET << ':' << terminal::CYAN
-			 << lstring::to_string(controller->isConnected()) << terminal::RESET << ','
-			 << terminal::YELLOW << "\"isGamepad\"" << terminal::RESET << ':' << terminal::CYAN
-			 << lstring::to_string(controller->isGamepad()) << terminal::RESET << '}' << endl;
+			 << controller->get_guid() << '"' << terminal::RESET << ','
+			 << terminal::YELLOW << "\"is_connected\"" << terminal::RESET << ':' << terminal::CYAN
+			 << lstring::to_string(controller->is_connected()) << terminal::RESET << ','
+			 << terminal::YELLOW << "\"is_gamepad\"" << terminal::RESET << ':' << terminal::CYAN
+			 << lstring::to_string(controller->is_gamepad()) << terminal::RESET << '}' << endl;
 	}
 
-	ScreenManager screenManager{};
+	ScreenManager screen_manager{};
 
 	ControllerBaseListenerImpl listener;
-	InputManager::INPUT_MANAGER.addControllerBaseListener(&listener);
-	ControllerInputListenerImpl inputListener{&screenManager};
-	InputManager::INPUT_MANAGER.addControllerInputListener(&inputListener);
+	InputManager::INPUT_MANAGER.add_controller_base_listener(&listener);
+	ControllerInputListenerImpl input_listener{&screen_manager};
+	InputManager::INPUT_MANAGER.add_controller_input_listener(&input_listener);
 
-	auto windowOptions = ionicengine::DEFAULT_WINDOW_OPTIONS;
-	windowOptions.resizable = false;
-	windowOptions.context_version_major = 3;
-	windowOptions.context_version_minor = 3;
-	windowOptions.opengl_profile = GLFW_OPENGL_CORE_PROFILE;
-	windowOptions.samples = 4;
-	auto window = window::createWindow("IonicEngine - Game Controllers", 512, 512, windowOptions);
-	window.requestContext();
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
+	auto window_options = ionicengine::DEFAULT_WINDOW_OPTIONS;
+	window_options.resizable = false;
+	window_options.context_version_major = 3;
+	window_options.context_version_minor = 3;
+	window_options.opengl_profile = GLFW_OPENGL_CORE_PROFILE;
+	window_options.samples = 4;
+	auto window = window::create_window("IonicEngine - Game Controllers", 512, 512, window_options);
+	window.request_context();
+	if (!ionicengine::post_init())
 	{
 		ionicengine::shutdown();
-		return err;
+		return EXIT_FAILURE;
 	}
 
 	glEnable(GL_MULTISAMPLE);
 
-	auto font = ionicengine::getFontManager()->loadFont(string{"Roboto.ttf"}, 14);
+	auto font = ionicengine::get_font_manager()->load_font(string{"Roboto.ttf"}, 14);
 	if (!font)
 	{
 		ionicengine::shutdown();
@@ -236,14 +234,14 @@ int main()
 	}
 
 	OverlayFPS overlay{font.value()};
-	screenManager.registerOverlay(IONICENGINE_OVERLAYS_FPS, &overlay);
-	screenManager.addActiveOverlay(IONICENGINE_OVERLAYS_FPS);
+	screen_manager.register_overlay(IONICENGINE_OVERLAYS_FPS, &overlay);
+	screen_manager.add_active_overlay(IONICENGINE_OVERLAYS_FPS);
 
-	getGraphicsManager()->init();
+	get_graphics_manager()->init();
 
-	screenManager.attachWindow(window);
+	screen_manager.attach_window(window);
 
-	screenManager.startLoop();
+	screen_manager.start_loop();
 
 	/*static double limitFPS = 1.0 / 144.0;
 
@@ -251,7 +249,7 @@ int main()
 	double deltaTime = 0, nowTime = 0;
 	int frames = 0, updates = 0;
 
-	while (!window.shouldClose())
+	while (!window.should_close())
 	{
 		screenManager.render();
 		//glClearColor(backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
@@ -271,14 +269,14 @@ int main()
 		// - Render at maximum possible frames
 		frames++;
 
-		glfwSwapBuffers(window.getHandle());
+		glfwSwapBuffers(window.get_handle());
 		glfwPollEvents();
 
 		// - Reset after one second
 		if (glfwGetTime() - timer > 1.0)
 		{
 			timer++;
-			window.setTitle("IonicEngine - Game Controllers - " + to_string(frames) + "FPS");
+			window.set_title("IonicEngine - Game Controllers - " + to_string(frames) + "FPS");
 			//overlay.fps = frames;
 			updates = 0, frames = 0;
 		}

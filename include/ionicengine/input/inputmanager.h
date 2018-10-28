@@ -35,37 +35,37 @@ namespace ionicengine
 	class IONICENGINE_API ControllerInputListener
 	{
 	public:
-		virtual void onButtonPress(const Controller &controller, uint8_t button) = 0;
+		virtual void on_button_press(const Controller &controller, uint8_t button) = 0;
 
-		virtual void onButtonRepeat(const Controller &controller, uint8_t button) = 0;
+		virtual void on_button_repeat(const Controller &controller, uint8_t button) = 0;
 
-		virtual void onButtonRelease(const Controller &controller, uint8_t button) = 0;
+		virtual void on_button_release(const Controller &controller, uint8_t button) = 0;
 
-		virtual void onAxisMove(const Controller &controller, uint8_t axis, float value) = 0;
+		virtual void on_axis_move(const Controller &controller, uint8_t axis, float value) = 0;
 
-		virtual void onAxisRelease(const Controller &controller, uint8_t axis) = 0;
+		virtual void on_axis_release(const Controller &controller, uint8_t axis) = 0;
 	};
 
 	class IONICENGINE_API KeyboardListener
 	{
 	public:
-		virtual void onKeyInput(Window &window, int key, int scancode, InputAction action, int mods) = 0;
+		virtual void on_key_input(Window &window, int key, int scancode, InputAction action, int mods) = 0;
 
-		virtual void onCharInput(Window &window, char32_t codepoint) = 0;
+		virtual void on_char_input(Window &window, char32_t codepoint) = 0;
 	};
 
 	class IONICENGINE_API MouseListener
 	{
 	public:
-		virtual void onMouseButton(Window &window, int button, InputAction action, int mods) = 0;
+		virtual void on_mouse_button(Window &window, int button, InputAction action, int mods) = 0;
 
-		virtual void onMousePosition(Window &window, double x, double y) = 0;
+		virtual void on_mouse_position(Window &window, double x, double y) = 0;
 		
-		virtual void onMouseEnter(Window &window) = 0;
+		virtual void on_mouse_enter(Window &window) = 0;
 		
-		virtual void onMouseExit(Window &window) = 0;
+		virtual void on_mouse_exit(Window &window) = 0;
 
-		virtual void onMouseScroll(Window &window, double xoffset, double yoffset) = 0;
+		virtual void on_mouse_scroll(Window &window, double xoffset, double yoffset) = 0;
 	};
 
 	class IONICENGINE_API InputManager
@@ -73,12 +73,12 @@ namespace ionicengine
 	private:
 		std::vector<Controller *> controllers;
 
-		std::vector<KeyboardListener *> keyboardListeners;
-		std::vector<MouseListener *> mouseListeners;
-		std::vector<ControllerBaseListener *> controllerBaseListeners;
-		std::vector<ControllerInputListener *> controllerInputListeners;
+		std::vector<KeyboardListener *> keyboard_listeners;
+		std::vector<MouseListener *> mouse_listeners;
+		std::vector<ControllerBaseListener *> controller_base_listeners;
+		std::vector<ControllerInputListener *> controller_input_listeners;
 
-		std::thread *inputThread = nullptr;
+		std::thread *input_thread = nullptr;
 
 		InputManager();
 
@@ -89,7 +89,7 @@ namespace ionicengine
 		 *
 		 * This function inits the input manager.
 		 */
-		void init(bool useController = true);
+		void init(bool use_controllers = true);
 
 		/*! @biref Shutdown the input manager.
 		 * DO NOT CALL THIS ON YOURSELF!
@@ -100,7 +100,7 @@ namespace ionicengine
 		 * Attaches a window to the input manager.
 		 * @param window Window to attach.
 		 */
-		void attachWindow(const Window &window);
+		void attach_window(const Window &window);
 
 		/*!
 		 * Gets the name of a keyboard key.
@@ -108,49 +108,49 @@ namespace ionicengine
 		 * @param scancode The scancode of the key to query.
 		 * @return The UTF-8 encoded, layout-specific name of the key, or {@code NULL}
 		 */
-		std::string getKeyName(int key, int scancode);
+		std::string get_key_name(int key, int scancode);
 
 		/*!
 		 * Adds a keyboard listener.
 		 * @param listener The pointer of the listener to add.
 		 */
-		void addKeyboardListener(KeyboardListener *listener);
+		void add_keyboard_listener(KeyboardListener *listener);
 
 		/*!
 		 * Removes a keyboard listener.
 		 * @param listener The pointer of the listener to add.
 		 */
-		bool removeKeyboardListener(KeyboardListener *listener);
+		bool remove_keyboard_listener(KeyboardListener *listener);
 
 		/*!
 		 * Checks whether a keyboard listener is registered.
 		 * @param listener The pointer of the listener to check.
 		 * @return True if the listener was found else false.
 		 */
-		bool hasKeyboardListener(KeyboardListener *listener);
+		bool has_keyboard_listener(KeyboardListener *listener);
 
-		std::vector<KeyboardListener *> getKeyboardListeners() const;
+		std::vector<KeyboardListener *> get_keyboard_listeners() const;
 
 		/*!
 		 * Adds a mouse listener.
 		 * @param listener The pointer of the listener to add.
 		 */
-		void addMouseListener(MouseListener *listener);
+		void add_mouse_listener(MouseListener *listener);
 
 		/*!
 		 * Removes a mouse listener.
 		 * @param listener The pointer of the listener to add.
 		 */
-		bool removeMouseListener(MouseListener *listener);
+		bool remove_mouse_listener(MouseListener *listener);
 
 		/*!
 		 * Checks whether a mouse listener is registered.
 		 * @param listener The pointer of the listener to check.
 		 * @return True if the listener was found else false.
 		 */
-		bool hasMouseListener(MouseListener *listener);
+		bool has_mouse_listener(MouseListener *listener);
 
-		std::vector<MouseListener *> getMouseListeners() const;
+		std::vector<MouseListener *> get_mouse_listeners() const;
 
 		/*! @brief Gets an controller by his defined ID.
 		 *
@@ -161,7 +161,7 @@ namespace ionicengine
 		 *
 		 * @return The instance of the controller.
 		 */
-		Controller *getController(uint8_t id);
+		Controller *get_controller(uint8_t id);
 
 		/*! @brief Gets all controllers.
 		 *
@@ -169,7 +169,7 @@ namespace ionicengine
 		 *
 		 * @return All controllers.
 		 */
-		std::vector<Controller *> getControllers() const;
+		std::vector<Controller *> get_controllers() const;
 
 		/*! @brief Adds an basic listener.
 		 *
@@ -177,7 +177,7 @@ namespace ionicengine
 		 *
 		 * @param listener The pointer of the listener to add.
 		 */
-		void addControllerBaseListener(ControllerBaseListener *listener);
+		void add_controller_base_listener(ControllerBaseListener *listener);
 
 		/*! @brief Removes an basic listener.
 		 *
@@ -187,7 +187,7 @@ namespace ionicengine
 		 *
 		 * @return True whether the listener was removed else false.
 		 */
-		bool removeControllerBaseListener(ControllerBaseListener *listener);
+		bool remove_controller_base_listener(ControllerBaseListener *listener);
 
 		/*! @brief Checks whether an basic listener is registered.
 		 *
@@ -197,9 +197,9 @@ namespace ionicengine
 		 *
 		 * @return True whether the listener was found else false.
 		 */
-		bool hasControllerBaseListener(ControllerBaseListener *listener);
+		bool has_controller_base_listener(ControllerBaseListener *listener);
 
-		std::vector<ControllerBaseListener *> getControllerBaseListeners() const;
+		std::vector<ControllerBaseListener *> get_controller_base_listeners() const;
 
 		/*! @brief Adds an input listener.
 		 *
@@ -207,7 +207,7 @@ namespace ionicengine
 		 *
 		 * @param listener The pointer of the listener to add.
 		 */
-		void addControllerInputListener(ControllerInputListener *listener);
+		void add_controller_input_listener(ControllerInputListener *listener);
 
 		/*! @brief Removes an input listener.
 		 *
@@ -215,7 +215,7 @@ namespace ionicengine
 		 *
 		 * @return True whether the listener was removed else false.
 		 */
-		bool removeControllerInputListener(ControllerInputListener *listener);
+		bool remove_controller_input_listener(ControllerInputListener *listener);
 
 		/*! @brief Checks whether an input listener is registered.
 		 *
@@ -225,9 +225,9 @@ namespace ionicengine
 		 *
 		 * @return True whether the listener was found else false.
 		 */
-		bool hasControllerInputListener(ControllerInputListener *listener);
+		bool has_controller_input_listener(ControllerInputListener *listener);
 
-		std::vector<ControllerInputListener *> getControllerInputListeners() const;
+		std::vector<ControllerInputListener *> get_controller_input_listeners() const;
 
 		// For singleton.
 		InputManager(InputManager const &) = delete;

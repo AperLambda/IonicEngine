@@ -48,41 +48,41 @@ namespace ionicengine
 	public:
 		Window(GLFWwindow *glfwWindow);
 
-		GLFWwindow *getHandle() const;
+		GLFWwindow *get_handle() const;
 
-		void setTitle(const std::string &title);
+		void set_title(const std::string &title);
 
-		void setSize(uint32_t width, uint32_t height);
+		void set_size(uint32_t width, uint32_t height);
 
-		std::pair<uint32_t, uint32_t> getSize() const;
+		Dimension2D_u32 get_size() const;
 
-		std::pair<uint32_t, uint32_t> getFramebufferSize() const;
+		Dimension2D_u32 get_framebuffer_size() const;
 
-		std::pair<int, int> getPosition() const;
+		std::pair<int, int> get_position() const;
 
-		std::pair<double, double> getCursorPosition() const;
+		std::pair<double, double> get_cursor_position() const;
 
-		void setPosition(int x, int y);
+		void set_position(int x, int y);
 
-		std::pair<float, float> getContentScale();
+		std::pair<float, float> get_content_scale();
 
-		std::optional<Monitor> getMonitor() const;
+		std::optional<Monitor> get_monitor() const;
 
-		bool shouldClose() const;
+		bool should_close() const;
 
-		void setShouldClose(bool shouldClose);
+		void set_should_close(bool should_close);
 
 		void show() const;
 
 		void hide() const;
 
-		void setVisible(bool visible) const;
+		void set_visible(bool visible) const;
 
-		bool isVisible() const;
+		bool is_visible() const;
 
 		void focus() const;
 
-		bool isFocused() const;
+		bool is_focused() const;
 
 		void iconify() const;
 
@@ -90,15 +90,13 @@ namespace ionicengine
 
 		void restore() const;
 
-		void setOpacity(float opacity);
+		void set_opacity(float opacity);
 
-		float getOpacity();
+		float get_opacity();
 
-		void requestAttention() const;
+		void request_attention() const;
 
-		void requestContext() const;
-
-		bool initContext() const;
+		void request_context() const;
 
 		void destroy();
 
@@ -111,17 +109,17 @@ namespace ionicengine
 
 	namespace window
 	{
-		extern Window IONICENGINE_API createWindow(const std::string &title, std::pair<uint32_t, uint32_t> size,
-												   const WindowOptions &options = DEFAULT_WINDOW_OPTIONS,
-												   const std::optional<const Monitor> &monitor = std::nullopt);
+		extern Window IONICENGINE_API create_window(const std::string &title, std::pair<uint32_t, uint32_t> size,
+													const WindowOptions &options = DEFAULT_WINDOW_OPTIONS,
+													const std::optional<const Monitor> &monitor = std::nullopt);
 
-		extern Window IONICENGINE_API createWindow(const std::string &title, uint32_t width, uint32_t height,
-												   const WindowOptions &options = DEFAULT_WINDOW_OPTIONS,
-												   const std::optional<const Monitor> &monitor = std::nullopt);
+		extern Window IONICENGINE_API create_window(const std::string &title, uint32_t width, uint32_t height,
+													const WindowOptions &options = DEFAULT_WINDOW_OPTIONS,
+													const std::optional<const Monitor> &monitor = std::nullopt);
 
-		extern std::optional<Window> IONICENGINE_API getByHandle(GLFWwindow *window);
+		extern std::optional<Window> IONICENGINE_API get_by_handle(GLFWwindow *window);
 
-		extern void IONICENGINE_API destroyAll();
+		extern void IONICENGINE_API destroy_all();
 	}
 }
 

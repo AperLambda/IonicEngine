@@ -30,19 +30,19 @@ namespace ionicengine
 		/*!
 		 * The bit depth of the red channel of the video mode.
 		 */
-		int redBits;
+		int red_bits;
 		/*!
 		 * The bit depth of the green channel of the video mode.
 		 */
-		int greenBits;
+		int green_bits;
 		/*!
 		 * The bit depth of the blue channel of the video mode.
 		 */
-		int blueBits;
+		int blue_bits;
 		/*!
 		 * The refresh rate, in Hz, of the video mode.
 		 */
-		int refreshRate;
+		int refresh_rate;
 	};
 
 	class IONICENGINE_API Monitor
@@ -61,21 +61,21 @@ namespace ionicengine
 		 * Gets the GLFW handle of the monitor.
 		 * @return The handle of the monitor.
 		 */
-		GLFWmonitor *getHandle() const;
+		GLFWmonitor *get_handle() const;
 
 		/*!
 		 * Gets the name of the monitor.
 		 * @return The name of the monitor.
 		 */
-		std::string getName() const;
+		std::string get_name() const;
 
 		/*!
 		 * Returns the current mode of this monitor.
 		 * @return The current mode of the monitor.
 		 */
-		VideoMode getVideoMode() const;
+		VideoMode get_video_mode() const;
 
-		bool isEmpty() const;
+		bool is_empty() const;
 
 		bool operator==(const Monitor &other) const;
 
@@ -86,9 +86,9 @@ namespace ionicengine
 
 	namespace monitor
 	{
-		extern std::vector<Monitor> IONICENGINE_API getMonitors();
+		extern std::vector<Monitor> IONICENGINE_API get_monitors();
 
-		extern const Monitor IONICENGINE_API getPrimaryMonitor();
+		extern const Monitor IONICENGINE_API get_primary_monitor();
 	}
 };
 

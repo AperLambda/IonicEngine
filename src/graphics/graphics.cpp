@@ -8,6 +8,7 @@
  */
 
 #include "../../include/ionicengine/graphics/graphics.h"
+#include "../../include/ionicengine/gl/buffer.h"
 #include <utility>
 
 using namespace lambdacommon;
@@ -20,56 +21,57 @@ using namespace lambdacommon;
                                 glDisable(GL_BLEND);
 
 #define toFloat(i) static_cast<float>(i)
-#define clampX(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(getWidth())))
-#define clampY(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(getHeight())))
+#define clampX(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(get_width())))
+#define clampY(i) toFloat(lambdacommon::maths::clamp(i, 0.f, static_cast<float>(get_height())))
 
 namespace ionicengine
 {
-	Graphics::Graphics(const std::pair<uint32_t, uint32_t> &framebufferSize)
-			: _framebufferSize(framebufferSize), _projection2d(
-			glm::ortho(0.0f, static_cast<float>(framebufferSize.first), static_cast<float>(framebufferSize.second),
+	Graphics::Graphics(const Dimension2D_u32 &framebufferSize)
+			: _framebuffer_size(framebufferSize), _projection2d(
+			glm::ortho(0.0f, static_cast<float>(framebufferSize.get_width()),
+					   static_cast<float>(framebufferSize.get_height()),
 					   0.0f))
 	{}
 
 	Graphics::~Graphics() = default;
 
-	std::pair<uint32_t, uint32_t> Graphics::getFramebufferSize() const
+	Dimension2D_u32 Graphics::get_framebuffer_size() const
 	{
-		return _framebufferSize;
+		return _framebuffer_size;
 	}
 
-	uint32_t Graphics::getWidth() const
+	uint32_t Graphics::get_width() const
 	{
-		return _framebufferSize.first;
+		return _framebuffer_size.get_width();
 	}
 
-	uint32_t Graphics::getHeight() const
+	uint32_t Graphics::get_height() const
 	{
-		return _framebufferSize.second;
+		return _framebuffer_size.get_height();
 	}
 
-	float Graphics::getFloatingWidth() const
+	float Graphics::get_floating_width() const
 	{
-		return static_cast<float>(this->getWidth());
+		return static_cast<float>(this->get_width());
 	}
 
-	float Graphics::getFloatingHeight() const
+	float Graphics::get_floating_height() const
 	{
-		return static_cast<float>(this->getHeight());
+		return static_cast<float>(this->get_height());
 	}
 
-	glm::mat4 Graphics::getOrthoProjection() const
+	glm::mat4 Graphics::get_ortho_projection() const
 	{
 		return _projection2d;
 	}
 
-	void Graphics::updateFramebufferSize(uint32_t width, uint32_t height)
+	void Graphics::update_framebuffer_size(uint32_t width, uint32_t height)
 	{
-		_framebufferSize = {width, height};
+		_framebuffer_size = {width, height};
 		_projection2d = glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f);
 	}
 
-	void Graphics::resetTransform()
+	void Graphics::reset_transform()
 	{
 		_transform = glm::mat4{1.0f};
 	}
@@ -99,7 +101,7 @@ namespace ionicengine
 		_transform = glm::rotate(_transform, radians, axis);
 	}
 
-	void Graphics::rotate2DCentered(float radians, uint32_t width, uint32_t height)
+	void Graphics::rotate_2d_centered(float radians, uint32_t width, uint32_t height)
 	{
 		float x = width / 2.f;
 		float y = height / 2.f;
@@ -119,41 +121,42 @@ namespace ionicengine
 		_transform = glm::scale(_transform, scale);
 	}
 
-	void Graphics::drawLine2D(int x, int y, int x2, int y2)
+	void Graphics::draw_line_2d(int x, int y, int x2, int y2)
 	{
-		drawLine2D(static_cast<float>(x), static_cast<float>(y), static_cast<float>(x2), static_cast<float>(y2));
+		draw_line_2d(static_cast<float>(x), static_cast<float>(y), static_cast<float>(x2), static_cast<float>(y2));
 	}
 
-	void Graphics::drawQuad(int x, int y, uint32_t width, uint32_t height)
+	void Graphics::draw_quad(int x, int y, uint32_t width, uint32_t height)
 	{
-		drawQuad(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height));
+		draw_quad(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height));
 	}
 
-	void Graphics::drawQuadOutline(int x, int y, uint32_t width, uint32_t height)
+	void Graphics::draw_quad_outline(int x, int y, uint32_t width, uint32_t height)
 	{
-		drawQuadOutline(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
-						static_cast<float>(height));
+		draw_quad_outline(static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+						  static_cast<float>(height));
 	}
 
-	void Graphics::drawImage(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
-							 const TextureRegion &region)
+	void Graphics::draw_image(const lambdacommon::ResourceName &texture, int x, int y, uint32_t width, uint32_t height,
+							  const TextureRegion &region)
 	{
-		drawImage(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
-				  static_cast<float>(height), region);
+		draw_image(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+				   static_cast<float>(height), region);
 	}
 
-	void Graphics::drawImage(const lambdacommon::ResourceName &texture, float x, float y, float width, float height,
-							 const TextureRegion &region)
+	void Graphics::draw_image(const lambdacommon::ResourceName &texture, float x, float y, float width, float height,
+							  const TextureRegion &region)
 	{
-		if (!texture::hasTexture(texture))
+		if (!texture::has_texture(texture))
 			return;
-		drawImage(texture::getTexture(texture), x, y, width, height, region);
+		draw_image(texture::get_texture(texture), x, y, width, height, region);
 	}
 
-	void Graphics::drawImage(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
-							 const TextureRegion &region)
+	void Graphics::draw_image(const Texture &texture, int x, int y, uint32_t width, uint32_t height,
+							  const TextureRegion &region)
 	{
-		drawImage(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width), static_cast<float>(height), region);
+		draw_image(texture, static_cast<float>(x), static_cast<float>(y), static_cast<float>(width),
+				   static_cast<float>(height), region);
 	}
 
 	class GraphicsGL3 : public Graphics
@@ -161,17 +164,17 @@ namespace ionicengine
 	private:
 		uint32_t vao, vbo;
 	public:
-		explicit GraphicsGL3(const std::pair<uint32_t, uint32_t> &framebufferSize, uint32_t vao, uint32_t vbo)
-				: Graphics(framebufferSize), vao(vao), vbo(vbo)
+		explicit GraphicsGL3(const Dimension2D_u32 &framebuffer_size, uint32_t vao, uint32_t vbo)
+				: Graphics(framebuffer_size), vao(vao), vbo(vbo)
 		{
 		}
 
-		void setColor(const lambdacommon::Color &color) override
+		void set_color(const lambdacommon::Color &color) override
 		{
 			this->color = color;
 		}
 
-		void drawLine2D(float x, float y, float x2, float y2) override
+		void draw_line_2d(float x, float y, float x2, float y2) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -189,10 +192,10 @@ namespace ionicengine
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
 			shader.use();
-			shader.setMatrix4f("projection", _projection2d);
-			shader.setMatrix4f("model", model);
-			shader.setMatrix4f("transform", _transform);
-			shader.setColor(color);
+			shader.set_matrix_4f("projection", _projection2d);
+			shader.set_matrix_4f("model", model);
+			shader.set_matrix_4f("transform", _transform);
+			shader.set_color(color);
 
 			vao::bind(this->vao);
 
@@ -210,7 +213,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawQuad(float x, float y, float width, float height) override
+		void draw_quad(float x, float y, float width, float height) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -225,12 +228,12 @@ namespace ionicengine
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
 			shader.use();
-			shader.setMatrix4f("projection", _projection2d);
-			shader.setMatrix4f("model", model);
-			shader.setMatrix4f("transform", _transform);
-			shader.setColor(color);
+			shader.set_matrix_4f("projection", _projection2d);
+			shader.set_matrix_4f("model", model);
+			shader.set_matrix_4f("transform", _transform);
+			shader.set_color(color);
 
-			vao::bind(quadVAO);
+			vao::bind(quad_vao);
 			// Render quad.
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			vao::unbind();
@@ -239,7 +242,7 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawQuadOutline(float x, float y, float width, float height) override
+		void draw_quad_outline(float x, float y, float width, float height) override
 		{
 			if (!shader::hasShader(IONICENGINE_SHADERS_2DBASIC))
 				return;
@@ -254,12 +257,12 @@ namespace ionicengine
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_2DBASIC);
 			shader.use();
-			shader.setMatrix4f("projection", _projection2d);
-			shader.setMatrix4f("model", model);
-			shader.setMatrix4f("transform", _transform);
-			shader.setColor(color);
+			shader.set_matrix_4f("projection", _projection2d);
+			shader.set_matrix_4f("model", model);
+			shader.set_matrix_4f("transform", _transform);
+			shader.set_color(color);
 
-			vao::bind(quadOutlineVAO);
+			vao::bind(quad_outline_vao);
 			// Render quad.
 			glDrawArrays(GL_LINE_LOOP, 0, 4);
 			vao::unbind();
@@ -268,8 +271,8 @@ namespace ionicengine
 			DISABLE_OPENGL_OPTIONS;
 		}
 
-		void drawImage(const Texture &texture, float x, float y, float width, float height,
-					   const TextureRegion &region) override
+		void draw_image(const Texture &texture, float x, float y, float width, float height,
+						const TextureRegion &region) override
 		{
 			if (!texture)
 				return;
@@ -284,28 +287,28 @@ namespace ionicengine
 			model = glm::scale(model, {width, height, 1.f});
 
 			GLfloat texCoords[4][2] = {
-					{region.minX(), region.maxY()},
-					{region.maxX(), region.maxY()},
-					{region.minX(), region.minY()},
-					{region.maxX(), region.minY()}
+					{region.min_x(), region.max_y()},
+					{region.max_x(), region.max_y()},
+					{region.min_x(), region.min_y()},
+					{region.max_x(), region.min_y()}
 			};
 
 			// Shader
 			auto shader = shader::getShader(IONICENGINE_SHADERS_IMAGE);
 			shader.use();
-			shader.setMatrix4f("projection", _projection2d);
-			shader.setMatrix4f("model", model);
-			shader.setMatrix4f("transform", _transform);
+			shader.set_matrix_4f("projection", _projection2d);
+			shader.set_matrix_4f("model", model);
+			shader.set_matrix_4f("transform", _transform);
 			for (size_t i = 0; i < 4; i++)
 			{
-				shader.setVector2f("texCoordsData[" + std::to_string(i) + "]", texCoords[i][0], texCoords[i][1]);
+				shader.set_vector_2f("texCoordsData[" + std::to_string(i) + "]", texCoords[i][0], texCoords[i][1]);
 			}
-			shader.setInteger("image", 0);
-			shader.setColor(color);
+			shader.set_integer("image", 0);
+			shader.set_color(color);
 
 			texture.bind();
 
-			vao::bind(textureVAO);
+			vao::bind(texture_vao);
 			// Render quad.
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 			vao::unbind();
@@ -317,8 +320,8 @@ namespace ionicengine
 		}
 
 		void
-		drawText(const Font &font, int xPos, int yPos, const std::string &text, uint32_t maxWidth, uint32_t maxHeight,
-				 float scale) override
+		draw_text(const Font &font, int xPos, int yPos, const std::string &text, uint32_t maxWidth, uint32_t maxHeight,
+				  float scale) override
 		{
 			if (!shader::hasShader(SHADER_TEXT))
 				return;
@@ -328,10 +331,10 @@ namespace ionicengine
 			// Shader
 			auto shader = shader::getShader(SHADER_TEXT);
 			shader.use();
-			shader.setMatrix4f("projection", _projection2d);
-			shader.setMatrix4f("transform", _transform);
-			shader.setInteger("text", 0);
-			shader.setColor(color);
+			shader.set_matrix_4f("projection", _projection2d);
+			shader.set_matrix_4f("transform", _transform);
+			shader.set_integer("text", 0);
+			shader.set_color(color);
 			glActiveTexture(GL_TEXTURE0);
 			vao::bind(this->vao);
 
@@ -339,49 +342,49 @@ namespace ionicengine
 
 			auto x = static_cast<float>(xPos);
 			auto y = static_cast<float>(yPos);
-			float originalX = x;
-			float originalY = y;
+			float original_x = x;
+			float original_y = y;
 
 			// Iterate through all characters.
 			std::string::const_iterator c;
 			for (c = text.begin(); c != text.end(); c++)
 			{
-				Character ch = font.getCharacter(*c);
+				Character ch = font.get_character(*c);
 
-				if (maxWidth != 0.f && x + (ch.advance >> 6) >= (originalX + maxWidth))
+				if (maxWidth != 0.f && x + (ch.advance >> 6) >= (original_x + maxWidth))
 				{
-					x = originalX;
-					y += font.getHeight() * scale;
+					x = original_x;
+					y += font.get_height() * scale;
 				}
-				if (maxHeight != 0.f && (y + font.getHeight() / 2.f) > (originalY + maxHeight))
+				if (maxHeight != 0.f && (y + font.get_height() / 2.f) > (original_y + maxHeight))
 					break;
 
 				// Special characters handling.
 				if (*c == '\t')
 				{
-					for (uint32_t i = 0; i < font.getTabSize(); i++)
+					for (uint32_t i = 0; i < font.get_tab_size(); i++)
 						x += (ch.advance >> 6) * scale;
 					continue;
 				}
 				else if (*c == '\n')
 				{
-					x = originalX;
-					y += font.getHeight() * scale;
+					x = original_x;
+					y += font.get_height() * scale;
 					continue;
 				}
 
 				// Define model position and scale.
 				model = glm::mat4(1.f);
 				GLfloat xpos = x + ch.bearing.x * scale;
-				GLfloat ypos = y + (font.getCharacter('H').bearing.y - ch.bearing.y) * scale;
+				GLfloat ypos = y + (font.get_character('H').bearing.y - ch.bearing.y) * scale;
 				model = glm::translate(model, {xpos, ypos, 0.f});
 				GLfloat w = ch.size.x * scale;
 				GLfloat h = ch.size.y * scale;
 				model = glm::scale(model, {w, h, 0.f});
 
-				shader.setMatrix4f("model", model);
+				shader.set_matrix_4f("model", model);
 				// Render glyph texture over quad.
-				glBindTexture(GL_TEXTURE_2D, ch.textureId);
+				glBindTexture(GL_TEXTURE_2D, ch.texture_id);
 				// Render quad.
 				glDrawArrays(GL_TRIANGLES, 0, 6);
 				// Now advance cursors for next glyph.
@@ -395,48 +398,44 @@ namespace ionicengine
 		}
 	};
 
-	void shapeQuadInit()
+	void shape_quad_init()
 	{
-		/*GLfloat outlineVertices[] = {0.f, 1.f,
-									 0.f, 0.f,
-									 1.f, 0.f,
-									 1.f, 1.f};*/
-		GLfloat outlineVertices[] = {0.f, 0.f,
-									 1.f, 0.f,
-									 1.f, 1.f,
-									 0.f, 1.f};
+		GLfloat outline_vertices[] = {0.f, 0.f,
+									  1.f, 0.f,
+									  1.f, 1.f,
+									  0.f, 1.f};
 
-		GLfloat fillVertices[] = {0.f, 0.f,
-								  0.f, 1.f,
-								  1.f, 0.f,
-								  1.f, 1.f};
+		GLfloat fill_vertices[] = {0.f, 0.f,
+								   0.f, 1.f,
+								   1.f, 0.f,
+								   1.f, 1.f};
 
-		glGenVertexArrays(1, &quadVAO);
-		glGenBuffers(1, &quadVBO);
+		quad_vao = vao::generate();
+		quad_vbo = vbo::generate();
 
-		vbo::bind(quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(fillVertices), fillVertices, GL_STATIC_DRAW);
+		vbo::bind(quad_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(fill_vertices), fill_vertices, GL_STATIC_DRAW);
 
-		vao::bind(quadVAO);
+		vao::bind(quad_vao);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
 		vbo::unbind();
 		vao::unbind();
 
-		glGenVertexArrays(1, &quadOutlineVAO);
-		glGenBuffers(1, &quadOutlineVBO);
+		glGenVertexArrays(1, &quad_outline_vao);
+		glGenBuffers(1, &quad_outline_vbo);
 
-		vbo::bind(quadOutlineVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(outlineVertices), outlineVertices, GL_STATIC_DRAW);
+		vbo::bind(quad_outline_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(outline_vertices), outline_vertices, GL_STATIC_DRAW);
 
-		vao::bind(quadOutlineVAO);
+		vao::bind(quad_outline_vao);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nullptr);
 		vbo::unbind();
 		vao::unbind();
 	}
 
-	void shapeTextureInit()
+	void shape_texture_init()
 	{
 		// Defines vertices, z is texture coordinates index.
 		GLfloat vertices[4][3] = {
@@ -446,38 +445,38 @@ namespace ionicengine
 				{1.f, 0.f, 3}
 		};
 
-		glGenVertexArrays(1, &textureVAO);
-		glGenBuffers(1, &textureVBO);
+		texture_vao = vao::generate();
+		texture_vbo = vbo::generate();
 
-		vbo::bind(textureVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		vbo::bind(texture_vbo);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
-		vao::bind(textureVAO);
+		vao::bind(texture_vao);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), nullptr);
 		vbo::unbind();
 		vao::unbind();
 	}
 
-	GraphicsManager::GraphicsManager() : _graphicsUsed(GRAPHICS_GL3)
+	GraphicsManager::GraphicsManager() : _graphics_used(GRAPHICS_GL3)
 	{}
 
 	void GraphicsManager::init()
 	{
-		//registerGraphics(GRAPHICS_GL1, [](const glm::mat4 &projection) { return (Graphics *) new GraphicsGL1(projection); });
-		registerGraphics(GRAPHICS_GL3,
-						 [this](const std::pair<uint32_t, uint32_t> &framebufferSize)
-						 {
-							 return (Graphics *) new GraphicsGL3(framebufferSize, vao, vbo);
-						 });
-		_graphicsUsed = GRAPHICS_GL3;
+		//register_graphics(GRAPHICS_GL1, [](const glm::mat4 &projection) { return (Graphics *) new GraphicsGL1(projection); });
+		register_graphics(GRAPHICS_GL3,
+						  [this](const Dimension2D_u32 &framebuffer_size)
+						  {
+							  return (Graphics *) new GraphicsGL3(framebuffer_size, vao, vbo);
+						  });
+		_graphics_used = GRAPHICS_GL3;
 
 		// Configure VAO/VBO for texture quads
-		glGenVertexArrays(1, &this->vao);
-		glGenBuffers(1, &this->vbo);
+		this->vao = vao::generate();
+		this->vbo = vbo::generate();
 		vao::bind(this->vao);
 		vbo::bind(this->vbo);
-		GLfloat textVertices[6][4] = {
+		GLfloat text_vertices[6][4] = {
 				{0.f, 1.f, 0.0, 1.0},
 				{1.f, 0.f, 1.0, 0.0},
 				{0.f, 0.f, 0.0, 0.0},
@@ -486,14 +485,14 @@ namespace ionicengine
 				{1.f, 1.f, 1.0, 1.0},
 				{1.f, 0.f, 1.0, 0.0}
 		};
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, textVertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 6 * 4, text_vertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), nullptr);
 		vbo::unbind();
 		vao::unbind();
 
-		shapeQuadInit();
-		shapeTextureInit();
+		shape_quad_init();
+		shape_texture_init();
 
 		if (!shader::compile(IONICENGINE_SHADERS_2DBASIC))
 			throw std::runtime_error("Cannot load 2d basic shaders.");
@@ -503,33 +502,33 @@ namespace ionicengine
 			throw std::runtime_error("Cannot load text shaders.");
 
 		// Configure Framebuffer
-		glGenFramebuffers(1, &framebuffer);
+		this->framebuffer = fbo::generate();
 	}
 
-	void GraphicsManager::registerGraphics(ResourceName name, const newGraphicsFunction &newGraphics)
+	void GraphicsManager::register_graphics(const ResourceName &name, const newGraphicsFunction &newGraphics)
 	{
 		if (_graphics.count(name))
 			throw std::invalid_argument(
-					"GraphicsManager has already registered the graphics with name '" + name.toString() + "'!");
+					"GraphicsManager has already registered the graphics with name '" + name.to_string() + "'!");
 		_graphics[name] = newGraphics;
 	}
 
-	void GraphicsManager::useGraphics(ResourceName name)
+	void GraphicsManager::use_graphics(ResourceName name)
 	{
-		_graphicsUsed = std::move(name);
+		_graphics_used = std::move(name);
 	}
 
-	Graphics *GraphicsManager::newGraphics(std::pair<uint32_t, uint32_t> framebufferSize) const
+	Graphics *GraphicsManager::new_graphics(const Dimension2D_u32 &framebuffer_size) const
 	{
-		if (!_graphics.count(_graphicsUsed))
+		if (!_graphics.count(_graphics_used))
 			return nullptr;
-		return _graphics.at(_graphicsUsed)(framebufferSize);
+		return _graphics.at(_graphics_used)(framebuffer_size);
 	}
 
-	const GraphicsManager *graphicsManager = new GraphicsManager{};
+	const GraphicsManager *graphics_manager = new GraphicsManager{};
 
-	GraphicsManager *getGraphicsManager()
+	GraphicsManager *get_graphics_manager()
 	{
-		return const_cast<GraphicsManager *>(graphicsManager);
+		return const_cast<GraphicsManager *>(graphics_manager);
 	}
 }

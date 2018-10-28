@@ -18,7 +18,7 @@ namespace ionicengine
 	{
 	private:
 		const uint8_t joystick;
-		bool axisInverted[6] = {false, false, false, false, false, false};
+		bool axis_inverted[6] = {false, false, false, false, false, false};
 
 	public:
 		explicit Controller(uint8_t id);
@@ -29,7 +29,7 @@ namespace ionicengine
 		 *
 		 * @return ID of the controller.
 		 */
-		uint8_t getId() const;
+		uint8_t get_id() const;
 
 		/*! @brief Gets the name of the controller.
 		 *
@@ -37,7 +37,7 @@ namespace ionicengine
 		 *
 		 * @return Controller's name.
 		 */
-		std::string getName() const;
+		std::string get_name() const;
 
 		/*! @brief Gets the GUID of the controller.
 		 *
@@ -47,7 +47,7 @@ namespace ionicengine
 		 *
 		 * @return Controller's GUID.
 		 */
-		std::string getGUID() const;
+		std::string get_guid() const;
 
 		/*! @brief Checks whether the controller is connected or not.
 		 *
@@ -55,27 +55,27 @@ namespace ionicengine
 		 *
 		 * @return True if the controller is connected else false.
 		 */
-		bool isConnected() const;
+		bool is_connected() const;
 
 		/*! @brief Returns whether the controller has a gamepad mapping.
 		 *
 		 * @return True if the controller has a gamepad mapping else false.
 		 */
-		bool isGamepad() const;
+		bool is_gamepad() const;
 
 		/*! @brief Sets whether the axis of the controller is inverted or not.
 		 *
 		 * @param axis The axis ID, between 0 and 5.
 		 * @param inverted True if the axis is inverted else false.
 		 */
-		void setAxisInverted(uint8_t axis, bool inverted);
+		void set_axis_inverted(uint8_t axis, bool inverted);
 
 		/*! @brief Returns whether the axis of the controller is inverted or not.
 		 *
 		 * @param axis The axis ID, between 0 and 5.
 		 * @return True if the axis is inverted else false.
 		 */
-		bool isAxisInverted(uint8_t axis) const;
+		bool is_axis_inverted(uint8_t axis) const;
 	};
 }
 

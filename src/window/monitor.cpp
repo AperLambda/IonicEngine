@@ -19,34 +19,34 @@ namespace ionicengine
 	Monitor::Monitor(Monitor &&monitor) noexcept : _monitor(monitor._monitor)
 	{}
 
-	GLFWmonitor *Monitor::getHandle() const
+	GLFWmonitor *Monitor::get_handle() const
 	{
 		return _monitor;
 	}
 
-	std::string Monitor::getName() const
+	std::string Monitor::get_name() const
 	{
 		if (_monitor == nullptr)
 			return "nullptr";
 		return std::string(glfwGetMonitorName(_monitor));
 	}
 
-	VideoMode Monitor::getVideoMode() const
+	VideoMode Monitor::get_video_mode() const
 	{
-		VideoMode vidMode{};
+		VideoMode vid_mode{};
 		if (_monitor == nullptr)
-			return vidMode;
+			return vid_mode;
 		auto glfwVidMode = glfwGetVideoMode(_monitor);
-		vidMode.width = glfwVidMode->width;
-		vidMode.height = glfwVidMode->height;
-		vidMode.redBits = glfwVidMode->redBits;
-		vidMode.greenBits = glfwVidMode->greenBits;
-		vidMode.blueBits = glfwVidMode->blueBits;
-		vidMode.refreshRate = glfwVidMode->refreshRate;
-		return vidMode;
+		vid_mode.width = glfwVidMode->width;
+		vid_mode.height = glfwVidMode->height;
+		vid_mode.red_bits = glfwVidMode->redBits;
+		vid_mode.green_bits = glfwVidMode->greenBits;
+		vid_mode.blue_bits = glfwVidMode->blueBits;
+		vid_mode.refresh_rate = glfwVidMode->refreshRate;
+		return vid_mode;
 	}
 
-	bool Monitor::isEmpty() const
+	bool Monitor::is_empty() const
 	{
 		return _monitor == nullptr;
 	}
@@ -67,7 +67,7 @@ namespace ionicengine
 
 	namespace monitor
 	{
-		std::vector<Monitor> getMonitors()
+		std::vector<Monitor> get_monitors()
 		{
 			int length;
 			GLFWmonitor **glfw_monitors = glfwGetMonitors(&length);
@@ -79,7 +79,7 @@ namespace ionicengine
 			return monitors;
 		}
 
-		const Monitor getPrimaryMonitor()
+		const Monitor get_primary_monitor()
 		{
 			return Monitor{glfwGetPrimaryMonitor()};
 		}

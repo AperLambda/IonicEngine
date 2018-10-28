@@ -22,19 +22,19 @@ std::string textArea{""};
 class KeyboardListenerImpl : public KeyboardListener
 {
 public:
-	void onKeyInput(Window &window, int key, int scancode, InputAction action, int mods) override
+	void on_key_input(Window &window, int key, int scancode, InputAction action, int mods) override
 	{
 		if (action == InputAction::PRESS)
 		{
 			if (key == GLFW_KEY_ESCAPE)
-				window.setShouldClose(true);
+				window.set_should_close(true);
 			else if (key == GLFW_KEY_BACKSPACE)
 				textArea = textArea.substr(0, textArea.length() - 1);
 			else if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
 				textArea += "\n";
 			else if (key == GLFW_KEY_C && mods == GLFW_MOD_CONTROL)
 			{
-				glfwSetClipboardString(window.getHandle(), textArea.c_str());
+				glfwSetClipboardString(window.get_handle(), textArea.c_str());
 			}
 		}
 		else if (action == InputAction::REPEAT)
@@ -44,7 +44,7 @@ public:
 		}
 	}
 
-	void onCharInput(Window &window, char32_t codepoint) override
+	void on_char_input(Window &window, char32_t codepoint) override
 	{
 		textArea += static_cast<char>(codepoint);
 	}
@@ -55,7 +55,7 @@ class TextArea : public Screen
 private:
 	Font font;
 	Texture texture;
-	bool increaseOpacity = true;
+	bool increase_opacity = true;
 	float opacity = 0.f;
 
 public:
@@ -67,44 +67,48 @@ public:
 
 	void draw(Graphics *graphics) override
 	{
-		auto ratio5Width = static_cast<int>(.10f * width), ratio5Height = static_cast<int>(.10f * height);
-		auto textureWidth = width, textureHeight = height;
-		uint32_t quadWidth = textureWidth - (ratio5Width * 2), quadHeight = textureHeight - (ratio5Height * 2);
-		graphics->setColor(Color::COLOR_WHITE);
-		graphics->drawImage({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, 0, 0, textureWidth,
-							textureHeight);
-		graphics->drawImage(texture, ratio5Width, ratio5Height, quadWidth, quadHeight, texture::newTextureRegion(
-				textureWidth, textureHeight, static_cast<uint32_t>(ratio5Width), static_cast<uint32_t>(ratio5Height),
-				quadWidth, quadHeight));
-		graphics->setColor({0.f, 0.f, 0.f, .25f});
-		graphics->drawQuad(ratio5Width, ratio5Height, quadWidth, quadHeight);
-		graphics->setColor(Color::COLOR_BLACK);
-		graphics->drawLine2D(ratio5Width, ratio5Height, ratio5Width + quadWidth, ratio5Height);
-		graphics->drawLine2D(ratio5Width, ratio5Height, ratio5Width, ratio5Height + quadHeight);
-		graphics->drawLine2D(ratio5Width, ratio5Height + quadHeight, ratio5Width + quadWidth,
-							 ratio5Height + quadHeight);
-		graphics->drawLine2D(ratio5Width + quadWidth, ratio5Height, ratio5Width + quadWidth, ratio5Height + quadHeight);
+		auto ratio5_width = static_cast<int>(.10f * width), ratio5_height = static_cast<int>(.10f * height);
+		auto texture_width = width, texture_height = height;
+		uint32_t quad_width = texture_width - (ratio5_width * 2), quad_height = texture_height - (ratio5_height * 2);
+		graphics->set_color(Color::COLOR_WHITE);
+		graphics->draw_image({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, 0, 0, texture_width,
+							 texture_height);
+		graphics->draw_image(texture, ratio5_width, ratio5_height, quad_width, quad_height, texture::new_texture_region(
+				texture_width, texture_height, static_cast<uint32_t>(ratio5_width),
+				static_cast<uint32_t>(ratio5_height),
+				quad_width, quad_height));
+		graphics->set_color({0.f, 0.f, 0.f, .25f});
+		graphics->draw_quad(ratio5_width, ratio5_height, quad_width, quad_height);
+		graphics->set_color(Color::COLOR_BLACK);
+		graphics->draw_line_2d(ratio5_width, ratio5_height, ratio5_width + quad_width, ratio5_height);
+		graphics->draw_line_2d(ratio5_width, ratio5_height, ratio5_width, ratio5_height + quad_height);
+		graphics->draw_line_2d(ratio5_width, ratio5_height + quad_height, ratio5_width + quad_width,
+							   ratio5_height + quad_height);
+		graphics->draw_line_2d(ratio5_width + quad_width, ratio5_height, ratio5_width + quad_width,
+							   ratio5_height + quad_height);
 
-		graphics->setColor(Color::COLOR_WHITE);
-		graphics->drawText(font, ratio5Width + 5, ratio5Height + 5, textArea, quadWidth - 10, quadHeight - 10);
+		graphics->set_color(Color::COLOR_WHITE);
+		graphics->draw_text(font, ratio5_width + 5, ratio5_height + 5, textArea, quad_width - 10, quad_height - 10);
 		auto splitted = lstring::split(textArea + "a", '\n');
-		uint32_t textLength = 0;
+		uint32_t text_length = 0;
 		if (splitted.size() != 0)
-			textLength = font.getTextLength(splitted[splitted.size() - 1]) - font.getTextLength("a");
-		auto cursorX = maths::clamp(ratio5Width + 5 + textLength + 2, static_cast<uint32_t>(ratio5Width + 7),
-									ratio5Width + quadWidth);
-		auto cursorY = ratio5Height + 2.f + font.getHeight() * maths::clamp(static_cast<uint32_t>(splitted.size() - 1),
-																			static_cast<uint32_t>(0), quadHeight);
-		graphics->setColor({1.f, 1.f, 1.f, opacity});
-		graphics->drawLine2D(cursorX, static_cast<int>(cursorY), cursorX, static_cast<int>(cursorY + font.getHeight()));
+			text_length = font.get_text_length(splitted[splitted.size() - 1]) - font.get_text_length("a");
+		auto cursor_x = maths::clamp(ratio5_width + 5 + text_length + 2, static_cast<uint32_t>(ratio5_width + 7),
+									 ratio5_width + quad_width);
+		auto cursor_y = ratio5_height + 2.f + font.get_height() *
+											  maths::clamp(static_cast<uint32_t>(splitted.size() - 1),
+														   static_cast<uint32_t>(0), quad_height);
+		graphics->set_color({1.f, 1.f, 1.f, opacity});
+		graphics->draw_line_2d(cursor_x, static_cast<int>(cursor_y), cursor_x,
+							   static_cast<int>(cursor_y + font.get_height()));
 	}
 
 	void update() override
 	{
-		if (increaseOpacity)
+		if (increase_opacity)
 		{
 			if (opacity >= 1.f)
-				increaseOpacity = false;
+				increase_opacity = false;
 			else
 			{
 				opacity += .05f;
@@ -113,7 +117,7 @@ public:
 		else
 		{
 			if (opacity <= 0.f)
-				increaseOpacity = true;
+				increase_opacity = true;
 			else
 			{
 				opacity -= .05f;
@@ -126,16 +130,16 @@ int main()
 {
 	std::setlocale(LC_ALL, "en_US.utf8");
 	terminal::setup();
-	std::cout << "Running ionic_image with IonicEngine v" + ionicengine::getVersion() << "...\n";
+	std::cout << "Running ionic_image with IonicEngine v" + ionicengine::get_version() << "...\n";
 
-	IonicOptions ionicOptions;
-	ionicOptions.debug = true;
-	ionicOptions.useControllers = false;
-	if (!ionicengine::init(ionicOptions))
+	IonicOptions ionic_options;
+	ionic_options.debug = true;
+	ionic_options.use_controllers = false;
+	if (!ionicengine::init(ionic_options))
 		return EXIT_FAILURE;
 
-	KeyboardListenerImpl keyboardListener{};
-	InputManager::INPUT_MANAGER.addKeyboardListener(&keyboardListener);
+	KeyboardListenerImpl keyboard_listener{};
+	InputManager::INPUT_MANAGER.add_keyboard_listener(&keyboard_listener);
 
 	ScreenManager screens{};
 
@@ -147,14 +151,12 @@ int main()
 	options.opengl_forward_compat = true;
 #endif
 
-	auto window = window::createWindow("IonicEngine - Input (Text Area)", 948, 648, options);
-	window.requestContext();
-	glewExperimental = GL_TRUE;
-	GLenum err = glewInit();
-	if (err != GLEW_OK)
+	auto window = window::create_window("IonicEngine - Input (Text Area)", 948, 648, options);
+	window.request_context();
+	if (!ionicengine::post_init())
 	{
 		ionicengine::shutdown();
-		return err;
+		return EXIT_FAILURE;
 	}
 
 	auto texture = texture::load({"ionic_tests:textures/conifer-dark-green-daylight-572937"}, "jpg", CLAMP,
@@ -168,7 +170,7 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-	auto font = ionicengine::getFontManager()->loadFont({"google:fonts/roboto"}, std::string("Roboto.ttf"), 14);
+	auto font = ionicengine::get_font_manager()->load_font({"google:fonts/roboto"}, std::string("Roboto.ttf"), 14);
 	if (!font)
 	{
 		std::cerr << "Roboto cannot be loaded!\n";
@@ -177,20 +179,20 @@ int main()
 	}
 
 	OverlayFPS overlay{font.value()};
-	screens.registerOverlay(IONICENGINE_OVERLAYS_FPS, &overlay);
-	screens.addActiveOverlay(IONICENGINE_OVERLAYS_FPS);
+	screens.register_overlay(IONICENGINE_OVERLAYS_FPS, &overlay);
+	screens.add_active_overlay(IONICENGINE_OVERLAYS_FPS);
 
 	ResourceName screensImage{"ionic_tests:screens/image"};
 
 	TextArea screen{font.value(), texture_blurred.value()};
-	screens.registerScreen(screensImage, &screen);
-	screens.setActiveScreen(screensImage);
+	screens.register_screen(screensImage, &screen);
+	screens.set_active_screen(screensImage);
 
-	getGraphicsManager()->init();
+	get_graphics_manager()->init();
 
-	screens.attachWindow(window);
+	screens.attach_window(window);
 
-	screens.startLoop();
+	screens.start_loop();
 
 	ionicengine::shutdown();
 

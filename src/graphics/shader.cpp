@@ -26,7 +26,7 @@ namespace ionicengine
 	Shader::Shader(Shader &&shader) noexcept : _id(shader._id)
 	{}
 
-	uint32_t Shader::getId() const
+	uint32_t Shader::get_id() const
 	{
 		return _id;
 	}
@@ -38,70 +38,70 @@ namespace ionicengine
 		return *this;
 	}
 
-	void Shader::setFloat(const std::string &name, float value, bool useShader)
+	void Shader::set_float(const std::string &name, float value, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniform1f(glGetUniformLocation(_id, name.c_str()), value);
 	}
 
-	void Shader::setInteger(const std::string &name, int value, bool useShader)
+	void Shader::set_integer(const std::string &name, int value, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniform1i(glGetUniformLocation(_id, name.c_str()), value);
 	}
 
-	void Shader::setVector2f(const std::string &name, float x, float y, bool useShader)
+	void Shader::set_vector_2f(const std::string &name, float x, float y, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniform2f(glGetUniformLocation(_id, name.c_str()), x, y);
 	}
 
-	void Shader::setVector2f(const std::string &name, const glm::vec2 &value, bool useShader)
+	void Shader::set_vector_2f(const std::string &name, const glm::vec2 &value, bool use_shader)
 	{
-		this->setVector2f(name, value.x, value.y, useShader);
+		this->set_vector_2f(name, value.x, value.y, use_shader);
 	}
 
-	void Shader::setVector3f(const std::string &name, float x, float y, float z, bool useShader)
+	void Shader::setVector3f(const std::string &name, float x, float y, float z, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniform3f(glGetUniformLocation(_id, name.c_str()), x, y, z);
 	}
 
-	void Shader::setVector3f(const std::string &name, const glm::vec3 &value, bool useShader)
+	void Shader::setVector3f(const std::string &name, const glm::vec3 &value, bool use_shader)
 	{
-		this->setVector3f(name, value.x, value.y, value.z, useShader);
+		this->setVector3f(name, value.x, value.y, value.z, use_shader);
 	}
 
-	void Shader::setVector4f(const std::string &name, float x, float y, float z, float w, bool useShader)
+	void Shader::set_vector_4f(const std::string &name, float x, float y, float z, float w, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniform4f(glGetUniformLocation(_id, name.c_str()), x, y, z, w);
 	}
 
-	void Shader::setVector4f(const std::string &name, const glm::vec4 &value, bool useShader)
+	void Shader::set_vector_4f(const std::string &name, const glm::vec4 &value, bool use_shader)
 	{
-		this->setVector4f(name, value.x, value.y, value.z, value.w, useShader);
+		this->set_vector_4f(name, value.x, value.y, value.z, value.w, use_shader);
 	}
 
-	void Shader::setColor(const lambdacommon::Color &color, bool useShader)
+	void Shader::set_color(const lambdacommon::Color &color, bool use_shader)
 	{
-		this->setColor("inColor", color, useShader);
+		this->set_color("inColor", color, use_shader);
 
 	}
 
-	void Shader::setColor(const std::string &name, const lambdacommon::Color &color, bool useShader)
+	void Shader::set_color(const std::string &name, const lambdacommon::Color &color, bool use_shader)
 	{
-		this->setVector4f(name, color.red(), color.green(), color.blue(), color.alpha(), useShader);
+		this->set_vector_4f(name, color.red(), color.green(), color.blue(), color.alpha(), use_shader);
 	}
 
-	void Shader::setMatrix4f(const std::string &name, const glm::mat4 &matrix, bool useShader)
+	void Shader::set_matrix_4f(const std::string &name, const glm::mat4 &matrix, bool use_shader)
 	{
-		if (useShader)
+		if (use_shader)
 			this->use();
 		glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
 	}
@@ -130,20 +130,20 @@ namespace ionicengine
 		return _id < shader._id;
 	}
 
-	bool checkCompileErrors(const lambdacommon::ResourceName &name, uint32_t id, const std::string &type)
+	bool check_compile_errors(const lambdacommon::ResourceName &name, uint32_t id, const std::string &type)
 	{
 		int success;
 		char infoLog[1024];
-		if (!lambdacommon::lstring::equalsIgnoreCase(type, "program"))
+		if (!lambdacommon::lstring::equals_ignore_case(type, "program"))
 		{
 			glGetShaderiv(id, GL_COMPILE_STATUS, &success);
 			if (!success)
 			{
 				glGetShaderInfoLog(id, 1024, nullptr, infoLog);
-				printError(
+				print_error(
 						"[IONICENGINE] Error - Shader: Cannot compile shader of type '" + type + "'. | Resource: " +
-						name.toString());
-				printError(infoLog);
+						name.to_string());
+				print_error(infoLog);
 				return false;
 			}
 		}
@@ -153,21 +153,21 @@ namespace ionicengine
 			if (!success)
 			{
 				glGetProgramInfoLog(id, 1024, nullptr, infoLog);
-				printError("[IONICENGINE] Error - Shader: Cannot link shader. | Resource: " + name.toString());
-				printError(infoLog);
+				print_error("[IONICENGINE] Error - Shader: Cannot link shader. | Resource: " + name.to_string());
+				print_error(infoLog);
 				return false;
 			}
 		}
 		return true;
 	}
 
-	std::optional<Shader> IONICENGINE_API shader::compile(const lambdacommon::ResourceName &shaderName)
+	std::optional<Shader> IONICENGINE_API shader::compile(const lambdacommon::ResourceName &shader_name)
 	{
-		if (shaders.count(shaderName.toString()))
-			return {shaders.at(shaderName.toString())};
+		if (shaders.count(shader_name.to_string()))
+			return {shaders.at(shader_name.to_string())};
 
-		auto vertexSource = getResourcesManager().loadResource(shaderName, "vert");
-		auto fragmentSource = getResourcesManager().loadResource(shaderName, "frag");
+		auto vertexSource = get_resources_manager().load_resource(shader_name, "vert");
+		auto fragmentSource = get_resources_manager().load_resource(shader_name, "frag");
 
 		if (vertexSource.empty() || fragmentSource.empty())
 			return {};
@@ -178,24 +178,24 @@ namespace ionicengine
 		auto sVertex = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(sVertex, 1, &vertexCSource, nullptr);
 		glCompileShader(sVertex);
-		if (!checkCompileErrors(shaderName, sVertex, "vertex"))
+		if (!check_compile_errors(shader_name, sVertex, "vertex"))
 			return {};
 		// Fragment shader
 		auto sFragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(sFragment, 1, &fragmentCSource, nullptr);
 		glCompileShader(sFragment);
-		if (!checkCompileErrors(shaderName, sFragment, "fragment"))
+		if (!check_compile_errors(shader_name, sFragment, "fragment"))
 			return {};
 
 		bool hasGeomtryShader = false;
 		uint32_t sGeom = 0;
-		if (getResourcesManager().doesResourceExist(shaderName, "geom"))
+		if (get_resources_manager().does_resource_exist(shader_name, "geom"))
 		{
-			auto geomSource = getResourcesManager().loadResource(shaderName, "geom").c_str();
+			auto geomSource = get_resources_manager().load_resource(shader_name, "geom").c_str();
 			sGeom = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(sGeom, 1, &geomSource, nullptr);
 			glCompileShader(sGeom);
-			if (!checkCompileErrors(shaderName, sGeom, "geometry"))
+			if (!check_compile_errors(shader_name, sGeom, "geometry"))
 				return {};
 			hasGeomtryShader = true;
 		}
@@ -206,7 +206,7 @@ namespace ionicengine
 		if (hasGeomtryShader)
 			glAttachShader(id, sGeom);
 		glLinkProgram(id);
-		if (!checkCompileErrors(shaderName, id, "program"))
+		if (!check_compile_errors(shader_name, id, "program"))
 			return {};
 		// Delete the shaders
 		glDeleteShader(sVertex);
@@ -214,20 +214,21 @@ namespace ionicengine
 		if (hasGeomtryShader)
 			glDeleteShader(sGeom);
 		Shader shader{id};
-		printDebug("[IonicEngine] Shader '" + shaderName.toString() + "' loaded successfully with ID '" + std::to_string(id) + "'!");
-		shaders.insert(std::pair<std::string, Shader>(shaderName.toString(), shader));
+		print_debug("[IonicEngine] Shader '" + shader_name.to_string() + "' loaded successfully with ID '" +
+					std::to_string(id) + "'!");
+		shaders.insert(std::pair<std::string, Shader>(shader_name.to_string(), shader));
 		return {shader};
 	}
 
-	bool shader::hasShader(const lambdacommon::ResourceName &shaderName)
+	bool shader::hasShader(const lambdacommon::ResourceName &shader_name)
 	{
-		return static_cast<bool>(shaders.count(shaderName.toString()));
+		return static_cast<bool>(shaders.count(shader_name.to_string()));
 	}
 
-	const Shader &shader::getShader(const lambdacommon::ResourceName &shaderName)
+	const Shader &shader::getShader(const lambdacommon::ResourceName &shader_name)
 	{
-		if (!shaders.count(shaderName.toString()))
-			throw std::runtime_error("Cannot get the shader " + shaderName.toString());
-		return shaders[shaderName.toString()];
+		if (!shaders.count(shader_name.to_string()))
+			throw std::runtime_error("Cannot get the shader " + shader_name.to_string());
+		return shaders[shader_name.to_string()];
 	}
 }

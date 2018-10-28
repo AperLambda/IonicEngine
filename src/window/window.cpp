@@ -15,82 +15,82 @@ namespace ionicengine
 	Window::Window(GLFWwindow *glfwWindow) : _pointer(glfwWindow)
 	{}
 
-	GLFWwindow *Window::getHandle() const
+	GLFWwindow *Window::get_handle() const
 	{
 		return _pointer;
 	}
 
-	void Window::setTitle(const std::string &title)
+	void Window::set_title(const std::string &title)
 	{
 		glfwSetWindowTitle(_pointer, title.c_str());
 	}
 
-	void Window::setSize(uint32_t width, uint32_t height)
+	void Window::set_size(uint32_t width, uint32_t height)
 	{
 		glfwSetWindowSize(_pointer, width, height);
 	}
 
-	std::pair<uint32_t, uint32_t> Window::getSize() const
+	Dimension2D_u32 Window::get_size() const
 	{
 		int width, height;
 		glfwGetWindowSize(_pointer, &width, &height);
 		return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 	}
 
-	std::pair<uint32_t, uint32_t> Window::getFramebufferSize() const
+	Dimension2D_u32 Window::get_framebuffer_size() const
 	{
 		int width, height;
 		glfwGetFramebufferSize(_pointer, &width, &height);
 		return {static_cast<uint32_t>(width), static_cast<uint32_t>(height)};
 	}
 
-	std::pair<int, int> Window::getPosition() const
+	std::pair<int, int> Window::get_position() const
 	{
 		int x, y;
 		glfwGetWindowPos(_pointer, &x, &y);
 		return {x, y};
 	}
 
-	std::pair<double, double> Window::getCursorPosition() const
+	std::pair<double, double> Window::get_cursor_position() const
 	{
 		double x, y;
 		glfwGetCursorPos(_pointer, &x, &y);
 		return {x, y};
 	}
 
-	void Window::setPosition(int x, int y)
+	void Window::set_position(int x, int y)
 	{
 		glfwSetWindowPos(_pointer, x, y);
 	}
 
-	std::pair<float, float> Window::getContentScale()
+	std::pair<float, float> Window::get_content_scale()
 	{
 		float xscale, yscale;
 		glfwGetWindowContentScale(_pointer, &xscale, &yscale);
 		return {xscale, yscale};
 	}
 
-	std::optional<Monitor> Window::getMonitor() const
+	std::optional<Monitor> Window::get_monitor() const
 	{
-		auto glfwMonitor = glfwGetWindowMonitor(_pointer);
-		if (glfwMonitor == nullptr)
+		auto glfw_monitor = glfwGetWindowMonitor(_pointer);
+		if (glfw_monitor == nullptr)
 			return {};
-		for (auto monitor : monitor::getMonitors())
+		for (auto monitor : monitor::get_monitors())
 		{
-			if (monitor.getHandle() == glfwMonitor)
+			if (monitor.get_handle() == glfw_monitor)
 				return {monitor};
 		}
 		return {};
 	}
 
-	bool Window::shouldClose() const
+	bool Window::should_close() const
 	{
 		return glfwWindowShouldClose(_pointer) == GLFW_TRUE;
 	}
 
-	void Window::setShouldClose(bool shouldClose)
+	void Window::set_should_close(bool should_close)
 	{
-		glfwSetWindowShouldClose(_pointer, shouldClose);
+		glfwSetWindowShouldClose(_pointer, should_close);
 	}
 
 	void Window::show() const
@@ -103,12 +103,12 @@ namespace ionicengine
 		glfwHideWindow(_pointer);
 	}
 
-	void Window::setVisible(bool visible) const
+	void Window::set_visible(bool visible) const
 	{
 		if (visible) show(); else hide();
 	}
 
-	bool Window::isVisible() const
+	bool Window::is_visible() const
 	{
 		return glfwGetWindowAttrib(_pointer, GLFW_VISIBLE) == GLFW_TRUE;
 	}
@@ -118,7 +118,7 @@ namespace ionicengine
 		glfwFocusWindow(_pointer);
 	}
 
-	bool Window::isFocused() const
+	bool Window::is_focused() const
 	{
 		return glfwGetWindowAttrib(_pointer, GLFW_FOCUSED) == GLFW_TRUE;
 	}
@@ -138,30 +138,24 @@ namespace ionicengine
 		glfwRestoreWindow(_pointer);
 	}
 
-	void Window::setOpacity(float opacity)
+	void Window::set_opacity(float opacity)
 	{
 		glfwSetWindowOpacity(_pointer, opacity);
 	}
 
-	float Window::getOpacity()
+	float Window::get_opacity()
 	{
 		return glfwGetWindowOpacity(_pointer);
 	}
 
-	void Window::requestAttention() const
+	void Window::request_attention() const
 	{
 		glfwRequestWindowAttention(_pointer);
 	}
 
-	void Window::requestContext() const
+	void Window::request_context() const
 	{
 		glfwMakeContextCurrent(_pointer);
-	}
-
-	bool Window::initContext() const
-	{
-		glewExperimental = GL_TRUE;
-		return glewInit() == GLEW_OK;
 	}
 
 	void Window::destroy()
@@ -191,29 +185,29 @@ namespace ionicengine
 	{
 		std::vector<Window> windows;
 
-		int toGLFWBool(bool aBool)
+		int to_glfw_bool(bool aBool)
 		{
 			return aBool ? GLFW_TRUE : GLFW_FALSE;
 		}
 
-		Window createWindow(const std::string &title, std::pair<uint32_t, uint32_t> size, const WindowOptions &options,
-							const std::optional<const Monitor> &monitor)
+		Window create_window(const std::string &title, std::pair<uint32_t, uint32_t> size, const WindowOptions &options,
+							 const std::optional<const Monitor> &monitor)
 		{
-			return createWindow(title, size.first, size.second, options, monitor);
+			return create_window(title, size.first, size.second, options, monitor);
 		}
 
-		Window createWindow(const std::string &title, uint32_t width, uint32_t height, const WindowOptions &options,
-							const std::optional<const Monitor> &monitor)
+		Window create_window(const std::string &title, uint32_t width, uint32_t height, const WindowOptions &options,
+							 const std::optional<const Monitor> &monitor)
 		{
-			glfwWindowHint(GLFW_VISIBLE, toGLFWBool(options.visible));
-			glfwWindowHint(GLFW_FOCUSED, toGLFWBool(options.focused));
-			glfwWindowHint(GLFW_RESIZABLE, toGLFWBool(options.resizable));
-			glfwWindowHint(GLFW_MAXIMIZED, toGLFWBool(options.maximized));
-			glfwWindowHint(GLFW_DECORATED, toGLFWBool(options.decorated));
-			glfwWindowHint(GLFW_FLOATING, toGLFWBool(options.floating));
-			glfwWindowHint(GLFW_AUTO_ICONIFY, toGLFWBool(options.auto_iconify));
-			glfwWindowHint(GLFW_CENTER_CURSOR, toGLFWBool(options.center_cursor));
-			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, toGLFWBool(options.transparent_framebuffer));
+			glfwWindowHint(GLFW_VISIBLE, to_glfw_bool(options.visible));
+			glfwWindowHint(GLFW_FOCUSED, to_glfw_bool(options.focused));
+			glfwWindowHint(GLFW_RESIZABLE, to_glfw_bool(options.resizable));
+			glfwWindowHint(GLFW_MAXIMIZED, to_glfw_bool(options.maximized));
+			glfwWindowHint(GLFW_DECORATED, to_glfw_bool(options.decorated));
+			glfwWindowHint(GLFW_FLOATING, to_glfw_bool(options.floating));
+			glfwWindowHint(GLFW_AUTO_ICONIFY, to_glfw_bool(options.auto_iconify));
+			glfwWindowHint(GLFW_CENTER_CURSOR, to_glfw_bool(options.center_cursor));
+			glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, to_glfw_bool(options.transparent_framebuffer));
 			// OpenGL
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, options.context_version_major);
 			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, options.context_version_minor);
@@ -223,37 +217,37 @@ namespace ionicengine
 
 			if (monitor.has_value())
 			{
-				auto vidMode = monitor->getVideoMode();
-				glfwWindowHint(GLFW_RED_BITS, vidMode.redBits);
-				glfwWindowHint(GLFW_GREEN_BITS, vidMode.greenBits);
-				glfwWindowHint(GLFW_BLUE_BITS, vidMode.blueBits);
-				glfwWindowHint(GLFW_REFRESH_RATE, vidMode.refreshRate);
-				GLFWwindow *window = glfwCreateWindow(vidMode.width, vidMode.height, title.c_str(),
-													  monitor->getHandle(), nullptr);
-				Window ionicWindow{window};
-				windows.push_back(ionicWindow);
-				InputManager::INPUT_MANAGER.attachWindow(ionicWindow);
-				return ionicWindow;
+				auto vid_mode = monitor->get_video_mode();
+				glfwWindowHint(GLFW_RED_BITS, vid_mode.red_bits);
+				glfwWindowHint(GLFW_GREEN_BITS, vid_mode.green_bits);
+				glfwWindowHint(GLFW_BLUE_BITS, vid_mode.blue_bits);
+				glfwWindowHint(GLFW_REFRESH_RATE, vid_mode.refresh_rate);
+				GLFWwindow *window = glfwCreateWindow(vid_mode.width, vid_mode.height, title.c_str(),
+													  monitor->get_handle(), nullptr);
+				Window ionic_window{window};
+				windows.push_back(ionic_window);
+				InputManager::INPUT_MANAGER.attach_window(ionic_window);
+				return ionic_window;
 			}
 			else
 			{
 				GLFWwindow *window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
-				Window ionicWindow{window};
-				windows.push_back(ionicWindow);
-				InputManager::INPUT_MANAGER.attachWindow(ionicWindow);
-				return ionicWindow;
+				Window ionic_window{window};
+				windows.push_back(ionic_window);
+				InputManager::INPUT_MANAGER.attach_window(ionic_window);
+				return ionic_window;
 			}
 		}
 
-		std::optional<Window> IONICENGINE_API getByHandle(GLFWwindow *window)
+		std::optional<Window> IONICENGINE_API get_by_handle(GLFWwindow *window)
 		{
-			for (const Window &ionicWindow : windows)
-				if (ionicWindow.getHandle() == window)
-					return {ionicWindow};
+			for (const Window &ionic_window : windows)
+				if (ionic_window.get_handle() == window)
+					return {ionic_window};
 			return std::nullopt;
 		}
 
-		void IONICENGINE_API destroyAll()
+		void IONICENGINE_API destroy_all()
 		{
 			for (auto window : windows)
 				window.destroy();

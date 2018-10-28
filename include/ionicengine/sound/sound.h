@@ -31,16 +31,16 @@ namespace ionicengine
 		 */
 		extern void IONICENGINE_API shutdown();
 
-		extern void IONICENGINE_API addSoundIndex(const lambdacommon::ResourceName &sound, int index);
+		extern void IONICENGINE_API add_sound_index(const lambdacommon::ResourceName &sound, int index);
 
-		extern int IONICENGINE_API getSoundIndex(const lambdacommon::ResourceName &sound);
+		extern int IONICENGINE_API get_sound_index(const lambdacommon::ResourceName &sound);
 
 		/*!
 		 * Checks whether there is a sound registered with the specified resource name.
 		 * @param sound The name of the sound to check.
 		 * @return True if there is a sound registered, else false.
 		 */
-		extern bool IONICENGINE_API hasSound(const lambdacommon::ResourceName &sound);
+		extern bool IONICENGINE_API has_sound(const lambdacommon::ResourceName &sound);
 
 		/*!
 		 * Plays the specified sound.
@@ -63,14 +63,14 @@ namespace ionicengine
 		 * @param sound The sound to check.
 		 * @return True if the sound is currently playing, else false.
 		 */
-		extern bool IONICENGINE_API isPlaying(int sound);
+		extern bool IONICENGINE_API is_playing(int sound);
 
 		/*!
 		 * Checks whether the specified sound is currently looped.
 		 * @param sound The sound to check.
 		 * @return True if the sound is currently looped, else false.
 		 */
-		extern bool IONICENGINE_API isLooping(int sound);
+		extern bool IONICENGINE_API is_looping(int sound);
 
 		/*!
 		 * Pauses the specified sound.
@@ -83,12 +83,12 @@ namespace ionicengine
 		 * @param sound The sound to check.
 		 * @return True if the sound is paused, else false.
 		 */
-		extern bool IONICENGINE_API isPaused(int sound);
+		extern bool IONICENGINE_API is_paused(int sound);
 
 		/*!
 		 * Pauses every sounds being currently playing.
 		 */
-		extern void IONICENGINE_API pauseAll();
+		extern void IONICENGINE_API pause_all();
 
 		/*!
 		 * Resumes the specified paused sound.
@@ -99,7 +99,7 @@ namespace ionicengine
 		/*!
 		 * Resumes every sounds being currently paused.
 		 */
-		extern void IONICENGINE_API resumeAll();
+		extern void IONICENGINE_API resume_all();
 
 		/*!
 		 * Stops the currently played sound.
@@ -112,26 +112,26 @@ namespace ionicengine
 		 * @param sound The sound to check.
 		 * @return True if the sound is stopped, else false.
 		 */
-		extern bool IONICENGINE_API isStopped(int sound);
+		extern bool IONICENGINE_API is_stopped(int sound);
 
 		/*!
 		 * Stops every sounds being currently played.
 		 */
-		extern void IONICENGINE_API stopAll();
+		extern void IONICENGINE_API stop_all();
 
 		/*!
 		 * Gets the next free buffer.
 		 * @param increment Increment the buffer after the call?
 		 * @return The next free buffer.
 		 */
-		extern int IONICENGINE_API getNextFreeBuffer(bool increment = false);
+		extern int IONICENGINE_API get_next_free_buffer(bool increment = false);
 
 		/*!
 		 * Gets the OpenAL buffer by his IonicEngine's id.
 		 * @param index The IonicEngine's id of the OpenAL buffer.
 		 * @return The OpenAL buffer or 0 if errors.
 		 */
-		extern ALuint IONICENGINE_API getBuffer(int index);
+		extern ALuint IONICENGINE_API get_buffer(int index);
 	}
 }
 
